@@ -78,7 +78,7 @@ services:
   web:
     # construit apps/web et apps/go dans l'image (aucun Node requis sur la machine)
     build: {context: ., dockerfile: services/nginx/Dockerfile}
-    ports: ["${WEB_PORT:-80}:80"]
+    ports: ["${WEB_PORT:-80}:80", "${WEB_TLS_PORT:-8443}:443"]
     volumes:
       - photos:/srv/photos:ro
     depends_on:

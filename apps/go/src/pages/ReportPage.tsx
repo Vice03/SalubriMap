@@ -10,8 +10,8 @@ import { notify, syncOutbox } from '../sync'
 export function ReportPage({ onSent }: { onSent: () => void }) {
   const gps = useGps()
   const [manual, setManual] = useState(false)
-  const [mLat, setMLat] = useState('12.371400')
-  const [mLon, setMLon] = useState('-1.519700')
+  const [mLat, setMLat] = useState('')
+  const [mLon, setMLon] = useState('')
   const [photo, setPhoto] = useState<Blob | null>(null)
   const [preview, setPreview] = useState<string | null>(null)
   const [takenAt, setTakenAt] = useState<string | null>(null)
@@ -28,7 +28,7 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
   const pos = manual
     ? { lat: Number(mLat), lon: Number(mLon), accuracy: null }
     : gps.status === 'ok' ? gps.fix : null
-  const posOk = pos != null && Number.isFinite(pos.lat) && Number.isFinite(pos.lon) && Math.abs(pos.lat) <= 90 && Math.abs(pos.lon) <= 180
+  const posOk = pos != null && (!manual || (mLat.trim() !== '' && mLon.trim() !== '')) && Number.isFinite(pos.lat) && Number.isFinite(pos.lon) && Math.abs(pos.lat) <= 90 && Math.abs(pos.lon) <= 180
   const ready = posOk && waste != null && !busy
 
   const submit = async () => {
@@ -36,7 +36,8 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
     setBusy(true)
     await outbox.put({
       clientId: uuid(), createdAt: takenAt ?? new Date().toISOString(), lat: pos.lat, lon: pos.lon,
-      accuracy: pos.accuracy, wasteType: waste!, volumeClass: volume, comment: comment.trim(), photo,
+      accuracy: pos.accuracy, wasteType: waste!, volumeClass: volume, photo,
+      comment: (manual ? `[Position saisie à la main] ${comment.trim()}` : comment.trim()).trim(),
       state: 'pending', attempts: 0,
     })
     notify()
@@ -83,8 +84,8 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
           <>
             {gps.status === 'error' && <div className="gps" style={{ color: '#92400e', background: '#fef3c7' }}><MapPinned size={18} />{gps.message}</div>}
             <div className="row2">
-              <label>Latitude<input inputMode="decimal" value={mLat} onChange={(e) => setMLat(e.target.value)} /></label>
-              <label>Longitude<input inputMode="decimal" value={mLon} onChange={(e) => setMLon(e.target.value)} /></label>
+              <label>Latitude<input inputMode="decimal" placeholder="ex. 12.37142" value={mLat} onChange={(e) => setMLat(e.target.value.replace(',', '.'))} /></label>
+              <label>Longitude<input inputMode="decimal" placeholder="ex. -1.51970" value={mLon} onChange={(e) => setMLon(e.target.value.replace(',', '.'))} /></label>
             </div>
             <p className="hint">Saisie manuelle : la mairie vérifiera la position avant validation.</p>
           </>

@@ -5,6 +5,9 @@
 - **Salubri Go** : application mobile (PWA) de signalement — photo (EXIF conservé), GPS avec badge de précision, type et volume, outbox hors ligne avec envoi idempotent, verdict des règles, dépotoirs autour de soi.
 - L'image Docker `web` construit elle-même les deux interfaces : un clone neuf + `docker compose up` suffit (Node non requis).
 - Code d'accès mairie (`X-Salubri-Token`) sur toutes les écritures sauf l'envoi d'un signalement ; CORS limité à la même origine.
+- Démo téléphone : `run/telephone` (câble USB, `http://localhost/go/` sécurisé) et HTTPS local sur le port 8443 ; l'appli entière est mise en cache dès la première visite ; position manuelle vide par défaut et signalée ; la photo envoyée ne reste sur le téléphone qu'en vignette.
+- Scénario sous-dimensionné : estimation du nombre de camions nécessaires.
+- Pièges de répétition régénérés pour le réseau OSM réel (rapport vert).
 - Tâches de fond suivies (plus de blocage des tests) ; 28 fichiers vides du squelette supprimés.
 
 - Brigade Laabal remodelée : police civique (contrôles, dissuasion, abonnements forcés, évacuation par les riverains), sans ramassage. Le nettoyage des dépotoirs passe aux services techniques de la mairie.

@@ -2,6 +2,18 @@
 import { deviceId, outbox, type OutboxItem, type Verdict } from './db'
 
 let running: Promise<number> | null = null
+
+async function thumbnail(photo: Blob): Promise<Blob | null> {
+  try {
+    const bmp = await createImageBitmap(photo)
+    const k = 160 / Math.max(bmp.width, bmp.height)
+    const c = document.createElement('canvas')
+    c.width = Math.round(bmp.width * k)
+    c.height = Math.round(bmp.height * k)
+    c.getContext('2d')!.drawImage(bmp, 0, 0, c.width, c.height)
+    return await new Promise((res) => c.toBlob((b) => res(b), 'image/jpeg', 0.7))
+  } catch { return null }
+}
 const listeners = new Set<() => void>()
 export const onOutboxChange = (fn: () => void) => { listeners.add(fn); return () => { listeners.delete(fn) } }
 export const notify = () => listeners.forEach((fn) => fn())
@@ -27,7 +39,8 @@ async function send(item: OutboxItem, device: string): Promise<void> {
   }
   if (res.ok) {
     const verdict = (await res.json()) as Verdict
-    await outbox.put({ ...item, state: 'sent', verdict, lastError: undefined })
+    // la photo est sur le serveur : on ne garde qu'une vignette pour ne pas remplir le téléphone
+    await outbox.put({ ...item, state: 'sent', verdict, lastError: undefined, photo: item.photo ? await thumbnail(item.photo) : null })
   } else if (res.status >= 500) {
     await outbox.put({ ...item, attempts: item.attempts + 1, lastError: `Serveur indisponible (${res.status}) : nouvel essai automatique` })
   } else {

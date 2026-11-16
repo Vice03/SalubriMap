@@ -13,7 +13,14 @@ COPY apps/go apps/go
 RUN pnpm --filter web build && pnpm --filter go build
 
 FROM nginx:1.27-alpine
+# Certificat auto-signé pour l'accès HTTPS depuis un téléphone sur le réseau local (démo uniquement)
+RUN apk add --no-cache openssl && mkdir -p /etc/nginx/salubri \
+ && openssl req -x509 -nodes -newkey rsa:2048 -days 825 -subj "/CN=salubri.local" \
+      -addext "subjectAltName=DNS:localhost,DNS:salubri.local,IP:127.0.0.1" \
+      -keyout /etc/nginx/salubri/key.pem -out /etc/nginx/salubri/cert.pem \
+ && apk del openssl
 COPY services/nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY services/nginx/locations.conf /etc/nginx/salubri/locations.conf
 COPY services/nginx/placeholder/ /srv/placeholder/
 COPY --from=build /src/apps/web/dist /srv/web
 COPY --from=build /src/apps/go/dist /srv/go

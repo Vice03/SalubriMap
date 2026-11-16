@@ -58,7 +58,7 @@ export interface PlanDiff {
 export interface SimSummary { [k: string]: number }
 export interface PlanSummary {
   ilots?: number; population?: number; demand_t_week?: number; points?: number; routes?: number
-  vehicles_available?: number; km_day?: number; cost_day_fcfa?: number; unserved_points?: number
+  vehicles_available?: number; km_day?: number; cost_day_fcfa?: number; unserved_points?: number; trucks_needed?: number | null
   unserved_t_per_pickup?: number; distance_mode?: string; solver?: string; duration_ms?: number
   diff?: PlanDiff; sim?: SimSummary; sim_daily?: Record<string, number[]>
 }

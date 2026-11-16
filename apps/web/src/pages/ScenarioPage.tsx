@@ -138,6 +138,13 @@ export function ScenarioPage() {
           )}
         </div>
         {s?.diff && <div style={{ marginTop: 12, fontWeight: 600 }}>Dernier changement : {s.diff.text}</div>}
+        {!!s?.unserved_points && s.points ? (
+          <div className="fleet-gap">
+            <b>Flotte insuffisante pour cette zone.</b> Avec {s.vehicles_available} camion(s), {pct(1 - s.unserved_points / s.points)} des points
+            sont desservis{s.trucks_needed ? <> : il en faudrait environ <b>{s.trucks_needed}</b> (même capacité, 2 rotations par jour)</> : null}.
+            Ajoutez des camions dans le panneau Flotte ou réduisez la zone active.
+          </div>
+        ) : null}
         <div className="grid kpis" style={{ marginTop: 14 }}>
           {[
             ['Points de regroupement', num(s?.points)], ['Tournées', num(s?.routes)], ['Distance par jour de collecte', km(s?.km_day)],

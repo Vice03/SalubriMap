@@ -12,10 +12,16 @@
 
 ## Test du mode hors ligne (Salubri Go)
 
-1. Ouvrir `http://<ip-du-pc>/go/` sur le téléphone (même Wi-Fi).
-2. **GPS et installation exigent HTTPS sur téléphone.** En HTTP sur le réseau local, Chrome Android refuse la géolocalisation : soit saisir la position à la main (le signalement passe « à revoir »), soit, sur le téléphone de démo, ouvrir `chrome://flags/#unsafely-treat-insecure-origin-as-secure`, ajouter `http://<ip-du-pc>`, relancer Chrome (GPS + installation de la PWA fonctionnent alors).
-3. Page chargée, passer en mode avion, signaler un dépotoir : il apparaît « En attente » dans « Mes envois ».
-4. Couper le mode avion : il part tout seul (ou bouton « Synchroniser ») et affiche son verdict (statut + score) ; il apparaît dans `GET /api/reports`.
+Sur téléphone, le GPS et l'installation de l'appli exigent une connexion sécurisée. Deux façons de faire :
+
+**A. Câble USB (recommandé pour la démo, Android).** `run/telephone` (adb reverse) : le téléphone ouvre `http://localhost/go/`, qui compte comme sécurisé. GPS, installation et hors ligne fonctionnent.
+1. Ouvrir `http://localhost/go/` une fois avec le câble : toute l'appli est mise en cache dès cette première visite.
+2. **Débrancher le câble** (le mode avion ne coupe pas l'USB), signaler un dépotoir : il apparaît « En attente » dans « Mes envois ».
+3. Rebrancher et relancer `run/telephone` : l'envoi part tout seul (ou bouton « Synchroniser ») et affiche son verdict (statut + score).
+
+**B. Wi-Fi en HTTPS (secours).** `https://<ip-du-pc>:8443/go/`, accepter l'avertissement du certificat local une fois : le GPS fonctionne. L'installation hors ligne ne marche pas avec un certificat non reconnu (limite des navigateurs) : pour la scène « hors ligne », utiliser A.
+
+Sans l'un ou l'autre, la position se saisit à la main (champs vides par défaut) et le signalement est marqué « position saisie ».
 
 ## Code d'accès mairie
 

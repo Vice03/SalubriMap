@@ -142,7 +142,7 @@ export function Dashboard() {
       sub: broken ? <><ArrowDown size={14} />{broken} en panne</> : <><ArrowUp size={14} />100 % opérationnels</>, subColor: broken ? '#dc2626' : '#16a34a',
       spark: weekly(daily.truck_km), sc: '#22c55e' },
     { icon: <MapPin size={28} />, bg: '#f28c28', value: num(pts.length), label: 'Points de regroupement',
-      sub: unserved ? <><ArrowUp size={14} />{unserved} non desservi(s)</> : <><ArrowUp size={14} />{saturated} saturé(s)</>, subColor: unserved || saturated ? '#dc2626' : '#16a34a',
+      sub: unserved ? <><ArrowUp size={14} />{unserved} non desservi(s){plan?.summary.trucks_needed ? ` · ≈ ${plan.summary.trucks_needed} camions nécessaires` : ''}</> : <><ArrowUp size={14} />{saturated} saturé(s)</>, subColor: unserved || saturated ? '#dc2626' : '#16a34a',
       spark: weekly(daily.overflow_points), sc: '#f59e0b' },
     { icon: <Recycle size={28} />, bg: '#16a34a', value: tonnes(sim.collected_t, 0), label: 'Déchets collectés (90 j simulés)',
       sub: <><TrendingUp size={14} />couverture {pct(sim.coverage_rate)}</>, subColor: '#16a34a',

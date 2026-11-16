@@ -12,6 +12,7 @@ Guarantees:
 import hashlib
 import json
 import logging
+import math
 import threading
 import time
 import uuid
@@ -174,6 +175,22 @@ def _time_windows(s: Session, commune_id: uuid.UUID, pts: list[PlacedPoint]) -> 
 
 
 # ---------------------------------------------------------------- public entry points
+def _trucks_needed(demand_nodes: np.ndarray, unserved: list[int], vehicles: list[Any]) -> int | None:
+    """Ordre de grandeur de la flotte nécessaire quand des points restent non desservis.
+
+    Camions × (tonnage total / tonnage réellement servi par la flotte actuelle), borné en dessous par la
+    capacité (2 rotations par camion). None quand tout est desservi.
+    """
+    if not unserved or not vehicles:
+        return None
+    total = float(demand_nodes.sum())
+    served = total - float(sum(demand_nodes[i] for i in unserved))
+    cap = float(np.mean([v.capacity_t for v in vehicles])) * 2
+    by_capacity = math.ceil(total / cap) if cap > 0 else len(vehicles)
+    by_observed = math.ceil(len(vehicles) * total / served) if served > 0 else by_capacity
+    return max(len(vehicles) + 1, by_capacity, by_observed)
+
+
 def request_recompute(
     s: Session, scenario: Scenario, kind: str, payload: dict[str, Any] | None = None, sync: bool = False
 ) -> PlanVersion:
@@ -515,6 +532,7 @@ def _execute(pv_id: str) -> None:
                 "cost_day_fcfa": round(sum(r.cost for r in vrp.solution.routes)),
                 "unserved_points": len(unserved_idx),
                 "unserved_t_per_pickup": round(float(sum(demand_nodes[i] for i in unserved_idx)), 2),
+                "trucks_needed": _trucks_needed(demand_nodes, unserved_idx, vehicles),
                 "distance_mode": matrix.mode,
                 "solver": vrp.solution.solver,
                 "notes": vrp.solution.notes,
