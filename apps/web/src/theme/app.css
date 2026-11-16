@@ -210,3 +210,5 @@ h1, h2, h3 { margin: 0; }
   .content { padding: 14px 12px 28px; gap: 14px; }
   .row-map { grid-template-columns: 1fr; }
 }
+
+.demo-badge { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; font-weight: 700; font-size: 12.5px; white-space: nowrap; }

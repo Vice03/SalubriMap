@@ -12,6 +12,9 @@ if errorlevel 1 (
   pause & exit /b 1
 )
 rem Les interfaces (apps/web, apps/go) sont construites dans l'image Docker "web" : pas besoin de Node ici.
+rem Hors demonstration (SALUBRI_DEMO_MODE=false dans .env) : secrets generes une fois dans .env
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0secrets.ps1"
+if errorlevel 1 ( echo Generation des secrets impossible : voir .env.example & pause & exit /b 1 )
 rem Avec l'extrait OSM (scripts/prepare_osm_extract.sh) : vraies rues + calcul d'itineraires OSRM
 set PROFILES=
 if exist "data\osm\ouaga.osm.pbf" set PROFILES=--profile osrm
@@ -35,5 +38,5 @@ rem curl.exe (inclus dans Windows 10+) sur 127.0.0.1 sans proxy : PowerShell pas
 curl.exe -s -f -o nul -m 3 --noproxy "*" http://127.0.0.1/api/health >nul 2>nul || powershell -NoProfile -Command "try { (Invoke-WebRequest -UseBasicParsing http://127.0.0.1/api/health -TimeoutSec 3) | Out-Null; exit 0 } catch { exit 1 }"
 if errorlevel 1 ( timeout /t 2 /nobreak >nul & goto wait )
 echo Salubri est pret : http://localhost   (Salubri Go : http://localhost/go/ , API : http://localhost/api/docs)
-echo Code d acces mairie par defaut : ouaga2026  (a changer dans un fichier .env : SALUBRI_ADMIN_TOKEN=...)
+echo Compte de demonstration (SALUBRI_DEMO_MODE=true) : demo / ouaga2026. Production : voir .env.example
 start "" http://localhost

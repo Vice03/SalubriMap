@@ -3,6 +3,7 @@
 ## 0.3.0 — en cours
 
 - **Comptes et rôles (lot A1)** : comptes de la mairie (`moderateur`, `admin`), connexion `POST /api/auth/login` avec session signée de 8 h, `GET /api/auth/me`, `POST /api/auth/logout` ; chaque route d'écriture exige le bon rôle (modération pour les signalements et dépotoirs, admin pour imports, scénarios, flotte, quartiers, recalculs) ; le journal signe chaque action « login (rôle) » au lieu de « system » ; outil `python -m salubri_api.users add|passwd|disable|list` ; `X-Salubri-Token` reste l'identifiant de service des scripts. Mots de passe en argon2id.
+- **Pas de secret par défaut hors démonstration (lot A2)** : `SALUBRI_DEMO_MODE` (vrai dans `docker-compose.yml`) ; en démonstration, compte `demo` / `ouaga2026` créé tout seul et badge « Mode démonstration » dans l'interface ; hors démonstration, l'API refuse de démarrer avec un code vide ou `ouaga2026`, une clé de session courte, sans admin actif ou avec `demo` actif ; `run/start` génère les secrets dans `.env` au premier lancement ; `run/admin <login>` crée le premier admin.
 
 ## 0.2.1 — 16 novembre 2026
 

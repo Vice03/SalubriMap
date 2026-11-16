@@ -112,5 +112,5 @@ export interface CompareResult {
   better_when_lower: string[]
 }
 
-export interface Health { status: string; db: string; osrm: string; version: string }
+export interface Health { status: string; db: string; osrm: string; version: string; demo_mode?: boolean }
 export interface ValidationRules { rules: { code: string; title: string; description: string; penalty: string }[] }

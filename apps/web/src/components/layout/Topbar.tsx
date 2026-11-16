@@ -26,6 +26,7 @@ export function Topbar() {
   const [menu, setMenu] = useState<'export' | 'alerts' | null>(null)
   const [importing, setImporting] = useState(false)
   const { data: quartiers } = useApi(() => api.quartiers(), [])
+  const { data: health } = useApi(() => api.health(), [])
   const { data: alerts } = useApi(() => loadAlerts(scenario), [scenario?.id, scenario?.latest_ready_plan_id])
 
   const results = useMemo(() => {
@@ -85,6 +86,11 @@ export function Topbar() {
             </div>
           )}
         </div>
+        {health?.demo_mode && (
+          <span className="demo-badge" title="Compte « demo » et code ouaga2026 connus de tous : ne pas utiliser pour de vraies données">
+            Mode démonstration
+          </span>
+        )}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#0f2b55', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>MO</div>
           <div style={{ lineHeight: 1.2 }}><b style={{ fontSize: 14 }}>Modérateur</b><div className="muted">Mairie de Ouagadougou</div></div>

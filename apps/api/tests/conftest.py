@@ -22,6 +22,7 @@ os.environ["SALUBRI_OSRM_URL"] = ""
 os.environ["SALUBRI_OSRM_RAIN_URL"] = ""
 os.environ["SALUBRI_COMMUNE"] = "testville"
 os.environ["SALUBRI_ADMIN_TOKEN"] = "test-token"
+os.environ["SALUBRI_DEMO_MODE"] = "true"  # comme docker-compose.yml ; le mode production est testé à part
 os.environ["SALUBRI_RESUME_ON_STARTUP"] = "false"
 
 from fastapi.testclient import TestClient  # noqa: E402

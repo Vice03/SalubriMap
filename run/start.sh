@@ -7,6 +7,8 @@ fi
 if ! docker info >/dev/null 2>&1; then
   echo "Docker est installé mais ne tourne pas : démarrez Docker Desktop puis relancez."; exit 1
 fi
+# Hors démonstration (SALUBRI_DEMO_MODE=false dans .env) : secrets générés une fois dans .env
+sh "$(dirname "$0")/secrets.sh" || exit 1
 # Les interfaces sont construites dans l'image Docker « web » : pas besoin de Node ici.
 PROFILES=""
 [ -s data/osm/ouaga.osm.pbf ] && PROFILES="--profile osrm"
@@ -22,5 +24,5 @@ until curl -fs http://localhost/api/health >/dev/null 2>&1; do
   printf "."; sleep 2
 done
 echo; echo "Salubri est prêt : http://localhost  (Salubri Go : http://localhost/go/ , API : http://localhost/api/docs)"
-echo "Code d'accès mairie par défaut : ouaga2026 (à changer dans .env : SALUBRI_ADMIN_TOKEN=...)"
+echo "Compte de démonstration (SALUBRI_DEMO_MODE=true) : demo / ouaga2026. Production : voir .env.example"
 ( command -v xdg-open >/dev/null && xdg-open http://localhost ) || ( command -v open >/dev/null && open http://localhost ) || true

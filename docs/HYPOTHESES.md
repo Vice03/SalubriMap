@@ -44,3 +44,10 @@ Choix faits là où la consigne laissait le choix (option la plus simple et sûr
 - **Mots de passe** : argon2id (`argon2-cffi`), 8 caractères minimum ; login enregistré en minuscules.
 - **Identifiant de service** : `X-Salubri-Token` (= `SALUBRI_ADMIN_TOKEN`) garde les droits admin pour les scripts (`rehearse.py`, `bench_pipeline.py`) et pour l'interface web tant que l'écran de connexion (lot A7) n'existe pas ; le journal le signe « service (admin) ».
 - **Journal** : chaque action d'un humain est signée « login (rôle) » ; « system » est réservé aux tâches de fond et au chargement des données, « console » à l'outil `python -m salubri_api.users`. Le champ `actor` envoyé par l'interface lors d'une modération est ignoré : l'auteur est le compte connecté.
+
+## Mode démonstration et secrets (0.3, lot A2)
+
+- `SALUBRI_DEMO_MODE` vaut **faux par défaut dans le code** (sûr) et **vrai dans `docker-compose.yml`** (la démo reste « une commande, sans compte à créer »).
+- En démonstration : compte `demo` (admin, mot de passe `ouaga2026`, créé au démarrage s'il n'existe pas ; jamais recréé s'il a été désactivé), code de service `ouaga2026` si `SALUBRI_ADMIN_TOKEN` est vide, clé de session aléatoire par démarrage, badge visible (`GET /api/health` → `demo_mode`).
+- Hors démonstration, l'API refuse de démarrer si : code de service vide, égal à `ouaga2026` ou de moins de 16 caractères ; clé de session de moins de 32 caractères ; aucun admin actif ; compte `demo` encore actif. Le message liste tous les problèmes à la fois.
+- Génération des secrets : `run/secrets.ps1` (Windows, appelé par `run/start.bat`) et `run/secrets.sh` (appelé par `run/start.sh`), 32 octets aléatoires du système (générateur cryptographique), écrits dans `.env` (UTF-8 sans BOM), affichés une seule fois, jamais régénérés s'ils sont déjà corrects.

@@ -12,7 +12,7 @@ router = APIRouter(tags=["Santé"])
 
 
 @router.get("/health", summary="État du service, de la base et d'OSRM")
-def health(s: Session = Depends(get_session)) -> dict[str, str]:
+def health(s: Session = Depends(get_session)) -> dict[str, str | bool]:
     try:
         s.execute(text("SELECT 1"))
         db = "ok"
@@ -23,4 +23,10 @@ def health(s: Session = Depends(get_session)) -> dict[str, str]:
         osrm = "ok" if r.status_code == 200 else "down"
     except Exception:
         osrm = "down"
-    return {"status": "ok" if db == "ok" else "degraded", "db": db, "osrm": osrm, "version": __version__}
+    return {
+        "status": "ok" if db == "ok" else "degraded",
+        "db": db,
+        "osrm": osrm,
+        "version": __version__,
+        "demo_mode": get_settings().demo_mode,
+    }

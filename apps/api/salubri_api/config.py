@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     # Code d'accès « mairie » exigé (en-tête X-Salubri-Token) sur toutes les écritures sauf l'envoi d'un
     # signalement citoyen. Vide = contrôle désactivé (développement local uniquement).
     admin_token: str = ""
+    # Mode démonstration (jury, répétitions) : compte « demo » et code « ouaga2026 » connus de tous, badge
+    # visible dans l'interface. Hors démonstration (false), l'API refuse de démarrer avec un secret par défaut.
+    # Faux par défaut (sûr) ; docker-compose.yml l'active pour que la démo reste « une commande ».
+    demo_mode: bool = False
     # Clé de signature des sessions (connexion des comptes mairie). Vide = clé aléatoire tirée au démarrage :
     # les sessions ouvertes ne survivent pas à un redémarrage de l'API (il suffit de se reconnecter).
     secret_key: str = ""
@@ -32,6 +36,14 @@ class Settings(BaseSettings):
     auto_recompute: bool = True
     # au démarrage, relancer les recalculs interrompus par un redémarrage (désactivé dans les tests)
     resume_on_startup: bool = True
+
+
+DEMO_TOKEN = "ouaga2026"
+
+
+def service_token(s: "Settings") -> str:
+    """Code de service effectif : SALUBRI_ADMIN_TOKEN, ou le code de démonstration en mode démo."""
+    return s.admin_token or (DEMO_TOKEN if s.demo_mode else "")
 
 
 @lru_cache

@@ -23,9 +23,13 @@ Sur téléphone, le GPS et l'installation de l'appli exigent une connexion sécu
 
 Sans l'un ou l'autre, la position se saisit à la main (champs vides par défaut) et le signalement est marqué « position saisie ».
 
-## Code d'accès mairie
+## Code d'accès mairie et mode démonstration
 
-Lectures publiques, envoi d'un signalement libre ; toutes les autres écritures (modération, imports, scénarios, flotte, dépotoirs) exigent le code mairie, demandé par l'interface à la première action. Par défaut `ouaga2026` ; le changer avant la démo dans un fichier `.env` à la racine : `SALUBRI_ADMIN_TOKEN=…`. Les scripts `run/rehearse` le lisent dans la même variable.
+Lectures publiques, envoi d'un signalement libre ; toutes les autres écritures exigent un compte de la mairie : modération et dépotoirs pour le rôle `moderateur`, imports, scénarios, flotte et quartiers pour le rôle `admin`.
+
+`run/start` lance Salubri **en mode démonstration** (réglage par défaut, badge jaune « Mode démonstration » dans l'interface) : le compte `demo` (admin, mot de passe `ouaga2026`) est créé tout seul et le code `ouaga2026` reste accepté. L'interface le demande à la première action protégée (l'écran de connexion arrive au lot A7). Les scripts `run/rehearse` utilisent ce même code (`SALUBRI_ADMIN_TOKEN`).
+
+**Hors démonstration** (`SALUBRI_DEMO_MODE=false` dans `.env`) : `run/start` génère un code de service et une clé de session aléatoires dans `.env` et les affiche une seule fois ; créer le premier admin avec `run/admin <login>` et désactiver `demo` s'il existe (`docker compose run --rm seed python -m salubri_api.users disable demo`). Sans cela, l'API refuse de démarrer et dit pourquoi (`docker compose logs api`).
 
 ## Avant la finale (3 fois : J-2, J-1, matin)
 

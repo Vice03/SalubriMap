@@ -87,6 +87,14 @@ def create_app() -> FastAPI:
         app.include_router(r.router, prefix="/api")
 
     @app.on_event("startup")
+    def _security() -> None:  # pas de secret par défaut hors mode démonstration (lève InsecureConfig)
+        from salubri_api.db import get_sessionmaker
+        from salubri_api.services.security_config import check_startup
+
+        with get_sessionmaker()() as s:
+            check_startup(settings, s)
+
+    @app.on_event("startup")
     def _resume() -> None:  # plans and simulations interrupted by a restart
         if settings.resume_on_startup:
             from salubri_api.services.plan.recovery import resume_interrupted

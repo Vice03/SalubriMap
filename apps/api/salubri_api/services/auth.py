@@ -24,6 +24,7 @@ from argon2.exceptions import InvalidHashError, VerificationError, VerifyMismatc
 from sqlalchemy.orm import Session
 
 from salubri_api.config import get_settings
+from salubri_api.config import service_token as effective_service_token
 from salubri_api.models import User
 
 log = logging.getLogger(__name__)
@@ -132,7 +133,7 @@ def principal_from_headers(s: Session, authorization: str | None, service_token:
             raise AuthError("Session fermée ou compte désactivé : reconnectez-vous")
         return Principal(user.login, user.role, user.display_name)
     if service_token:
-        expected = get_settings().admin_token
+        expected = effective_service_token(get_settings())
         if expected and hmac.compare_digest(service_token, expected):
             return Principal("service", "admin", "Identifiant de service")
         raise AuthError("Code d'accès invalide")
