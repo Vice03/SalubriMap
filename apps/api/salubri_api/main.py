@@ -71,6 +71,16 @@ def create_app() -> FastAPI:
     for r in (health, communes, quartiers, reports, imports, dumps, scenarios, plans, sim, export, audit, validation):
         app.include_router(r.router, prefix="/api")
 
+    @app.on_event("startup")
+    def _resume() -> None:  # plans and simulations interrupted by a restart
+        if settings.resume_on_startup:
+            from salubri_api.services.plan.recovery import resume_interrupted
+
+            try:
+                resume_interrupted()
+            except Exception:  # base absente ou pas encore migrée : le seed s'en charge
+                logging.getLogger(__name__).exception("reprise au démarrage impossible")
+
     settings.photos_dir.mkdir(parents=True, exist_ok=True)
     app.mount("/photos", StaticFiles(directory=settings.photos_dir), name="photos")
     return app

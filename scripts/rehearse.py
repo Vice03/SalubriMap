@@ -1,7 +1,8 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Replay the jury's live test against a running Salubri API and write docs/REHEARSAL_REPORT.md.
 
-1. imports data/rehearsal/traps.geojson (+ photos) and checks every trap against traps_expected.json;
+1. imports the trap set generated for the loaded map, data/rehearsal/traps/<carte>/traps.geojson (+ photos), and
+   checks every trap against traps_expected.json (<carte> comes from GET /api/communes/{slug});
 2. on a scratch clone of the baseline scenario, applies data/rehearsal/scenario_changes.yaml step by step,
    follows the SSE progress, times each recompute and checks the invariants.
 Exit code 0 only if everything passes.
@@ -17,6 +18,7 @@ import sys
 import time
 import zipfile
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -32,8 +34,27 @@ def ok(flag: bool) -> str:
     return f"{GREEN}OK{RESET}" if flag else f"{RED}ÉCHEC{RESET}"
 
 
-def traps_zip() -> bytes:
-    fc = json.loads((DATA / "rehearsal" / "traps.geojson").read_text(encoding="utf-8"))
+def traps_dir(c: httpx.Client) -> tuple[Path, str]:
+    """Folder of the trap set generated for the base map the API has loaded (see services/dataset.py)."""
+    slug = os.environ.get("SALUBRI_COMMUNE", "ouagadougou")
+    key = c.get(f"/api/communes/{slug}").json().get("dataset", "")
+    folder = DATA / "rehearsal" / "traps" / key
+    if key and (folder / "traps.geojson").exists():
+        return folder, key
+    legacy = DATA / "rehearsal"
+    if (legacy / "traps.geojson").exists():  # ancien emplacement unique, avant les jeux par carte
+        print(
+            f"{RED}Attention{RESET} : pas de jeu pour la carte « {key} », ancien jeu data/rehearsal/traps.geojson utilisé."
+        )
+        return legacy, f"{key} (ancien jeu, à régénérer : make gen-traps)"
+    sys.exit(
+        f"Aucun jeu de pièges pour la carte chargée « {key or 'inconnue'} ». "
+        "Générez-le d'abord : make gen-traps (ou python scripts/gen_traps.py)."
+    )
+
+
+def traps_zip(folder: Path) -> bytes:
+    fc = json.loads((folder / "traps.geojson").read_text(encoding="utf-8"))
     buf = io.BytesIO()
     with zipfile.ZipFile(buf, "w", zipfile.ZIP_DEFLATED) as z:
         z.writestr("traps.geojson", json.dumps(fc))
@@ -45,15 +66,22 @@ def traps_zip() -> bytes:
 
 
 def run_traps(c: httpx.Client) -> tuple[bool, list[str]]:
+    folder, key = traps_dir(c)
+    print(f"Pièges : jeu « {key} »")
     for b in c.get("/api/imports").json():
         if b["filename"] == "traps.zip" and not b["rolled_back"]:
             c.post(f"/api/imports/{b['id']}/rollback")
     before = len(c.get("/api/dump-sites").json()["features"])
-    expected = json.loads((DATA / "rehearsal" / "traps_expected.json").read_text(encoding="utf-8"))
-    r = c.post("/api/imports", files={"file": ("traps.zip", traps_zip(), "application/zip")}, timeout=120)
+    expected = json.loads((folder / "traps_expected.json").read_text(encoding="utf-8"))
+    r = c.post("/api/imports", files={"file": ("traps.zip", traps_zip(folder), "application/zip")}, timeout=120)
     r.raise_for_status()
     rows = {row["external_id"]: row for row in r.json()["report"] if row.get("external_id")}
-    lines = ["| Piège | Attendu | Obtenu | Règles | Résultat |", "|---|---|---|---|---|"]
+    lines = [
+        f"Jeu de pièges : `{key}`",
+        "",
+        "| Piège | Attendu | Obtenu | Règles | Résultat |",
+        "|---|---|---|---|---|",
+    ]
     all_ok = True
     print(f"\n{'Piège':28} {'attendu':22} {'obtenu':12} {'score':>5}  règles")
     for eid, exp in expected.items():

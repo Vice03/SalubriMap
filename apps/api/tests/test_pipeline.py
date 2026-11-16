@@ -149,3 +149,20 @@ def test_diff_text(db, client):
     b = request_recompute(db, sc, "fleet_changed", sync=True)
     d = client.get(f"/api/plans/{b.id}/diff").json()
     assert d["against"] is not None and isinstance(d["text"], str) and d["routes_changed"] >= 1
+
+
+def test_restart_resumes_interrupted_plans_and_fails_open_simulations(db):
+    from salubri_api.models import SimRun
+    from salubri_api.services.plan.recovery import resume_interrupted
+
+    pv = first_plan(db)
+    sc = scenario(db)
+    stuck = PlanVersion(scenario_id=sc.id, version=pv.version + 1, event_kind="manual", status="running")
+    db.add(stuck)
+    run = SimRun(plan_version_id=pv.id, seed=1, horizon_days=30, replications=2, status="running")
+    db.add(run)
+    db.commit()
+    assert resume_interrupted(sync=True) == [str(sc.id)]
+    db.expire_all()
+    assert db.get(PlanVersion, stuck.id).status == "ready"
+    assert db.get(SimRun, run.id).status == "failed"

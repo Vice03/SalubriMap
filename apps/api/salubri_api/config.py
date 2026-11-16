@@ -26,6 +26,8 @@ class Settings(BaseSettings):
     admin_token: str = ""
     reports_debounce_s: float = 2.0
     auto_recompute: bool = True
+    # au démarrage, relancer les recalculs interrompus par un redémarrage (désactivé dans les tests)
+    resume_on_startup: bool = True
 
 
 @lru_cache

@@ -30,6 +30,6 @@ Lectures publiques, envoi d'un signalement libre ; toutes les autres écritures 
 ## Avant la finale (3 fois : J-2, J-1, matin)
 
 1. Machine de démo débranchée d'Internet : `run/reset` puis chronométrer le démarrage.
-2. `run/rehearse` → rapport vert.
+2. `run/rehearse` → rapport vert. Les pièges dépendent de la carte chargée (rues réelles ou ville synthétique) : après un changement de données, `make gen-traps` crée le jeu `data/rehearsal/traps/<carte>/`, que `rehearse` choisit tout seul.
 3. Un membre joue le jury avec un autre téléphone : photo d'écran, GPS falsifié, même photo deux fois.
 4. `docker compose stop osrm` pendant un recalcul → bandeau « distances approximatives », pas d'erreur ; puis `docker compose start osrm`.

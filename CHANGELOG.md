@@ -1,5 +1,14 @@
 # Journal des versions
 
+## 0.2.1 — 16 novembre 2026
+
+- Tournées : sur une grande zone (ville entière, 1 000+ points), la limite de temps du solveur s'adapte à la taille et le meilleur de OR-Tools et de l'heuristique de repli est retenu. Avant, un recalcul pouvait rendre un plan à 0 tournée.
+- Reprise après redémarrage : les recalculs interrompus repartent tout seuls, les simulations interrompues sont marquées en échec avec un message clair.
+- Pièges de répétition rangés par carte chargée (`data/rehearsal/traps/<carte>/`) : `rehearse` choisit le jeu qui correspond à la carte de l'API, fini les rapports rouges pour cause de jeu généré sur une autre carte.
+- Salubri Go : le cache hors ligne ignore l'en-tête `Vary` (page blanche hors ligne derrière certains relais).
+- Salubri Map/Sim : pages chargées à la demande, carte dans un fichier séparé (premier fichier 1 065 ko → 70 ko + bibliothèques en cache) ; affichage téléphone (barre d'onglets en bas) ; bouton « Ajouter un camion » qui ne déborde plus.
+- Tests navigateur (`tests/e2e`) : hors ligne de Salubri Go de bout en bout, affichage de chaque page sur ordinateur et téléphone.
+
 ## 0.2.0 — 16 novembre 2026
 
 - **Salubri Go** : application mobile (PWA) de signalement — photo (EXIF conservé), GPS avec badge de précision, type et volume, outbox hors ligne avec envoi idempotent, verdict des règles, dépotoirs autour de soi.

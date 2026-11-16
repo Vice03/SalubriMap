@@ -13,5 +13,9 @@ export default defineConfig({
       '/photos': { target: api, changeOrigin: true },
     },
   },
-  build: { chunkSizeWarningLimit: 1500 },
+  build: {
+    chunkSizeWarningLimit: 900,
+    // la carte (maplibre, ~800 ko) dans son propre fichier, mis en cache séparément du code de l'appli
+    rollupOptions: { output: { manualChunks: { maplibre: ['maplibre-gl'], react: ['react', 'react-dom', 'react-router-dom'] } } },
+  },
 })

@@ -148,7 +148,9 @@ def solve_vrp(
     params = pywrapcp.DefaultRoutingSearchParameters()
     params.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PARALLEL_CHEAPEST_INSERTION
     params.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
-    params.time_limit.FromMilliseconds(int(time_limit_s * 1000))
+    # Large instances (whole city: 1,000+ points) need more than the default second to get past the first
+    # insertion pass; under that limit OR-Tools can return an almost empty solution (every point dropped).
+    params.time_limit.FromMilliseconds(int(effective_time_limit(time_limit_s, n) * 1000))
     sol = routing.SolveWithParameters(params)
     if sol is None:
         from salubri_api.services.planning.vrp_fallback import solve_fallback
@@ -179,4 +181,23 @@ def solve_vrp(
     for r in sorted(routes, key=lambda r: (r.vehicle_idx, r.arrival_min[0])):
         by_vehicle[r.vehicle_idx] = by_vehicle.get(r.vehicle_idx, 0) + 1
         r.rotation = by_vehicle[r.vehicle_idx]
-    return VrpSolution(routes, unserved, float(sol.ObjectiveValue()), "ortools", int((time.perf_counter() - t0) * 1000))
+    best = VrpSolution(routes, unserved, float(sol.ObjectiveValue()), "ortools", int((time.perf_counter() - t0) * 1000))
+    if unserved:
+        # Stopped by the time limit with points left over: the constructive heuristic may serve more.
+        from salubri_api.services.planning.vrp_fallback import solve_fallback
+
+        fb = solve_fallback(dist_km, dur_min, demand_t, vehicles, time_windows, service_min, max_route_min, rotations)
+        if _left_t(fb.unserved, demand_t) < _left_t(unserved, demand_t) - 1e-9:
+            fb.notes.append("Heuristique de repli retenue : elle dessert plus que OR-Tools dans le temps imparti")
+            fb.duration_ms = int((time.perf_counter() - t0) * 1000)
+            return fb
+    return best
+
+
+def effective_time_limit(time_limit_s: float, n_nodes: int) -> float:
+    """Scenario time limit, raised for large instances (about 1 s per 300 points, at most 8 s)."""
+    return max(time_limit_s, min(8.0, n_nodes / 300))
+
+
+def _left_t(unserved: list[int], demand_t: np.ndarray) -> float:
+    return float(sum(demand_t[i] for i in unserved))

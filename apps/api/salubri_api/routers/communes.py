@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 
 from salubri_api.db import get_session
 from salubri_api.models import Commune
+from salubri_api.services.dataset import dataset_key
 from salubri_api.services.geo import shape
 
 router = APIRouter(prefix="/communes", tags=["Commune"])
@@ -26,4 +27,5 @@ def get_commune_info(slug: str, s: Session = Depends(get_session)) -> dict[str, 
         "center": [(b[0] + b[2]) / 2, (b[1] + b[3]) / 2],
         "depot": [d.x, d.y],
         "params_default": c.params_default,
+        "dataset": dataset_key(s, c.id),
     }

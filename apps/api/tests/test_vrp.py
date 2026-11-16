@@ -56,3 +56,25 @@ def test_osrm_down_falls_back_to_haversine():
 def test_rain_is_slower():
     dry, rain = approx_matrix(NODES[:5], "dry"), approx_matrix(NODES[:5], "rain")
     assert (rain.duration_min[0, 1:] > dry.duration_min[0, 1:]).all()
+
+
+def test_time_limited_ortools_never_serves_less_than_the_fallback() -> None:
+    """Large instance + tiny time limit: OR-Tools may stop with most points dropped; keep the better plan."""
+    from salubri_api.services.planning.vrp import effective_time_limit
+    from salubri_api.services.planning.vrp_fallback import solve_fallback
+
+    rng = np.random.default_rng(1)
+    n = 301
+    xy = rng.uniform(0, 25, (n, 2))
+    dist = np.hypot(*(xy[:, None, :] - xy[None, :, :]).transpose(2, 0, 1))
+    dur = dist / 25 * 90
+    dem = np.r_[0, rng.uniform(0.3, 2.5, n - 1)]
+    veh = [VehicleSpec(8, 450, 20000)] * 4
+    tw = [(0, 1440)] + [(420, 1020)] * (n - 1)
+    sol = solve_vrp(dist, dur, dem, veh, tw, 10, time_limit_s=0.02)
+    fb = solve_fallback(dist, dur, dem, veh, tw, 10, 480, 2)
+    left = lambda u: sum(dem[i] for i in u)  # noqa: E731
+    assert sol.routes
+    assert left(sol.unserved) <= left(fb.unserved) + 1e-9
+    assert effective_time_limit(1.0, 56) == 1.0
+    assert effective_time_limit(1.0, 1035) > 3

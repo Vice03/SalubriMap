@@ -1,8 +1,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Generate the rehearsal trap set from the loaded database (works with the synthetic city AND real data).
 
-Writes data/rehearsal/traps.geojson (+ photos referenced by name, rebuilt deterministically at import time)
-and data/rehearsal/traps_expected.json. Needs SALUBRI_DATABASE_URL (the seed must have run).
+Writes data/rehearsal/traps/<carte>/traps.geojson (+ photos referenced by name, rebuilt deterministically at
+import time) and traps_expected.json, where <carte> names the loaded base map (services/dataset.py): a trap set
+is only valid for the map it was generated on. rehearse.py picks the folder that matches the running API. Needs SALUBRI_DATABASE_URL (the seed must have run).
 
     python scripts/gen_traps.py
 """
@@ -16,9 +17,9 @@ from sqlalchemy import text
 from _common import DATA
 from salubri_api.config import get_settings
 from salubri_api.db import get_sessionmaker
+from salubri_api.services.dataset import dataset_key
 
 T0 = datetime(2026, 11, 16, 8, 0, tzinfo=UTC)
-OUT = DATA / "rehearsal"
 
 
 def main() -> None:
@@ -50,6 +51,7 @@ def main() -> None:
 
     with get_sessionmaker()() as s:
         cid = s.execute(text("SELECT id FROM communes WHERE slug = :s"), {"s": get_settings().commune}).scalar_one()
+        out = DATA / "rehearsal" / "traps" / dataset_key(s, cid)
 
         def free_points(n: int, seed: float, min_gap_m: float = 80) -> list[tuple[float, float]]:
             rows = s.execute(
@@ -235,12 +237,12 @@ def main() -> None:
             photo=same,
         )
 
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / "traps.geojson").write_text(
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "traps.geojson").write_text(
         json.dumps({"type": "FeatureCollection", "features": feats}, ensure_ascii=False, indent=1), encoding="utf-8"
     )
-    (OUT / "traps_expected.json").write_text(json.dumps(expected, ensure_ascii=False, indent=1), encoding="utf-8")
-    print(f"{len(feats)} signalements piégés écrits dans {OUT}")
+    (out / "traps_expected.json").write_text(json.dumps(expected, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"{len(feats)} signalements piégés écrits dans {out}")
 
 
 if __name__ == "__main__":
