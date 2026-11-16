@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+name: CI
+on: [push, pull_request]
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgis/postgis:16-3.4
+        env: {POSTGRES_USER: salubri, POSTGRES_PASSWORD: salubri, POSTGRES_DB: salubri_test}
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U salubri" --health-interval 5s --health-timeout 3s --health-retries 20
+    defaults: {run: {working-directory: apps/api}}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v3
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: uv pip install --system -r pyproject.toml pytest ruff && uv pip install --system --no-deps -e .
+      - run: ruff check salubri_api tests ../../scripts && ruff format --check salubri_api tests ../../scripts
+      - run: pytest -q
+        env:
+          SALUBRI_TEST_DATABASE_URL: postgresql+psycopg://salubri:salubri@localhost:5432/salubri_test

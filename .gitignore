@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.venv/
+venv/
+.env
+var/
+node_modules/
+apps/*/dist/*
+!apps/*/dist/.gitkeep
+.DS_Store
+*.log
+data/osm/*.osm.pbf.tmp
+data/osm/*.osm.pbf
+data/osm/.seeded_osm

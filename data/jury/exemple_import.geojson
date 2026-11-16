@@ -1,0 +1,88 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.49241,
+     12.389982
+    ]
+   },
+   "properties": {
+    "external_id": "jury-geo-0",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "reported_at": "2026-11-15T12:00:00+00:00",
+    "device_id": "jury-geo-0"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.569637,
+     12.314894
+    ]
+   },
+   "properties": {
+    "external_id": "jury-geo-1",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "reported_at": "2026-11-14T12:00:00+00:00",
+    "device_id": "jury-geo-1"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.445577,
+     12.38384
+    ]
+   },
+   "properties": {
+    "external_id": "jury-geo-2",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "reported_at": "2026-11-13T12:00:00+00:00",
+    "device_id": "jury-geo-2"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.533491,
+     12.382463
+    ]
+   },
+   "properties": {
+    "external_id": "jury-geo-3",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "reported_at": "2026-11-12T12:00:00+00:00",
+    "device_id": "jury-geo-3"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     12.415098,
+     -1.59011
+    ]
+   },
+   "properties": {
+    "external_id": "jury-geo-swapped",
+    "waste_type": "plastic",
+    "device_id": "jury-geo-9"
+   }
+  }
+ ]
+}

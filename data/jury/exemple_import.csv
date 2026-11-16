@@ -1,0 +1,11 @@
+lat;lon;type;volume;date;commentaire;device_id
+12.359625;-1.540146;ménager;charrette;15/11/2026 12:00;;jury-0
+12.358012;-1.537004;plastique;charrette;15/11/2026 07:00;;jury-1
+12.357522;-1.519624;gravats;charrette;15/11/2026 02:00;;jury-2
+12.348204;-1.525669;mixte;charrette;14/11/2026 21:00;;jury-0
+12.346438;-1.542186;ménager;charrette;14/11/2026 16:00;;jury-1
+12.351561;-1.538548;plastique;charrette;14/11/2026 11:00;;jury-2
+12.360112;-1.521315;gravats;charrette;14/11/2026 06:00;;jury-0
+12.368631;-1.529804;mixte;charrette;14/11/2026 01:00;;jury-1
+;;plastique;sac;14/11/2026 10:00;ligne sans coordonnées;jury-x
+12.352700;-1.531718;mixte;sac;31/02/2026;date impossible;jury-x

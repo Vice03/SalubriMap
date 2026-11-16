@@ -1,0 +1,47 @@
+# Séquence rejouée par scripts/rehearse.py sur un clone du scénario de base.
+# must_run : étapes qui doivent être recalculées ; must_hit : étapes qui doivent venir du cache ;
+# max_s : durée serveur maximale du recalcul (secondes).
+steps:
+  - name: "2 camions en panne"
+    action: breakdown
+    vehicles: [BF-01, BF-06]
+    must_run: [E5, E6, E7]
+    must_hit: [E1, E2, E3, E4]
+    max_s: 2
+  - name: "Saison des pluies"
+    action: params
+    params: {season: rain}
+    must_run: [E2, E4, E5, E6, E7]
+    must_hit: [E3]
+    max_s: 3
+  - name: "Nouveau quartier (45 000 hab.)"
+    action: new_quartier
+    name: "Secteur nouveau (répétition)"
+    population: 45000
+    check_frozen: true
+    # polygone au sud de la zone urbanisée de démo (hors des quartiers existants) ; à adapter avec les vrais quartiers
+    polygon: [[-1.5550, 12.2840], [-1.5250, 12.2840], [-1.5250, 12.2980], [-1.5550, 12.2980], [-1.5550, 12.2840]]
+    must_run: [E2, E3, E4, E5, E6, E7]
+    max_s: 5
+  - name: "Budget −30 %"
+    action: params
+    params: {budget_factor: 0.7}
+    must_run: [E6, E7]
+    must_hit: [E1, E2, E3, E4, E5]
+    max_s: 1.5
+  - name: "Réparation de BF-01"
+    action: breakdown
+    vehicles: [BF-01]
+    out_of_service: false
+    must_run: [E5, E6, E7]
+    must_hit: [E1, E2, E3, E4]
+    max_s: 2
+  - name: "Retour en saison sèche"
+    action: params
+    params: {season: dry}
+    must_run: [E4, E5, E6, E7]
+    must_hit: [E3]
+    max_s: 3
+  - name: "Deux modifications en 100 ms"
+    action: double_patch
+    max_s: 5

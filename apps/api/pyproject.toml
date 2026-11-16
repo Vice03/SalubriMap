@@ -1,0 +1,46 @@
+[project]
+name = "salubri-api"
+version = "0.1.0"
+description = "Salubri — API d'aide à la décision pour l'assainissement de Ouagadougou"
+license = { text = "AGPL-3.0-or-later" }
+requires-python = ">=3.12,<3.14"
+dependencies = [
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "pydantic>=2.7",
+  "pydantic-settings>=2.3",
+  "sqlalchemy>=2.0.30",
+  "geoalchemy2>=0.15",
+  "alembic>=1.13",
+  "psycopg[binary]>=3.1",
+  "ortools>=9.10",
+  "numpy>=1.26",
+  "scikit-learn>=1.4",
+  "shapely>=2.0",
+  "pyproj>=3.6",
+  "pillow>=10.3",
+  "imagehash>=4.3",
+  "httpx>=0.27",
+  "sse-starlette>=2.1",
+  "osmium>=3.7",
+  "python-multipart>=0.0.9",
+  "pyyaml>=6.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[tool.ruff]
+extend = "../../ruff.toml"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: needs OSRM running (skipped otherwise)"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["salubri_api"]

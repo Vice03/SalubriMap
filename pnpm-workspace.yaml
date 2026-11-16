@@ -1,0 +1,3 @@
+packages:
+  - "apps/web"
+  # - "apps/go"   # à réactiver quand Salubri Go aura son package.json

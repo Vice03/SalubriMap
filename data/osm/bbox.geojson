@@ -1,0 +1,2 @@
+{"type": "FeatureCollection", "features": [{"type": "Feature", "properties": {"name": "Ouagadougou, zone de travail"},
+ "geometry": {"type": "Polygon", "coordinates": [[[-1.70, 12.25], [-1.35, 12.25], [-1.35, 12.50], [-1.70, 12.50], [-1.70, 12.25]]]}}]}

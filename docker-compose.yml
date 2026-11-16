@@ -1,0 +1,89 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Salubri — one command: `docker compose up --build`
+# Order: db (healthy) -> seed (one-shot, idempotent) -> api (healthy) -> web (nginx on port 80).
+# OSRM is optional (profile "osrm"): without it the API uses straight-line distances.
+#   Start with routing: docker compose --profile osrm up --build
+
+name: salubri
+
+x-api-env: &api-env
+  SALUBRI_DATABASE_URL: postgresql+psycopg://salubri:salubri@db:5432/salubri
+  SALUBRI_OSRM_URL: http://osrm:5000
+  SALUBRI_OSRM_RAIN_URL: http://osrm_rain:5000
+  SALUBRI_DATA_DIR: /app/data
+  SALUBRI_PHOTOS_DIR: /app/var/photos
+  SALUBRI_COMMUNE: ${SALUBRI_COMMUNE:-ouagadougou}
+  SALUBRI_CORS_ORIGINS: ${SALUBRI_CORS_ORIGINS:-*}
+
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    environment:
+      POSTGRES_USER: salubri
+      POSTGRES_PASSWORD: salubri
+      POSTGRES_DB: salubri
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./services/db/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
+    ports: ["${DB_PORT:-5432}:5432"]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U salubri -d salubri"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  osrm:
+    build: ./services/osrm
+    profiles: ["osrm"]
+    environment:
+      OSRM_PROFILE: /profiles/car.lua
+    volumes:
+      - ./data/osm:/data/osm:ro
+      - osrm:/osrm
+
+  osrm_rain:
+    build: ./services/osrm
+    profiles: ["osrm"]
+    environment:
+      OSRM_PROFILE: /profiles/car_rain.lua
+    volumes:
+      - ./data/osm:/data/osm:ro
+      - osrm:/osrm
+
+  seed:
+    build: ./apps/api
+    environment: *api-env
+    command: ["python", "-m", "salubri_api.seed.run"]
+    volumes:
+      - ./data:/app/data:ro
+      - photos:/app/var/photos
+    depends_on:
+      db: {condition: service_healthy}
+    restart: "no"
+
+  api:
+    build: ./apps/api
+    environment: *api-env
+    volumes:
+      - ./data:/app/data:ro
+      - ./scripts:/app/scripts:ro
+      - photos:/app/var/photos
+    ports: ["${API_PORT:-8000}:8000"]
+    depends_on:
+      db: {condition: service_healthy}
+      seed: {condition: service_completed_successfully}
+
+  web:
+    build: ./services/nginx
+    ports: ["${WEB_PORT:-80}:80"]
+    volumes:
+      - ./apps/web/dist:/srv/web:ro
+      - ./apps/go/dist:/srv/go:ro
+      - photos:/srv/photos:ro
+    depends_on:
+      api: {condition: service_healthy}
+
+volumes:
+  pgdata:
+  osrm:
+  photos:

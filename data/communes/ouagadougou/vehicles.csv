@@ -1,0 +1,9 @@
+label,kind,capacity_t,cost_per_km,fixed_cost_day,shift_start,shift_end
+BF-01,truck_8t,8,450,20000,300,1080
+BF-02,truck_8t,8,450,20000,300,1080
+BF-03,truck_8t,8,450,20000,300,1080
+BF-04,truck_8t,8,450,20000,300,1080
+BF-05,truck_8t,8,450,20000,300,1080
+BF-06,truck_12t,12,520,25000,300,1080
+BF-07,truck_12t,12,520,25000,300,1080
+BF-08,truck_12t,12,520,25000,300,1080

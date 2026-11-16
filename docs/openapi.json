@@ -1,0 +1,2838 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "Salubri API",
+  "description": "Aide à la décision pour l'assainissement de Ouagadougou : signalements vérifiés, plan de collecte, simulation multi-agents. Licence AGPL-3.0.",
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/api/health": {
+   "get": {
+    "tags": [
+     "Santé"
+    ],
+    "summary": "État du service, de la base et d'OSRM",
+    "operationId": "health_api_health_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": {
+          "type": "string"
+         },
+         "type": "object",
+         "title": "Response Health Api Health Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/communes/{slug}": {
+   "get": {
+    "tags": [
+     "Commune"
+    ],
+    "summary": "Commune : emprise, dépôt des camions, paramètres par défaut",
+    "operationId": "get_commune_info_api_communes__slug__get",
+    "parameters": [
+     {
+      "name": "slug",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Slug"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Commune Info Api Communes  Slug  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/quartiers": {
+   "get": {
+    "tags": [
+     "Quartiers"
+    ],
+    "summary": "Quartiers (FeatureCollection avec population et nombre d'îlots)",
+    "operationId": "list_quartiers_api_quartiers_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response List Quartiers Api Quartiers Get"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Quartiers"
+    ],
+    "summary": "Ajouter un quartier (polygone dessiné) : recalcul incrémental des plans",
+    "operationId": "create_quartier_api_quartiers_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/QuartierFeature"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Create Quartier Api Quartiers Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/quartiers/{quartier_id}": {
+   "delete": {
+    "tags": [
+     "Quartiers"
+    ],
+    "summary": "Supprimer un quartier ajouté (les plans ne le comptent plus)",
+    "operationId": "delete_quartier_api_quartiers__quartier_id__delete",
+    "parameters": [
+     {
+      "name": "quartier_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Quartier Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/reports": {
+   "post": {
+    "tags": [
+     "Signalements"
+    ],
+    "summary": "Envoyer un signalement (Salubri Go)",
+    "description": "Multipart. Idempotent sur `client_id` : un renvoi renvoie 200 et le même signalement.",
+    "operationId": "create_report_api_reports_post",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_create_report_api_reports_post"
+       }
+      }
+     }
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ReportCreated"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "Signalements"
+    ],
+    "summary": "Lister les signalements (FeatureCollection)",
+    "operationId": "list_reports_api_reports_get",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Un ou plusieurs statuts",
+       "title": "Status"
+      },
+      "description": "Un ou plusieurs statuts"
+     },
+     {
+      "name": "type",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Type"
+      }
+     },
+     {
+      "name": "quartier",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Quartier"
+      }
+     },
+     {
+      "name": "since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Since"
+      }
+     },
+     {
+      "name": "until",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Until"
+      }
+     },
+     {
+      "name": "bbox",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "minLon,minLat,maxLon,maxLat",
+       "title": "Bbox"
+      },
+      "description": "minLon,minLat,maxLon,maxLat"
+     },
+     {
+      "name": "min_score",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Min Score"
+      }
+     },
+     {
+      "name": "max_score",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "integer"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Max Score"
+      }
+     },
+     {
+      "name": "rule",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "Code de règle déclenchée, ex. R2",
+       "title": "Rule"
+      },
+      "description": "Code de règle déclenchée, ex. R2"
+     },
+     {
+      "name": "device_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Device Id"
+      }
+     },
+     {
+      "name": "import_batch",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Import Batch"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 5000,
+       "minimum": 1,
+       "default": 1000,
+       "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Reports Api Reports Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/reports/stats": {
+   "get": {
+    "tags": [
+     "Signalements"
+    ],
+    "summary": "Compteurs par statut, type et règle (tuiles du tableau de bord)",
+    "operationId": "stats_api_reports_stats_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Stats Api Reports Stats Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/reports/{report_id}": {
+   "get": {
+    "tags": [
+     "Signalements"
+    ],
+    "summary": "Fiche complète d'un signalement",
+    "operationId": "get_report_api_reports__report_id__get",
+    "parameters": [
+     {
+      "name": "report_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Report Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Report Api Reports  Report Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Signalements"
+    ],
+    "summary": "Modérer : forcer un statut (journalisé)",
+    "operationId": "patch_report_api_reports__report_id__patch",
+    "parameters": [
+     {
+      "name": "report_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Report Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ReportPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Patch Report Api Reports  Report Id  Patch"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/reports/{report_id}/revalidate": {
+   "post": {
+    "tags": [
+     "Signalements"
+    ],
+    "summary": "Rejouer les règles R1–R12 sur ce signalement",
+    "operationId": "revalidate_api_reports__report_id__revalidate_post",
+    "parameters": [
+     {
+      "name": "report_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Report Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Revalidate Api Reports  Report Id  Revalidate Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/reports/{report_id}/merge": {
+   "post": {
+    "tags": [
+     "Signalements"
+    ],
+    "summary": "Fusionner dans un autre signalement (doublon confirmé)",
+    "operationId": "merge_api_reports__report_id__merge_post",
+    "parameters": [
+     {
+      "name": "report_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Report Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/MergeIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Merge Api Reports  Report Id  Merge Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/imports": {
+   "get": {
+    "tags": [
+     "Import"
+    ],
+    "summary": "Historique des imports",
+    "operationId": "list_imports_api_imports_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         "type": "array",
+         "title": "Response List Imports Api Imports Get"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Import"
+    ],
+    "summary": "Importer un fichier GeoJSON, CSV ou ZIP (fichier + photos)",
+    "description": "Chaque ligne passe par les mêmes règles qu'un signalement Salubri Go. `dry_run=true` simule l'import sans rien enregistrer. Voir docs/IMPORT.md.",
+    "operationId": "create_import_api_imports_post",
+    "requestBody": {
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_create_import_api_imports_post"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ImportResult"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/imports/{batch_id}": {
+   "get": {
+    "tags": [
+     "Import"
+    ],
+    "summary": "Rapport détaillé d'un import",
+    "operationId": "get_import_api_imports__batch_id__get",
+    "parameters": [
+     {
+      "name": "batch_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Batch Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Import Api Imports  Batch Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/imports/{batch_id}/rollback": {
+   "post": {
+    "tags": [
+     "Import"
+    ],
+    "summary": "Annuler un import (supprime ses signalements)",
+    "operationId": "rollback_api_imports__batch_id__rollback_post",
+    "parameters": [
+     {
+      "name": "batch_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Batch Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Rollback Api Imports  Batch Id  Rollback Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/dump-sites": {
+   "get": {
+    "tags": [
+     "Dépotoirs"
+    ],
+    "summary": "Dépotoirs consolidés (FeatureCollection, triés par priorité)",
+    "operationId": "list_dumps_api_dump_sites_get",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "array",
+         "items": {
+          "type": "string"
+         }
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Status"
+      }
+     },
+     {
+      "name": "bbox",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "description": "minLon,minLat,maxLon,maxLat",
+       "title": "Bbox"
+      },
+      "description": "minLon,minLat,maxLon,maxLat"
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response List Dumps Api Dump Sites Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/dump-sites/{site_id}/cleaned": {
+   "post": {
+    "tags": [
+     "Dépotoirs"
+    ],
+    "summary": "Brigade Laabal : marquer nettoyé",
+    "operationId": "cleaned_api_dump_sites__site_id__cleaned_post",
+    "parameters": [
+     {
+      "name": "site_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Site Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_cleaned_api_dump_sites__site_id__cleaned_post"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Cleaned Api Dump Sites  Site Id  Cleaned Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/dump-sites/{site_id}": {
+   "patch": {
+    "tags": [
+     "Dépotoirs"
+    ],
+    "summary": "Enregistrer l'identifiant OSM après versement",
+    "operationId": "set_osm_id_api_dump_sites__site_id__patch",
+    "parameters": [
+     {
+      "name": "site_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Site Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/OsmIdIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Set Osm Id Api Dump Sites  Site Id  Patch"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/scenarios": {
+   "get": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Lister les scénarios",
+    "operationId": "list_scenarios_api_scenarios_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "items": {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         "type": "array",
+         "title": "Response List Scenarios Api Scenarios Get"
+        }
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Créer un scénario (ou cloner depuis parent_id)",
+    "operationId": "create_scenario_api_scenarios_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ScenarioCreate"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Create Scenario Api Scenarios Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/scenarios/params-schema": {
+   "get": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Schéma des paramètres (types, bornes, libellés FR) pour générer le formulaire",
+    "operationId": "params_schema_api_scenarios_params_schema_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Params Schema Api Scenarios Params Schema Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/scenarios/compare": {
+   "get": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Comparer les derniers plans prêts de deux scénarios",
+    "operationId": "compare_api_scenarios_compare_get",
+    "parameters": [
+     {
+      "name": "a",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "A"
+      }
+     },
+     {
+      "name": "b",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "B"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Compare Api Scenarios Compare Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/scenarios/{scenario_id}": {
+   "get": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Détail d'un scénario (paramètres, camions, derniers plans)",
+    "operationId": "get_scenario_api_scenarios__scenario_id__get",
+    "parameters": [
+     {
+      "name": "scenario_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Scenario Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Scenario Api Scenarios  Scenario Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "patch": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Modifier des paramètres et/ou des camions : déclenche le recalcul",
+    "operationId": "patch_scenario_api_scenarios__scenario_id__patch",
+    "parameters": [
+     {
+      "name": "scenario_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Scenario Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ScenarioPatch"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Patch Scenario Api Scenarios  Scenario Id  Patch"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "delete": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Supprimer un scénario (sauf le scénario de base)",
+    "operationId": "delete_scenario_api_scenarios__scenario_id__delete",
+    "parameters": [
+     {
+      "name": "scenario_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Scenario Id"
+      }
+     }
+    ],
+    "responses": {
+     "204": {
+      "description": "Successful Response"
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/scenarios/{scenario_id}/vehicles/{vehicle_id}/breakdown": {
+   "post": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Raccourci « camion en panne / réparé »",
+    "operationId": "breakdown_api_scenarios__scenario_id__vehicles__vehicle_id__breakdown_post",
+    "parameters": [
+     {
+      "name": "scenario_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Scenario Id"
+      }
+     },
+     {
+      "name": "vehicle_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Vehicle Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/BreakdownIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Breakdown Api Scenarios  Scenario Id  Vehicles  Vehicle Id  Breakdown Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/scenarios/{scenario_id}/recompute": {
+   "post": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Recalcul complet manuel",
+    "operationId": "recompute_api_scenarios__scenario_id__recompute_post",
+    "parameters": [
+     {
+      "name": "scenario_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Scenario Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "$ref": "#/components/schemas/RecomputeIn"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Body"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Recompute Api Scenarios  Scenario Id  Recompute Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/plans/{plan_id}": {
+   "get": {
+    "tags": [
+     "Plans"
+    ],
+    "summary": "Statut, étapes et résumé d'une version de plan",
+    "operationId": "get_plan_api_plans__plan_id__get",
+    "parameters": [
+     {
+      "name": "plan_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Plan Id"
+      }
+     },
+     {
+      "name": "daily",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Daily"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Plan Api Plans  Plan Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/plans/{plan_id}/events": {
+   "get": {
+    "tags": [
+     "Plans"
+    ],
+    "summary": "Progression en direct (Server-Sent Events)",
+    "description": "Événements : running, stage_started, stage_done, ready, failed, superseded.",
+    "operationId": "plan_events_api_plans__plan_id__events_get",
+    "parameters": [
+     {
+      "name": "plan_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Plan Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/plans/{plan_id}/points": {
+   "get": {
+    "tags": [
+     "Plans"
+    ],
+    "summary": "Points de regroupement (FeatureCollection)",
+    "operationId": "points_api_plans__plan_id__points_get",
+    "parameters": [
+     {
+      "name": "plan_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Plan Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Points Api Plans  Plan Id  Points Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/plans/{plan_id}/routes": {
+   "get": {
+    "tags": [
+     "Plans"
+    ],
+    "summary": "Tournées (FeatureCollection de LineString, avec arrêts et horaires)",
+    "operationId": "routes_api_plans__plan_id__routes_get",
+    "parameters": [
+     {
+      "name": "plan_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Plan Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Routes Api Plans  Plan Id  Routes Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/plans/{plan_id}/unserved": {
+   "get": {
+    "tags": [
+     "Plans"
+    ],
+    "summary": "Points non desservis",
+    "operationId": "unserved_api_plans__plan_id__unserved_get",
+    "parameters": [
+     {
+      "name": "plan_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Plan Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "additionalProperties": true
+         },
+         "title": "Response Unserved Api Plans  Plan Id  Unserved Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/plans/{plan_id}/diff": {
+   "get": {
+    "tags": [
+     "Plans"
+    ],
+    "summary": "Différences avec une autre version (par défaut : la précédente prête)",
+    "operationId": "diff_api_plans__plan_id__diff_get",
+    "parameters": [
+     {
+      "name": "plan_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Plan Id"
+      }
+     },
+     {
+      "name": "against",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Against"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Diff Api Plans  Plan Id  Diff Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/plans/{plan_id}/simulate": {
+   "post": {
+    "tags": [
+     "Plans"
+    ],
+    "summary": "Lancer des réplications de la simulation (arrière-plan)",
+    "operationId": "simulate_plan_api_plans__plan_id__simulate_post",
+    "parameters": [
+     {
+      "name": "plan_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Plan Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/SimulateIn"
+       }
+      }
+     }
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Simulate Plan Api Plans  Plan Id  Simulate Post"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim-runs/{run_id}": {
+   "get": {
+    "tags": [
+     "Simulation"
+    ],
+    "summary": "Résultat de réplications : médiane, p10, p90 par indicateur",
+    "operationId": "get_run_api_sim_runs__run_id__get",
+    "parameters": [
+     {
+      "name": "run_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Run Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Get Run Api Sim Runs  Run Id  Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/export/geojson": {
+   "get": {
+    "tags": [
+     "Export"
+    ],
+    "summary": "Dépotoirs vérifiés en GeoJSON (sans données personnelles)",
+    "operationId": "export_geojson_api_export_geojson_get",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "description": "Statuts de dépotoir : active, recurring, cleaned",
+       "title": "Status"
+      },
+      "description": "Statuts de dépotoir : active, recurring, cleaned"
+     },
+     {
+      "name": "since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Since"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/export/csv": {
+   "get": {
+    "tags": [
+     "Export"
+    ],
+    "summary": "Dépotoirs vérifiés en CSV (UTF-8 avec BOM, séparateur ;)",
+    "operationId": "export_csv_api_export_csv_get",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "description": "Statuts de dépotoir : active, recurring, cleaned",
+       "title": "Status"
+      },
+      "description": "Statuts de dépotoir : active, recurring, cleaned"
+     },
+     {
+      "name": "since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Since"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/export/osm": {
+   "get": {
+    "tags": [
+     "Export"
+    ],
+    "summary": "Dépotoirs vérifiés en OSM XML pour JOSM (voir docs/OSM.md)",
+    "operationId": "export_osm_api_export_osm_get",
+    "parameters": [
+     {
+      "name": "status",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "description": "Statuts de dépotoir : active, recurring, cleaned",
+       "title": "Status"
+      },
+      "description": "Statuts de dépotoir : active, recurring, cleaned"
+     },
+     {
+      "name": "since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Since"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/audit": {
+   "get": {
+    "tags": [
+     "Journal"
+    ],
+    "summary": "Journal d'audit (plus récent d'abord)",
+    "operationId": "list_audit_api_audit_get",
+    "parameters": [
+     {
+      "name": "entity",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Entity"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 1000,
+       "minimum": 1,
+       "default": 200,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "additionalProperties": true
+         },
+         "title": "Response List Audit Api Audit Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/validation/rules": {
+   "get": {
+    "tags": [
+     "Validation"
+    ],
+    "summary": "Règles anti-pièges R1–R12, seuils et pénalités (à afficher au jury)",
+    "operationId": "rules_api_validation_rules_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Rules Api Validation Rules Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "Body_cleaned_api_dump_sites__site_id__cleaned_post": {
+    "properties": {
+     "device_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Device Id"
+     },
+     "photo": {
+      "anyOf": [
+       {
+        "type": "string",
+        "contentMediaType": "application/octet-stream"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Photo"
+     }
+    },
+    "type": "object",
+    "title": "Body_cleaned_api_dump_sites__site_id__cleaned_post"
+   },
+   "Body_create_import_api_imports_post": {
+    "properties": {
+     "file": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "File"
+     },
+     "format": {
+      "type": "string",
+      "title": "Format",
+      "default": "auto"
+     },
+     "dry_run": {
+      "type": "boolean",
+      "title": "Dry Run",
+      "default": false
+     },
+     "uploaded_by": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Uploaded By"
+     }
+    },
+    "type": "object",
+    "required": [
+     "file"
+    ],
+    "title": "Body_create_import_api_imports_post"
+   },
+   "Body_create_report_api_reports_post": {
+    "properties": {
+     "lat": {
+      "type": "number",
+      "title": "Lat"
+     },
+     "lon": {
+      "type": "number",
+      "title": "Lon"
+     },
+     "waste_type": {
+      "type": "string",
+      "title": "Waste Type",
+      "default": "other"
+     },
+     "volume_class": {
+      "type": "string",
+      "title": "Volume Class",
+      "default": "bag"
+     },
+     "accuracy": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Accuracy"
+     },
+     "comment": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Comment"
+     },
+     "reported_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reported At"
+     },
+     "device_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Device Id"
+     },
+     "client_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Client Id"
+     },
+     "external_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "External Id"
+     },
+     "photo": {
+      "anyOf": [
+       {
+        "type": "string",
+        "contentMediaType": "application/octet-stream"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Photo"
+     }
+    },
+    "type": "object",
+    "required": [
+     "lat",
+     "lon"
+    ],
+    "title": "Body_create_report_api_reports_post"
+   },
+   "BreakdownIn": {
+    "properties": {
+     "out_of_service": {
+      "type": "boolean",
+      "title": "Out Of Service",
+      "default": true
+     }
+    },
+    "type": "object",
+    "title": "BreakdownIn"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "ImportResult": {
+    "properties": {
+     "batch_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Batch Id"
+     },
+     "dry_run": {
+      "type": "boolean",
+      "title": "Dry Run"
+     },
+     "format": {
+      "type": "string",
+      "title": "Format"
+     },
+     "rows_total": {
+      "type": "integer",
+      "title": "Rows Total"
+     },
+     "accepted": {
+      "type": "integer",
+      "title": "Accepted"
+     },
+     "rejected": {
+      "type": "integer",
+      "title": "Rejected"
+     },
+     "report": {
+      "items": {
+       "$ref": "#/components/schemas/ImportRow"
+      },
+      "type": "array",
+      "title": "Report"
+     }
+    },
+    "type": "object",
+    "required": [
+     "batch_id",
+     "dry_run",
+     "format",
+     "rows_total",
+     "accepted",
+     "rejected",
+     "report"
+    ],
+    "title": "ImportResult"
+   },
+   "ImportRow": {
+    "properties": {
+     "row": {
+      "type": "integer",
+      "title": "Row"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "accepted",
+       "rejected"
+      ],
+      "title": "Status"
+     },
+     "errors": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Errors",
+      "default": []
+     },
+     "warnings": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Warnings",
+      "default": []
+     },
+     "report_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Report Id"
+     },
+     "external_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "External Id"
+     },
+     "score": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Score"
+     },
+     "report_status": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Report Status"
+     },
+     "rule_hits": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "type": "array",
+      "title": "Rule Hits",
+      "default": []
+     }
+    },
+    "type": "object",
+    "required": [
+     "row",
+     "status"
+    ],
+    "title": "ImportRow"
+   },
+   "MergeIn": {
+    "properties": {
+     "into": {
+      "type": "string",
+      "title": "Into",
+      "description": "Identifiant du signalement ou du dépotoir cible"
+     }
+    },
+    "type": "object",
+    "required": [
+     "into"
+    ],
+    "title": "MergeIn"
+   },
+   "OsmIdIn": {
+    "properties": {
+     "osm_id": {
+      "type": "integer",
+      "title": "Osm Id"
+     }
+    },
+    "type": "object",
+    "required": [
+     "osm_id"
+    ],
+    "title": "OsmIdIn"
+   },
+   "QuartierFeature": {
+    "properties": {
+     "type": {
+      "type": "string",
+      "title": "Type",
+      "default": "Feature"
+     },
+     "geometry": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Geometry"
+     },
+     "properties": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Properties",
+      "description": "name (texte), population (entier), arrondissement (optionnel), scenario_id (optionnel : limite l'ajout à ce scénario)"
+     }
+    },
+    "type": "object",
+    "required": [
+     "geometry"
+    ],
+    "title": "QuartierFeature"
+   },
+   "RecomputeIn": {
+    "properties": {
+     "reason": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reason"
+     }
+    },
+    "type": "object",
+    "title": "RecomputeIn"
+   },
+   "ReportCreated": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "status": {
+      "type": "string",
+      "enum": [
+       "pending",
+       "probable",
+       "verified",
+       "to_review",
+       "rejected",
+       "cleaned"
+      ],
+      "title": "Status"
+     },
+     "score": {
+      "type": "integer",
+      "title": "Score"
+     },
+     "rule_hits": {
+      "items": {
+       "$ref": "#/components/schemas/RuleHitOut"
+      },
+      "type": "array",
+      "title": "Rule Hits"
+     },
+     "duplicate_of": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Duplicate Of"
+     },
+     "already_received": {
+      "type": "boolean",
+      "title": "Already Received",
+      "default": false
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "status",
+     "score",
+     "rule_hits"
+    ],
+    "title": "ReportCreated"
+   },
+   "ReportPatch": {
+    "properties": {
+     "status": {
+      "type": "string",
+      "enum": [
+       "verified",
+       "rejected",
+       "to_review",
+       "probable",
+       "cleaned"
+      ],
+      "title": "Status"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     },
+     "actor": {
+      "type": "string",
+      "title": "Actor",
+      "default": "moderateur"
+     }
+    },
+    "type": "object",
+    "required": [
+     "status"
+    ],
+    "title": "ReportPatch"
+   },
+   "RuleHitOut": {
+    "properties": {
+     "rule": {
+      "type": "string",
+      "title": "Rule"
+     },
+     "delta": {
+      "type": "integer",
+      "title": "Delta"
+     },
+     "detail": {
+      "type": "string",
+      "title": "Detail"
+     },
+     "reject": {
+      "type": "boolean",
+      "title": "Reject",
+      "default": false
+     }
+    },
+    "type": "object",
+    "required": [
+     "rule",
+     "delta",
+     "detail"
+    ],
+    "title": "RuleHitOut"
+   },
+   "ScenarioCreate": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "maxLength": 128,
+      "minLength": 1,
+      "title": "Name"
+     },
+     "parent_id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Parent Id"
+     },
+     "params": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Params",
+      "default": {}
+     }
+    },
+    "type": "object",
+    "required": [
+     "name"
+    ],
+    "title": "ScenarioCreate"
+   },
+   "ScenarioPatch": {
+    "properties": {
+     "name": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Name"
+     },
+     "params": {
+      "additionalProperties": true,
+      "type": "object",
+      "title": "Params",
+      "default": {}
+     },
+     "vehicles": {
+      "anyOf": [
+       {
+        "items": {
+         "$ref": "#/components/schemas/VehicleIn"
+        },
+        "type": "array"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vehicles"
+     }
+    },
+    "type": "object",
+    "title": "ScenarioPatch"
+   },
+   "SimulateIn": {
+    "properties": {
+     "seed": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Seed"
+     },
+     "horizon_days": {
+      "anyOf": [
+       {
+        "type": "integer",
+        "maximum": 365.0,
+        "minimum": 7.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Horizon Days"
+     },
+     "replications": {
+      "type": "integer",
+      "maximum": 20.0,
+      "minimum": 1.0,
+      "title": "Replications",
+      "default": 5
+     }
+    },
+    "type": "object",
+    "title": "SimulateIn"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   },
+   "VehicleIn": {
+    "properties": {
+     "id": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Id"
+     },
+     "label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Label"
+     },
+     "kind": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Kind"
+     },
+     "capacity_t": {
+      "anyOf": [
+       {
+        "type": "number",
+        "exclusiveMinimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Capacity T"
+     },
+     "cost_per_km": {
+      "anyOf": [
+       {
+        "type": "number",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Cost Per Km"
+     },
+     "fixed_cost_day": {
+      "anyOf": [
+       {
+        "type": "number",
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Fixed Cost Day"
+     },
+     "out_of_service": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Out Of Service"
+     }
+    },
+    "type": "object",
+    "title": "VehicleIn"
+   }
+  }
+ }
+}

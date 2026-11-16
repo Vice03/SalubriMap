@@ -1,0 +1,30 @@
+{
+  "slug": "ouagadougou",
+  "name": "Ouagadougou",
+  "bbox": [
+    -1.62,
+    12.28,
+    -1.42,
+    12.46
+  ],
+  "depot": [
+    -1.5,
+    12.47
+  ],
+  "depot_name": "CTVD de Polesgo (position à vérifier)",
+  "osm_extract": "ouaga.osm.pbf",
+  "buildings": "ouaga_buildings.csv.gz",
+  "scenarios": [
+    {
+      "name": "Zone pilote",
+      "baseline": true,
+      "quartiers": [
+        "Arrondissement 5 — Nord"
+      ]
+    },
+    {
+      "name": "Ville entière (démo)",
+      "quartiers": null
+    }
+  ]
+}

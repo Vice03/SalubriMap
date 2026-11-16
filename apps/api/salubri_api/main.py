@@ -1,0 +1,82 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+"""Salubri API entry point."""
+
+import logging
+from typing import Any
+
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+
+from salubri_api import __version__
+from salubri_api.config import get_settings
+from salubri_api.routers import (
+    audit,
+    communes,
+    dumps,
+    export,
+    health,
+    imports,
+    plans,
+    quartiers,
+    reports,
+    scenarios,
+    sim,
+    validation,
+)
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+
+
+def problem(status: int, title: str, detail: Any, errors: list[Any] | None = None) -> JSONResponse:
+    body: dict[str, Any] = {"type": "about:blank", "title": title, "status": status, "detail": detail}
+    if errors is not None:
+        body["errors"] = errors
+    return JSONResponse(body, status_code=status, media_type="application/problem+json")
+
+
+def create_app() -> FastAPI:
+    settings = get_settings()
+    app = FastAPI(
+        title="Salubri API",
+        version=__version__,
+        description="Aide à la décision pour l'assainissement de Ouagadougou : signalements vérifiés, "
+        "plan de collecte, simulation multi-agents. Licence AGPL-3.0.",
+        docs_url="/api/docs",
+        openapi_url="/api/openapi.json",
+        redoc_url=None,
+    )
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=[o.strip() for o in settings.cors_origins.split(",")],
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
+    @app.exception_handler(HTTPException)
+    async def http_exc(_: Request, exc: HTTPException) -> JSONResponse:
+        titles = {
+            404: "Introuvable",
+            409: "Conflit",
+            413: "Trop volumineux",
+            422: "Données invalides",
+            503: "Service indisponible",
+        }
+        return problem(exc.status_code, titles.get(exc.status_code, "Erreur"), exc.detail)
+
+    @app.exception_handler(RequestValidationError)
+    async def validation_exc(_: Request, exc: RequestValidationError) -> JSONResponse:
+        errs = [{"loc": list(e.get("loc", [])), "msg": e.get("msg")} for e in exc.errors()]
+        return problem(422, "Données invalides", "Certains champs sont invalides", errs)
+
+    for r in (health, communes, quartiers, reports, imports, dumps, scenarios, plans, sim, export, audit, validation):
+        app.include_router(r.router, prefix="/api")
+
+    settings.photos_dir.mkdir(parents=True, exist_ok=True)
+    app.mount("/photos", StaticFiles(directory=settings.photos_dir), name="photos")
+    return app
+
+
+app = create_app()

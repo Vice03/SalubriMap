@@ -1,0 +1,13 @@
+{
+  "name": "salubri",
+  "private": true,
+  "license": "AGPL-3.0-or-later",
+  "description": "Salubri — front-ends (apps/web, apps/go). Le backend est dans apps/api (Python).",
+  "packageManager": "pnpm@9.12.0",
+  "scripts": {
+    "dev:web": "pnpm --filter web dev",
+    "dev:go": "pnpm --filter go dev",
+    "build": "pnpm -r build",
+    "test": "pnpm -r test"
+  }
+}
