@@ -36,6 +36,28 @@ def _created(r: Report, already: bool = False) -> ReportCreated:
     )
 
 
+def _check_device_rate(s: Session, commune: Commune, device_id: str | None) -> None:
+    """Pourriel : au-delà d'un plafond horaire par appareil, on refuse (429) au lieu d'enregistrer.
+
+    Le plafond reprend le seuil de la règle R10 (spam_per_hour) multiplié par spam_block_factor :
+    R10 baisse déjà le score à partir de spam_per_hour, le 429 n'arrive que bien au-delà.
+    """
+    if not device_id:
+        return
+    th = thresholds_for(commune)
+    cap = th.spam_per_hour * th.spam_block_factor
+    n = s.execute(
+        text("SELECT count(*) FROM reports WHERE device_id = :d AND received_at > now() - interval '1 hour'"),
+        {"d": device_id},
+    ).scalar_one()
+    if n >= cap:
+        raise HTTPException(
+            429,
+            f"Trop de signalements envoyés par ce téléphone ({n} en 1 h). Les suivants partiront plus tard.",
+            headers={"Retry-After": "600"},
+        )
+
+
 @router.post(
     "",
     status_code=201,
@@ -78,6 +100,7 @@ def create_report(
         )
     except ValidationError as exc:
         raise RequestValidationError(exc.errors()) from exc
+    _check_device_rate(s, commune, data.device_id)
     raw = photo.file.read(MAX_PHOTO + 1) if photo is not None else None
     if raw is not None and len(raw) > MAX_PHOTO:
         raise HTTPException(413, "Photo trop lourde (12 Mo maximum)")

@@ -45,6 +45,7 @@ export function OutboxPage() {
               <b>{w?.emoji} {w?.label ?? i.wasteType}</b> <span className="hint">· {VOLUME.find((v) => v.k === i.volumeClass)?.label}</span>
               <div className="hint">{new Date(i.createdAt).toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short' })}</div>
               {i.state === 'pending' && <span className="pill" style={{ background: '#fef3c7', color: '#92400e' }}>En attente{i.attempts ? ` · ${i.attempts} essai(s)` : ''}</span>}
+              {i.state === 'pending' && i.lastError && <div className="hint">{i.lastError}</div>}
               {i.state === 'error' && <span className="pill" style={{ background: '#fee2e2', color: '#991b1b' }}><AlertTriangle size={12} /> {i.lastError}</span>}
               {st && i.verdict && (
                 <>

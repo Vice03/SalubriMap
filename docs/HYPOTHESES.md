@@ -51,3 +51,13 @@ Choix faits là où la consigne laissait le choix (option la plus simple et sûr
 - En démonstration : compte `demo` (admin, mot de passe `ouaga2026`, créé au démarrage s'il n'existe pas ; jamais recréé s'il a été désactivé), code de service `ouaga2026` si `SALUBRI_ADMIN_TOKEN` est vide, clé de session aléatoire par démarrage, badge visible (`GET /api/health` → `demo_mode`).
 - Hors démonstration, l'API refuse de démarrer si : code de service vide, égal à `ouaga2026` ou de moins de 16 caractères ; clé de session de moins de 32 caractères ; aucun admin actif ; compte `demo` encore actif. Le message liste tous les problèmes à la fois.
 - Génération des secrets : `run/secrets.ps1` (Windows, appelé par `run/start.bat`) et `run/secrets.sh` (appelé par `run/start.sh`), 32 octets aléatoires du système (générateur cryptographique), écrits dans `.env` (UTF-8 sans BOM), affichés une seule fois, jamais régénérés s'ils sont déjà corrects.
+
+## Force brute et pourriel (0.3, lot A3)
+
+- Les compteurs d'échecs de connexion sont **en mémoire du processus API** (un seul processus uvicorn) : un redémarrage les remet à zéro. Suffisant pour un poste de la mairie ; avec plusieurs processus, il faudrait les mettre en base.
+- Deux clés comptées : l'identifiant (normalisé en minuscules) et l'adresse IP. Une connexion réussie efface le compteur de l'identifiant, pas celui de l'adresse.
+- L'adresse vient de l'en-tête `X-Real-IP` posé par nginx. Quelqu'un qui appelle l'API directement sur le port 8000 peut l'inventer : la clé par identifiant tient toujours, et en production le port 8000 ne doit pas être exposé (voir docs/SECURITY.md, lot A6).
+- Plafond par téléphone : 3 × le seuil de la règle R10 (`spam_per_hour`, 10 par défaut), soit 30 signalements reçus par heure. R10 baisse déjà le score à partir de 10 ; le refus 429 ne sert qu'à arrêter un robot. Compté sur l'heure de réception (le serveur), pas sur l'heure déclarée par le téléphone.
+- L'adresse IP des échecs de connexion n'est pas écrite dans le journal (donnée personnelle, lot A4).
+- En mode démonstration, un compte `demo` désactivé par un administrateur n'est pas réactivé automatiquement.
+

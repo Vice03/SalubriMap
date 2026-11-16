@@ -26,6 +26,8 @@ class ValidationThresholds(BaseModel):
     same_point_m: float = 1
     max_speed_kmh: float = 120
     spam_per_hour: int = 10
+    # au-delà de spam_per_hour x spam_block_factor envois par heure, un appareil reçoit 429 (lot A3)
+    spam_block_factor: int = 3
     spam_same_comment: int = 5
     luminance_var_min: float = 25
     photo_min_side_px: int = 200

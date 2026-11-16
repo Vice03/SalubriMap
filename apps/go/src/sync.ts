@@ -41,8 +41,15 @@ async function send(item: OutboxItem, device: string): Promise<void> {
     const verdict = (await res.json()) as Verdict
     // la photo est sur le serveur : on ne garde qu'une vignette pour ne pas remplir le téléphone
     await outbox.put({ ...item, state: 'sent', verdict, lastError: undefined, photo: item.photo ? await thumbnail(item.photo) : null })
+  } else if (res.status === 429) {
+    // trop d'envois : le signalement reste « En attente » et repart au prochain essai automatique
+    let msg = 'Trop d\'envois pour le moment : nouvel essai automatique'
+    try { const b = await res.json(); if (typeof b.detail === 'string') msg = b.detail } catch { /* corps non JSON */ }
+    await outbox.put({ ...item, attempts: item.attempts + 1, lastError: msg })
+    throw new Error('throttled') // inutile d'envoyer les suivants tout de suite
   } else if (res.status >= 500) {
     await outbox.put({ ...item, attempts: item.attempts + 1, lastError: `Serveur indisponible (${res.status}) : nouvel essai automatique` })
+    throw new Error('server')
   } else {
     let msg = `Refusé (${res.status})`
     try { const b = await res.json(); msg = b.detail ? (typeof b.detail === 'string' ? b.detail : JSON.stringify(b.detail)) : msg } catch { /* corps non JSON */ }

@@ -59,10 +59,14 @@ def create_app() -> FastAPI:
             404: "Introuvable",
             409: "Conflit",
             413: "Trop volumineux",
+            429: "Trop de requêtes",
             422: "Données invalides",
             503: "Service indisponible",
         }
-        return problem(exc.status_code, titles.get(exc.status_code, "Erreur"), exc.detail)
+        resp = problem(exc.status_code, titles.get(exc.status_code, "Erreur"), exc.detail)
+        for k, v in (exc.headers or {}).items():  # Retry-After (429), WWW-Authenticate…
+            resp.headers[k] = v
+        return resp
 
     @app.exception_handler(RequestValidationError)
     async def validation_exc(_: Request, exc: RequestValidationError) -> JSONResponse:

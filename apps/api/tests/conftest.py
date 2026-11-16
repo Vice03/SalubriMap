@@ -66,9 +66,11 @@ def db(world) -> Iterator[object]:  # type: ignore[no-untyped-def]
     # attendre les recalculs en arrière-plan du test précédent : sinon ils bloquent le TRUNCATE (verrous)
     from salubri_api.services import background
     from salubri_api.services.plan.trigger import cancel_all
+    from salubri_api.services.ratelimit import login_failures
 
     cancel_all()
     background.drain(60)
+    login_failures.reset()  # compteurs anti-force brute : propres à chaque test
     eng = get_engine()
     with eng.begin() as c:
         tables = ", ".join(t.name for t in reversed(Base.metadata.sorted_tables))
