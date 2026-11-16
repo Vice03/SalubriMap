@@ -7,13 +7,7 @@ fi
 if ! docker info >/dev/null 2>&1; then
   echo "Docker est installé mais ne tourne pas : démarrez Docker Desktop puis relancez."; exit 1
 fi
-if [ ! -f apps/web/dist/index.html ]; then
-  if command -v pnpm >/dev/null 2>&1; then
-    echo "Construction de l'interface web…"; pnpm install && pnpm --filter web build
-  else
-    echo "Interface web non construite et pnpm absent : la page d'attente sera affichée."
-  fi
-fi
+# Les interfaces sont construites dans l'image Docker « web » : pas besoin de Node ici.
 PROFILES=""
 [ -s data/osm/ouaga.osm.pbf ] && PROFILES="--profile osrm"
 docker compose $PROFILES up --build -d || exit 1
@@ -27,5 +21,6 @@ until curl -fs http://localhost/api/health >/dev/null 2>&1; do
   i=$((i+1)); [ $i -gt 120 ] && { echo; echo "L'API ne répond pas : docker compose logs api seed"; exit 1; }
   printf "."; sleep 2
 done
-echo; echo "Salubri est prêt : http://localhost  (API : http://localhost/api/docs)"
+echo; echo "Salubri est prêt : http://localhost  (Salubri Go : http://localhost/go/ , API : http://localhost/api/docs)"
+echo "Code d'accès mairie par défaut : ouaga2026 (à changer dans .env : SALUBRI_ADMIN_TOKEN=...)"
 ( command -v xdg-open >/dev/null && xdg-open http://localhost ) || ( command -v open >/dev/null && open http://localhost ) || true

@@ -27,6 +27,14 @@ def _fire(commune_id: str) -> None:
                 log.exception("recompute request failed")
 
 
+def cancel_all() -> None:
+    """Annule les recalculs différés en attente (tests, arrêt)."""
+    with _guard:
+        for t in _timers.values():
+            t.cancel()
+        _timers.clear()
+
+
 def reports_changed(commune_id: uuid.UUID) -> None:
     settings = get_settings()
     if not settings.auto_recompute:

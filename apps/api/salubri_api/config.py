@@ -19,7 +19,11 @@ class Settings(BaseSettings):
     data_dir: Path = REPO_ROOT / "data"
     photos_dir: Path = REPO_ROOT / "var" / "photos"
     commune: str = "ouagadougou"
-    cors_origins: str = "*"
+    # Origines autorisées en cross-origin ; vide = même origine seulement (nginx sert l'UI et l'API ensemble).
+    cors_origins: str = ""
+    # Code d'accès « mairie » exigé (en-tête X-Salubri-Token) sur toutes les écritures sauf l'envoi d'un
+    # signalement citoyen. Vide = contrôle désactivé (développement local uniquement).
+    admin_token: str = ""
     reports_debounce_s: float = 2.0
     auto_recompute: bool = True
 

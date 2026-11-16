@@ -1,7 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 import asyncio
 import json
-import threading
 from collections.abc import AsyncIterator
 from typing import Any
 
@@ -11,8 +10,9 @@ from sse_starlette.sse import EventSourceResponse
 
 from salubri_api.db import get_session, get_sessionmaker
 from salubri_api.models import CollectionPoint, PlanVersion, Route, RouteStop, SimRun, UnservedPoint, Vehicle
-from salubri_api.routers.deps import parse_uuid
+from salubri_api.routers.deps import parse_uuid, require_mairie
 from salubri_api.schemas.plans import SimulateIn
+from salubri_api.services import background
 from salubri_api.services.geo import feature, feature_collection
 from salubri_api.services.params import ScenarioParams
 from salubri_api.services.plan import bus
@@ -21,7 +21,7 @@ from salubri_api.services.plan.pipeline import latest_ready, plan_view, snapshot
 from salubri_api.services.simulation.engine import replicate
 from salubri_api.services.simulation.params import SimParams
 
-router = APIRouter(prefix="/plans", tags=["Plans"])
+router = APIRouter(prefix="/plans", tags=["Plans"], dependencies=[Depends(require_mairie)])
 
 
 def _get(s: Session, plan_id: str) -> PlanVersion:
@@ -225,9 +225,5 @@ def simulate_plan(plan_id: str, body: SimulateIn, s: Session = Depends(get_sessi
     run = SimRun(plan_version_id=pv.id, seed=seed, horizon_days=horizon, replications=body.replications)
     s.add(run)
     s.commit()
-    threading.Thread(
-        target=_run_replications,
-        args=(str(run.id), str(pv.id), seed, body.horizon_days, body.replications),
-        daemon=True,
-    ).start()
+    background.spawn(_run_replications, str(run.id), str(pv.id), seed, body.horizon_days, body.replications, name="sim")
     return {"sim_run_id": str(run.id), "status": "pending"}

@@ -12,9 +12,14 @@
 
 ## Test du mode hors ligne (Salubri Go)
 
-1. Ouvrir `http://<ip-du-pc>/go/` sur le téléphone (même Wi-Fi), installer la PWA.
-2. Mode avion, signaler un dépotoir : il apparaît « En attente » dans l'outbox.
-3. Couper le mode avion : il passe « Envoyé » avec son score ; il apparaît dans `GET /api/reports`.
+1. Ouvrir `http://<ip-du-pc>/go/` sur le téléphone (même Wi-Fi).
+2. **GPS et installation exigent HTTPS sur téléphone.** En HTTP sur le réseau local, Chrome Android refuse la géolocalisation : soit saisir la position à la main (le signalement passe « à revoir »), soit, sur le téléphone de démo, ouvrir `chrome://flags/#unsafely-treat-insecure-origin-as-secure`, ajouter `http://<ip-du-pc>`, relancer Chrome (GPS + installation de la PWA fonctionnent alors).
+3. Page chargée, passer en mode avion, signaler un dépotoir : il apparaît « En attente » dans « Mes envois ».
+4. Couper le mode avion : il part tout seul (ou bouton « Synchroniser ») et affiche son verdict (statut + score) ; il apparaît dans `GET /api/reports`.
+
+## Code d'accès mairie
+
+Lectures publiques, envoi d'un signalement libre ; toutes les autres écritures (modération, imports, scénarios, flotte, dépotoirs) exigent le code mairie, demandé par l'interface à la première action. Par défaut `ouaga2026` ; le changer avant la démo dans un fichier `.env` à la racine : `SALUBRI_ADMIN_TOKEN=…`. Les scripts `run/rehearse` le lisent dans la même variable.
 
 ## Avant la finale (3 fois : J-2, J-1, matin)
 

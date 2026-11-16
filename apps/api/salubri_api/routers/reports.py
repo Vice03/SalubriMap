@@ -11,7 +11,7 @@ from sqlalchemy.orm import Session
 from salubri_api.db import get_session
 from salubri_api.models import Commune, DumpSite, Photo, Report, utcnow
 from salubri_api.models.audit import audit
-from salubri_api.routers.deps import get_commune, parse_uuid
+from salubri_api.routers.deps import get_commune, parse_uuid, require_mairie
 from salubri_api.routers.serializers import report_feature
 from salubri_api.schemas.reports import MergeIn, ReportCreated, ReportIn, ReportPatch
 from salubri_api.services.consolidation import consolidate
@@ -216,7 +216,7 @@ def get_report(report_id: str, s: Session = Depends(get_session)) -> dict[str, A
     return f
 
 
-@router.patch("/{report_id}", summary="Modérer : forcer un statut (journalisé)")
+@router.patch("/{report_id}", dependencies=[Depends(require_mairie)], summary="Modérer : forcer un statut (journalisé)")
 def patch_report(
     report_id: str, body: ReportPatch, s: Session = Depends(get_session), commune: Commune = Depends(get_commune)
 ) -> dict[str, Any]:
@@ -232,7 +232,11 @@ def patch_report(
     return report_feature(s, r)
 
 
-@router.post("/{report_id}/revalidate", summary="Rejouer les règles R1–R12 sur ce signalement")
+@router.post(
+    "/{report_id}/revalidate",
+    dependencies=[Depends(require_mairie)],
+    summary="Rejouer les règles R1–R12 sur ce signalement",
+)
 def revalidate(
     report_id: str, s: Session = Depends(get_session), commune: Commune = Depends(get_commune)
 ) -> dict[str, Any]:
@@ -250,7 +254,11 @@ def revalidate(
     return report_feature(s, r)
 
 
-@router.post("/{report_id}/merge", summary="Fusionner dans un autre signalement (doublon confirmé)")
+@router.post(
+    "/{report_id}/merge",
+    dependencies=[Depends(require_mairie)],
+    summary="Fusionner dans un autre signalement (doublon confirmé)",
+)
 def merge(
     report_id: str, body: MergeIn, s: Session = Depends(get_session), commune: Commune = Depends(get_commune)
 ) -> dict[str, Any]:

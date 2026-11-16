@@ -9,13 +9,13 @@ from sqlalchemy.orm import Session
 from salubri_api.db import get_session
 from salubri_api.models import Commune, DumpSite
 from salubri_api.models.audit import audit
-from salubri_api.routers.deps import get_commune, parse_uuid
+from salubri_api.routers.deps import get_commune, parse_uuid, require_mairie
 from salubri_api.routers.serializers import dump_feature
 from salubri_api.services.consolidation import mark_cleaned
 from salubri_api.services.geo import feature_collection
 from salubri_api.services.plan.trigger import reports_changed
 
-router = APIRouter(prefix="/dump-sites", tags=["Dépotoirs"])
+router = APIRouter(prefix="/dump-sites", tags=["Dépotoirs"], dependencies=[Depends(require_mairie)])
 
 
 @router.get("", summary="Dépotoirs consolidés (FeatureCollection, triés par priorité)")

@@ -1,6 +1,6 @@
 # Rapport de répétition de l'épreuve
 
-Généré le 16/11/2026 12:02 UTC — API http://localhost:8000, OSRM down.
+Généré le 16/11/2026 20:07 UTC — API http://localhost:8000, OSRM down.
 
 ## Signalements piégés
 
@@ -29,13 +29,13 @@ Généré le 16/11/2026 12:02 UTC — API http://localhost:8000, OSRM down.
 | trap-021-r6-building | to_review/rejected R6 | to_review (50) | R6 | ✅ |
 | trap-022-r6-building | to_review/rejected R6 | to_review (50) | R6 | ✅ |
 | trap-023-r6-building | to_review/rejected R6 | to_review (50) | R6 | ✅ |
-| trap-024-r7-reservoir | rejected R7 | rejected (0) | R7 | ✅ |
-| trap-025-r7-reservoir | rejected R7 | rejected (0) | R7 | ✅ |
-| trap-026-r7-river | to_review/rejected R7 | to_review (55) | R7 | ✅ |
+| trap-024-r7-reservoir | rejected R7 | probable (100) | — | ❌ |
+| trap-025-r7-reservoir | rejected R7 | probable (100) | — | ❌ |
+| trap-026-r7-river | to_review/rejected R7 | probable (100) | — | ❌ |
 | trap-027-r8-zero | rejected R8 | rejected (0) | R5, R8 | ✅ |
 | trap-028-r8-rounded | probable/to_review R8 | probable (75) | R8 | ✅ |
 | trap-029-r8-accuracy | probable R8 | probable (85) | R8 | ✅ |
-| trap-030-r8-copied-point | to_review/rejected R8 | to_review (60) | R8 | ✅ |
+| trap-030-r8-copied-point | to_review/rejected R8 | rejected (15) | R7, R8 | ✅ |
 | trap-031-r9-first | probable  | probable (100) | — | ✅ |
 | trap-032-r9-jump | to_review/probable/rejected R9 | to_review (60) | R9 | ✅ |
 | trap-033-r10-burst | probable  | probable (100) | — | ✅ |
@@ -61,18 +61,18 @@ Généré le 16/11/2026 12:02 UTC — API http://localhost:8000, OSRM down.
 | trap-053-r12-medical | probable R12 | probable (90) | R12 | ✅ |
 | trap-054-combined | rejected R2 R6 | rejected (0) | R2, R6 | ✅ |
 
-Dépotoirs consolidés avant/après : 123 → 123 ✅
+Dépotoirs consolidés avant/après : 194 → 194 ✅
 
 ## Changements de paramètres
 
 | Étape | Événement | Étapes recalculées | En cache | Durée serveur | Durée totale | Invariants |
 |---|---|---|---|---|---|---|
-| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.03 s | 1.20 s | ✅ |
+| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.03 s | 1.19 s | ✅ |
 | Saison des pluies | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.05 s | 1.21 s | ✅ |
-| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 1.11 s | 1.36 s | ✅ |
+| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 1.32 s | 1.61 s | ✅ |
 | Budget −30 % | budget_changed | E6, E7 | E1, E2, E3, E4, E5 | 0.03 s | 0.23 s | ✅ |
-| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.04 s | 1.20 s | ✅ |
-| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.06 s | 1.23 s | ✅ |
+| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.04 s | 1.21 s | ✅ |
+| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.05 s | 1.22 s | ✅ |
 | Deux modifications en 100 ms | subscription_changed | E7 | E1, E2, E3, E4, E5, E6 | 0.00 s | 0.25 s | ✅ |
 
-**Résultat : tout est vert.**
+**Résultat : des contrôles échouent.**

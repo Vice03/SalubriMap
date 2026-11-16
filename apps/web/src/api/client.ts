@@ -25,8 +25,13 @@ function qs(q?: Query): string {
   return s ? `?${s}` : ''
 }
 
-async function request<T>(method: string, path: string, opts: { query?: Query; json?: unknown; form?: FormData } = {}): Promise<T> {
-  const init: RequestInit = { method, headers: {} }
+const TOKEN_KEY = 'salubri_mairie_code'
+const readToken = () => { try { return localStorage.getItem(TOKEN_KEY) ?? '' } catch { return '' } }
+const saveToken = (t: string) => { try { localStorage.setItem(TOKEN_KEY, t) } catch { /* stockage indisponible */ } }
+
+/** Les écritures (modération, imports, scénarios, flotte) exigent le code d'accès mairie. */
+async function request<T>(method: string, path: string, opts: { query?: Query; json?: unknown; form?: FormData } = {}, retry = true): Promise<T> {
+  const init: RequestInit = { method, headers: method === 'GET' ? {} : { 'X-Salubri-Token': readToken() } }
   if (opts.json !== undefined) {
     init.body = JSON.stringify(opts.json)
     ;(init.headers as Record<string, string>)['Content-Type'] = 'application/json'
@@ -36,6 +41,10 @@ async function request<T>(method: string, path: string, opts: { query?: Query; j
     res = await fetch(`/api${path}${qs(opts.query)}`, init)
   } catch {
     throw new ApiError(0, 'Réseau', "Impossible de joindre le serveur Salubri")
+  }
+  if (res.status === 401 && retry) {
+    const code = window.prompt("Code d'accès mairie (modération, imports, scénarios) :")
+    if (code) { saveToken(code.trim()); return request<T>(method, path, opts, false) }
   }
   if (res.status === 204) return undefined as T
   const body = await res.json().catch(() => ({}))

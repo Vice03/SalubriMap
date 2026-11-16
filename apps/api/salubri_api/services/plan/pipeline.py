@@ -37,6 +37,7 @@ from salubri_api.models import (
     Vehicle,
     utcnow,
 )
+from salubri_api.services import background
 from salubri_api.services.consolidation import consolidate
 from salubri_api.services.demand import demand_kg_day
 from salubri_api.services.geo import haversine_m, shape, to_wkb
@@ -194,7 +195,7 @@ def request_recompute(
         run_pending(str(scenario.id))
         s.refresh(pv)
     else:
-        threading.Thread(target=run_pending, args=(str(scenario.id),), daemon=True).start()
+        background.spawn(run_pending, str(scenario.id), name=f"plan-{scenario.id}")
     return pv
 
 

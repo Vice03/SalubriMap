@@ -1,0 +1,12 @@
+{
+  "name": "Salubri Go — signaler un dépotoir",
+  "short_name": "Salubri Go",
+  "description": "Signaler un dépotoir sauvage à Ouagadougou, même sans réseau.",
+  "lang": "fr",
+  "start_url": "/go/",
+  "scope": "/go/",
+  "display": "standalone",
+  "background_color": "#f4f7fb",
+  "theme_color": "#0f2b55",
+  "icons": [{ "src": "/go/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

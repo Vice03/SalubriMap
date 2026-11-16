@@ -11,16 +11,7 @@ if errorlevel 1 (
   echo Docker est installe mais ne tourne pas : demarrez Docker Desktop puis relancez.
   pause & exit /b 1
 )
-if not exist "apps\web\dist\index.html" (
-  where pnpm >nul 2>nul
-  if errorlevel 1 (
-    echo Interface web non construite et pnpm absent : la page d'attente sera affichee.
-  ) else (
-    echo Construction de l'interface web...
-    call pnpm install
-    call pnpm --filter web build
-  )
-)
+rem Les interfaces (apps/web, apps/go) sont construites dans l'image Docker "web" : pas besoin de Node ici.
 rem Avec l'extrait OSM (scripts/prepare_osm_extract.sh) : vraies rues + calcul d'itineraires OSRM
 set PROFILES=
 if exist "data\osm\ouaga.osm.pbf" set PROFILES=--profile osrm
@@ -43,5 +34,6 @@ if %n% gtr 120 (
 rem curl.exe (inclus dans Windows 10+) sur 127.0.0.1 sans proxy : PowerShell passait par le proxy systeme / IPv6 et ne voyait jamais l API
 curl.exe -s -f -o nul -m 3 --noproxy "*" http://127.0.0.1/api/health >nul 2>nul || powershell -NoProfile -Command "try { (Invoke-WebRequest -UseBasicParsing http://127.0.0.1/api/health -TimeoutSec 3) | Out-Null; exit 0 } catch { exit 1 }"
 if errorlevel 1 ( timeout /t 2 /nobreak >nul & goto wait )
-echo Salubri est pret : http://localhost   (API : http://localhost/api/docs)
+echo Salubri est pret : http://localhost   (Salubri Go : http://localhost/go/ , API : http://localhost/api/docs)
+echo Code d acces mairie par defaut : ouaga2026  (a changer dans un fichier .env : SALUBRI_ADMIN_TOKEN=...)
 start "" http://localhost

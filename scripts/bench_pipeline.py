@@ -6,6 +6,7 @@ Fails (exit 1) if a partial recompute p95 > 2 s or a full one > 5 s (server-side
 """
 
 import argparse
+import os
 import statistics
 import sys
 import time
@@ -30,7 +31,8 @@ def main() -> None:
     ap.add_argument("--api", default="http://localhost")
     ap.add_argument("--n", type=int, default=5)
     a = ap.parse_args()
-    with httpx.Client(base_url=a.api, timeout=60) as c:
+    token = os.environ.get("SALUBRI_ADMIN_TOKEN", "ouaga2026")
+    with httpx.Client(base_url=a.api, timeout=60, headers={"X-Salubri-Token": token}) as c:
         base = next(s for s in c.get("/api/scenarios").json() if s["is_baseline"])
         sc = c.post("/api/scenarios", json={"name": "Banc d'essai", "parent_id": base["id"]}).json()
         wait(c, sc["plan_version_id"])

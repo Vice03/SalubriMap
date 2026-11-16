@@ -12,6 +12,7 @@ Exit code 0 only if everything passes.
 import argparse
 import io
 import json
+import os
 import sys
 import time
 import zipfile
@@ -232,7 +233,8 @@ def main() -> None:
     ap.add_argument("--traps-only", action="store_true")
     ap.add_argument("--keep", action="store_true", help="garder le scénario de répétition")
     a = ap.parse_args()
-    with httpx.Client(base_url=a.api, timeout=30) as c:
+    token = os.environ.get("SALUBRI_ADMIN_TOKEN", "ouaga2026")
+    with httpx.Client(base_url=a.api, timeout=30, headers={"X-Salubri-Token": token}) as c:
         h = c.get("/api/health").json()
         print(f"API {a.api} : base {h['db']}, OSRM {h['osrm']}")
         traps_ok, traps_lines = run_traps(c)

@@ -102,7 +102,15 @@ def load_osm(s: Session, commune_id: uuid.UUID, path: Path, bbox: Polygon | None
             n_r += 1
     for g, kind, name in h.water:
         if keep(g):
-            s.add(Water(commune_id=commune_id, geom=to_wkb(g), kind=kind, name=(name or None) and name[:128], flood_prone=kind == "waterway"))
+            s.add(
+                Water(
+                    commune_id=commune_id,
+                    geom=to_wkb(g),
+                    kind=kind,
+                    name=(name or None) and name[:128],
+                    flood_prone=kind == "waterway",
+                )
+            )
             n_w += 1
     for g, kind, name in h.pois:
         if keep(g):

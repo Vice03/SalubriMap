@@ -1,0 +1,11 @@
+# Contexte Docker : seul le code est envoyé (pas les données lourdes ni les builds locaux)
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/.ruff_cache
+.git
+data/osm/*.pbf
+data/open_buildings
+apps/web/tsconfig.tsbuildinfo

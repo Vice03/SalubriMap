@@ -8,12 +8,12 @@ from sqlalchemy.orm import Session
 from salubri_api.db import get_session
 from salubri_api.models import Commune, PlanVersion, Scenario, Vehicle
 from salubri_api.models.audit import audit
-from salubri_api.routers.deps import get_commune, parse_uuid
+from salubri_api.routers.deps import get_commune, parse_uuid, require_mairie
 from salubri_api.schemas.scenarios import BreakdownIn, RecomputeIn, ScenarioCreate, ScenarioPatch, VehicleIn
 from salubri_api.services.params import PARAM_EVENT, ScenarioParams, widest_event
 from salubri_api.services.plan.pipeline import latest_ready, request_recompute
 
-router = APIRouter(prefix="/scenarios", tags=["Scénarios"])
+router = APIRouter(prefix="/scenarios", tags=["Scénarios"], dependencies=[Depends(require_mairie)])
 
 PARAM_LABELS = {
     "population_factor": "Facteur de population",

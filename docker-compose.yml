@@ -13,7 +13,9 @@ x-api-env: &api-env
   SALUBRI_DATA_DIR: /app/data
   SALUBRI_PHOTOS_DIR: /app/var/photos
   SALUBRI_COMMUNE: ${SALUBRI_COMMUNE:-ouagadougou}
-  SALUBRI_CORS_ORIGINS: ${SALUBRI_CORS_ORIGINS:-*}
+  SALUBRI_CORS_ORIGINS: ${SALUBRI_CORS_ORIGINS:-}
+  # code d'accès mairie (modération, imports, scénarios) : à changer via un fichier .env
+  SALUBRI_ADMIN_TOKEN: ${SALUBRI_ADMIN_TOKEN:-ouaga2026}
 
 services:
   db:
@@ -74,11 +76,10 @@ services:
       seed: {condition: service_completed_successfully}
 
   web:
-    build: ./services/nginx
+    # construit apps/web et apps/go dans l'image (aucun Node requis sur la machine)
+    build: {context: ., dockerfile: services/nginx/Dockerfile}
     ports: ["${WEB_PORT:-80}:80"]
     volumes:
-      - ./apps/web/dist:/srv/web:ro
-      - ./apps/go/dist:/srv/go:ro
       - photos:/srv/photos:ro
     depends_on:
       api: {condition: service_healthy}

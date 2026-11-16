@@ -21,6 +21,7 @@ os.environ["SALUBRI_AUTO_RECOMPUTE"] = "false"
 os.environ["SALUBRI_OSRM_URL"] = ""
 os.environ["SALUBRI_OSRM_RAIN_URL"] = ""
 os.environ["SALUBRI_COMMUNE"] = "testville"
+os.environ["SALUBRI_ADMIN_TOKEN"] = "test-token"
 
 from fastapi.testclient import TestClient  # noqa: E402
 from PIL import Image  # noqa: E402
@@ -60,6 +61,12 @@ def world():  # type: ignore[no-untyped-def]
 
 @pytest.fixture()
 def db(world) -> Iterator[object]:  # type: ignore[no-untyped-def]
+    # attendre les recalculs en arrière-plan du test précédent : sinon ils bloquent le TRUNCATE (verrous)
+    from salubri_api.services import background
+    from salubri_api.services.plan.trigger import cancel_all
+
+    cancel_all()
+    background.drain(60)
     eng = get_engine()
     with eng.begin() as c:
         tables = ", ".join(t.name for t in reversed(Base.metadata.sorted_tables))
@@ -112,7 +119,7 @@ def db(world) -> Iterator[object]:  # type: ignore[no-untyped-def]
 def client(db) -> Iterator[TestClient]:  # type: ignore[no-untyped-def]
     from salubri_api.main import app
 
-    with TestClient(app) as c:
+    with TestClient(app, headers={"X-Salubri-Token": "test-token"}) as c:
         yield c
 
 
