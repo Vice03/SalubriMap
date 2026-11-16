@@ -60,7 +60,7 @@ nginx sert déjà :
 | `/` | `apps/web/dist/` | Salubri Map + Sim (SPA : toute URL inconnue renvoie `index.html`) |
 | `/go/` | `apps/go/dist/` | Salubri Go (PWA, `base: '/go/'` dans Vite) |
 | `/api/` | API FastAPI | SSE non bufferisé |
-| `/photos/` | photos téléversées | URLs fournies par l'API (`photo_url`) |
+| `/api/reports/{id}/photo` | photo d'un signalement | publique si vérifié ou nettoyé (sans EXIF), sinon réservée à la mairie (lot A4) |
 
 Tant que `dist/` est vide, nginx affiche une page d'attente. Il suffit donc de faire `pnpm build` : les dossiers sont montés dans le conteneur, pas besoin de reconstruire l'image.
 
@@ -276,7 +276,7 @@ Réponse (réelle, piège R9 de la répétition) :
       "dump_site_id": null,
       "quartier_id": "5bf66512-c7f7-4ce7-a074-8e18cbfe59f3",
       "import_batch_id": "21a8c6d0-2573-4854-ad7a-89641343a5e1",
-      "photo_url": "/photos/b79af5a98db33cd0a0bcebe383f6fb2e.jpg",
+      "photo_url": "/api/reports/3f0c…/photo",
       "forced_status": false,
       "moderated_by": null,
       "moderated_at": null
@@ -750,3 +750,9 @@ Le backend est testé (82 tests). S'il manque un champ ou un endpoint pour un é
 - Rôles : `moderateur` (modération, dépotoirs) et `admin` (tout). 401 = pas connecté ou session expirée (reconnecter) ; 403 = connecté mais rôle insuffisant (message en français dans `detail`).
 - `X-Salubri-Token` reste accepté (identifiant de service, droits admin) pour les scripts.
 - Créer un compte : `docker compose exec api python -m salubri_api.users add <login> --role admin`.
+
+## Ajouts 0.3 — vue publique (lot A4)
+
+- Sans compte, `GET /api/reports` ne renvoie que les signalements `verified` et `cleaned`, avec les seuls champs `id, status, score, waste_type, volume_class, reported_at, dump_site_id, quartier_id, photo_url`, et `restricted: true` dans la FeatureCollection. Les filtres `device_id` et `import_batch` répondent 403.
+- `GET /api/reports/{id}` d'un signalement non public : 404 pour un visiteur. `GET /api/audit` : 401 sans compte.
+- Le client envoie le code d'accès aussi en lecture ; une lecture refusée n'ouvre jamais la fenêtre de connexion.

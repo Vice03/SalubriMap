@@ -20,7 +20,7 @@ def test_filters(client, world):
     assert client.get("/api/reports", params={"type": "plastic"}).json()["total"] == 1
     assert client.get("/api/reports", params={"bbox": "-1.56,12.33,-1.50,12.38"}).json()["total"] == 1
     feat = client.get("/api/reports", params={"type": "plastic"}).json()["features"][0]
-    assert feat["properties"]["photo_url"].startswith("/photos/")
+    assert feat["properties"]["photo_url"] == f"/api/reports/{feat['id']}/photo"
     assert client.get(feat["properties"]["photo_url"]).status_code == 200
 
 

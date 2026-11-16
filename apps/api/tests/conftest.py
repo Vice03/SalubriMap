@@ -127,6 +127,15 @@ def client(db) -> Iterator[TestClient]:  # type: ignore[no-untyped-def]
         yield c
 
 
+@pytest.fixture()
+def anon(db) -> Iterator[TestClient]:  # type: ignore[no-untyped-def]
+    """Client sans identifiant : un citoyen ou un visiteur."""
+    from salubri_api.main import app
+
+    with TestClient(app) as c:
+        yield c
+
+
 def free_point(world, poly: Polygon = Q1, n: int = 0) -> tuple[float, float]:  # type: ignore[no-untyped-def]
     """A deterministic point inside `poly`, away from buildings, roads-free not required, away from water."""
     from shapely.ops import unary_union

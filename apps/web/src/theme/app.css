@@ -212,3 +212,12 @@ h1, h2, h3 { margin: 0; }
 }
 
 .demo-badge { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; background: #fef3c7; color: #92400e; border: 1px solid #fcd34d; font-weight: 700; font-size: 12.5px; white-space: nowrap; }
+
+/* Vue publique des signalements (lot A4) */
+.restricted-note {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  margin: 4px 0 12px; padding: 10px 14px; border-radius: 12px;
+  background: linear-gradient(90deg, #fff7e0, #fdecc8); color: #7a4b00;
+  border: 1px solid #f3d38a; font-size: 14px;
+}
+.restricted-note .btn { margin-left: auto; }

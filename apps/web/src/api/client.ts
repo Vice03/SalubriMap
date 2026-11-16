@@ -29,9 +29,28 @@ const TOKEN_KEY = 'salubri_mairie_code'
 const readToken = () => { try { return localStorage.getItem(TOKEN_KEY) ?? '' } catch { return '' } }
 const saveToken = (t: string) => { try { localStorage.setItem(TOKEN_KEY, t) } catch { /* stockage indisponible */ } }
 
+/** Demande le code d'accès mairie ; true s'il a été saisi. (L'écran de connexion arrive au lot A7.) */
+export function signIn(): boolean {
+  const code = window.prompt("Code d'accès mairie (modération, imports, scénarios) :")
+  if (!code) return false
+  saveToken(code.trim())
+  return true
+}
+
+/** Photo d'un signalement : chargée avec le code, car celles des signalements non vérifiés sont réservées. */
+export async function photoObjectUrl(url: string): Promise<string | null> {
+  const tok = readToken()
+  try {
+    const res = await fetch(url, { headers: tok ? { 'X-Salubri-Token': tok } : {} })
+    return res.ok ? URL.createObjectURL(await res.blob()) : null
+  } catch { return null }
+}
+
 /** Les écritures (modération, imports, scénarios, flotte) exigent le code d'accès mairie. */
 async function request<T>(method: string, path: string, opts: { query?: Query; json?: unknown; form?: FormData } = {}, retry = true): Promise<T> {
-  const init: RequestInit = { method, headers: method === 'GET' ? {} : { 'X-Salubri-Token': readToken() } }
+  // le code est aussi envoyé en lecture : la mairie voit alors les signalements non vérifiés (lot A4)
+  const tok = readToken()
+  const init: RequestInit = { method, headers: tok ? { 'X-Salubri-Token': tok } : {} }
   if (opts.json !== undefined) {
     init.body = JSON.stringify(opts.json)
     ;(init.headers as Record<string, string>)['Content-Type'] = 'application/json'
@@ -42,10 +61,8 @@ async function request<T>(method: string, path: string, opts: { query?: Query; j
   } catch {
     throw new ApiError(0, 'Réseau', "Impossible de joindre le serveur Salubri")
   }
-  if (res.status === 401 && retry) {
-    const code = window.prompt("Code d'accès mairie (modération, imports, scénarios) :")
-    if (code) { saveToken(code.trim()); return request<T>(method, path, opts, false) }
-  }
+  // une écriture refusée propose la connexion ; une lecture ne fait jamais surgir la fenêtre
+  if (res.status === 401 && retry && method !== 'GET' && signIn()) return request<T>(method, path, opts, false)
   if (res.status === 204) return undefined as T
   const body = await res.json().catch(() => ({}))
   if (!res.ok) {

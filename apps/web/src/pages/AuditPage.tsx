@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { ClipboardList } from 'lucide-react'
-import { api } from '../api/client'
+import { ClipboardList, Lock } from 'lucide-react'
+import { api, signIn } from '../api/client'
 import { date } from '../lib/format'
 import { AUDIT_ACTION } from '../lib/labels'
 import { useApi } from '../state/app'
@@ -10,11 +10,17 @@ const ENTITY: Record<string, string> = {
 }
 
 export function AuditPage() {
-  const { data } = useApi(() => api.audit(300), [])
+  const { data, error } = useApi(() => api.audit(300), [])
   return (
     <div className="content">
       <div className="card" style={{ overflowX: 'auto' }}>
         <div className="card-head"><ClipboardList color="#0f2b55" /><h2>Journal des actions</h2></div>
+        {error && (
+          <div className="restricted-note">
+            <Lock size={16} /> Le journal (appareils, notes, comptes) est réservé à la mairie.
+            <button className="btn ghost" onClick={() => { if (signIn()) window.location.reload() }}>Se connecter</button>
+          </div>
+        )}
         <table className="table">
           <thead><tr><th>Date</th><th>Action</th><th>Objet</th><th>Par</th><th>Détail</th></tr></thead>
           <tbody>

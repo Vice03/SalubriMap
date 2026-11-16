@@ -4,15 +4,17 @@ from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Response, UploadFile
 from fastapi.exceptions import RequestValidationError
+from fastapi.responses import FileResponse
 from pydantic import ValidationError
 from sqlalchemy import text
 from sqlalchemy.orm import Session
 
+from salubri_api.config import get_settings
 from salubri_api.db import get_session
 from salubri_api.models import Commune, DumpSite, Photo, Report, utcnow
 from salubri_api.models.audit import audit
-from salubri_api.routers.deps import get_commune, parse_uuid, require_moderateur
-from salubri_api.routers.serializers import report_feature
+from salubri_api.routers.deps import get_commune, is_staff, optional_principal, parse_uuid, require_moderateur
+from salubri_api.routers.serializers import PUBLIC_STATUSES, is_public, report_feature
 from salubri_api.schemas.reports import MergeIn, ReportCreated, ReportIn, ReportPatch
 from salubri_api.services.auth import Principal
 from salubri_api.services.consolidation import consolidate
@@ -20,6 +22,7 @@ from salubri_api.services.geo import feature_collection, shape
 from salubri_api.services.plan.trigger import reports_changed
 from salubri_api.services.reports import find_by_client_id, stage_report, thresholds_for, validate_staged
 from salubri_api.services.validation.engine import corroborate, photo_info_from_row, validate_report
+from salubri_api.services.validation.photo import public_jpeg
 
 router = APIRouter(prefix="/reports", tags=["Signalements"])
 MAX_PHOTO = 12 * 1024 * 1024
@@ -133,7 +136,14 @@ def list_reports(
     offset: Annotated[int, Query(ge=0)] = 0,
     s: Session = Depends(get_session),
     commune: Commune = Depends(get_commune),
+    who: Principal | None = Depends(optional_principal),
 ) -> dict[str, Any]:
+    staff = is_staff(who)
+    if not staff:
+        # public : signalements vérifiés ou nettoyés seulement, pas de recherche par appareil ou par import
+        if device_id or import_batch:
+            raise HTTPException(403, "Filtre réservé aux modérateurs de la mairie")
+        status = [x for x in (status or PUBLIC_STATUSES) if x in PUBLIC_STATUSES] or ["__aucun__"]
     q = s.query(Report).filter(Report.commune_id == commune.id)
     if status:
         q = q.filter(Report.status.in_(status))
@@ -166,7 +176,11 @@ def list_reports(
     total = q.count()
     rows = q.order_by(Report.reported_at.desc()).offset(offset).limit(limit).all()
     photos = {p.report_id: p for p in s.query(Photo).filter(Photo.report_id.in_([r.id for r in rows]))} if rows else {}
-    return feature_collection([report_feature(s, r, photos) for r in rows], total=total, limit=limit, offset=offset)
+    out = feature_collection(
+        [report_feature(s, r, photos, staff) for r in rows], total=total, limit=limit, offset=offset
+    )
+    out["restricted"] = not staff  # l'interface propose alors de se connecter
+    return out
 
 
 @router.get("/stats", summary="Compteurs par statut, type et règle (tuiles du tableau de bord)")
@@ -210,10 +224,17 @@ def _get(s: Session, report_id: str) -> Report:
 
 
 @router.get("/{report_id}", summary="Fiche complète d'un signalement")
-def get_report(report_id: str, s: Session = Depends(get_session)) -> dict[str, Any]:
+def get_report(
+    report_id: str, s: Session = Depends(get_session), who: Principal | None = Depends(optional_principal)
+) -> dict[str, Any]:
     r = _get(s, report_id)
-    f = report_feature(s, r)
+    staff = is_staff(who)
+    if not staff and not is_public(r):
+        raise HTTPException(404, "Signalement introuvable")  # même réponse que s'il n'existait pas
+    f = report_feature(s, r, staff=staff)
     related = s.query(Report).filter((Report.duplicate_of == r.id) | (Report.id == r.duplicate_of)).all()
+    if not staff:
+        related = [x for x in related if is_public(x)]
     f["properties"]["related"] = [
         {
             "id": str(x.id),
@@ -228,7 +249,7 @@ def get_report(report_id: str, s: Session = Depends(get_session)) -> dict[str, A
         if d:
             f["properties"]["dump_site"] = {"id": str(d.id), "status": d.status, "n_reports": d.n_reports}
     photo = s.query(Photo).filter(Photo.report_id == r.id).first()
-    if photo:
+    if photo and staff:
         f["properties"]["photo"] = {
             "width": photo.width,
             "height": photo.height,
@@ -238,6 +259,28 @@ def get_report(report_id: str, s: Session = Depends(get_session)) -> dict[str, A
             "exif_taken_at": photo.exif_taken_at.isoformat() if photo.exif_taken_at else None,
         }
     return f
+
+
+@router.get(
+    "/{report_id}/photo",
+    summary="Photo d'un signalement",
+    description="Publique si le signalement est vérifié ou nettoyé (sans EXIF) ; sinon réservée aux modérateurs.",
+    response_class=FileResponse,
+)
+def get_photo(
+    report_id: str, s: Session = Depends(get_session), who: Principal | None = Depends(optional_principal)
+) -> Response:
+    r = _get(s, report_id)
+    staff = is_staff(who)
+    photo = s.query(Photo).filter(Photo.report_id == r.id).first()
+    if photo is None or (not staff and not is_public(r)):
+        raise HTTPException(404, "Photo introuvable")
+    path = (get_settings().photos_dir / photo.path).resolve()
+    if path.parent != get_settings().photos_dir.resolve() or not path.is_file():
+        raise HTTPException(404, "Photo introuvable")
+    if staff:
+        return FileResponse(path, media_type="image/jpeg", headers={"Cache-Control": "private, no-store"})
+    return Response(public_jpeg(path), media_type="image/jpeg", headers={"Cache-Control": "public, max-age=86400"})
 
 
 @router.patch("/{report_id}", summary="Modérer : forcer un statut (journalisé)")

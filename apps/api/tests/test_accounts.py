@@ -50,14 +50,6 @@ def bearer(client: TestClient, login: str, password: str = "motdepasse-123") -> 
     return {"Authorization": f"Bearer {r.json()['token']}"}
 
 
-@pytest.fixture()
-def anon(db):  # type: ignore[no-untyped-def]
-    from salubri_api.main import app
-
-    with TestClient(app) as c:
-        yield c
-
-
 def test_every_write_route_is_classified():
     routes = {f"{m} {p}" for m, p in write_routes()}
     assert len(routes) >= 19
@@ -100,8 +92,9 @@ def test_moderation_and_admin_actions_succeed_and_are_signed_in_the_journal(db, 
     db.expire_all()
     actors = {a.action: a.actor for a in db.query(AuditLog).filter(AuditLog.action.in_(["moderate", "login"]))}
     assert actors["moderate"] == "awa (moderateur)"
-    journal = anon.get("/api/audit").json()
-    assert any(e["actor"] == "awa (moderateur)" for e in (journal["items"] if isinstance(journal, dict) else journal))
+    assert anon.get("/api/audit").status_code == 401  # journal réservé à la mairie (lot A4)
+    journal = anon.get("/api/audit", headers=mod).json()
+    assert any(e["actor"] == "awa (moderateur)" for e in journal)
 
 
 def test_login_me_logout_and_session_rules(db, anon):  # type: ignore[no-untyped-def]

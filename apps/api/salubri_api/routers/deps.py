@@ -92,3 +92,26 @@ async def current_user(
     if p is None:
         raise HTTPException(401, "Non connecté", headers={"WWW-Authenticate": "Bearer"})
     return p
+
+
+async def optional_principal(
+    authorization: str | None = Header(None), x_salubri_token: str | None = Header(None)
+) -> Principal | None:
+    """Appelant connecté ou None (lectures qui montrent plus aux comptes de la mairie, lot A4)."""
+    return await _principal(authorization, x_salubri_token)
+
+
+def is_staff(p: Principal | None) -> bool:
+    """Modérateur ou admin : voit les signalements non vérifiés, l'appareil, le commentaire et l'EXIF."""
+    return p is not None and p.role in GRANTS["moderateur"]
+
+
+async def require_staff_read(p: Principal | None = Depends(optional_principal)) -> Principal:
+    """Lecture réservée à la mairie (journal) : 401 anonyme, 403 rôle insuffisant."""
+    if p is None:
+        raise HTTPException(
+            401, "Connectez-vous avec un compte de la mairie pour voir ceci", headers={"WWW-Authenticate": "Bearer"}
+        )
+    if not is_staff(p):
+        raise HTTPException(403, f"Lecture réservée aux modérateurs (vous êtes {ROLE_LABEL[p.role]})")
+    return p

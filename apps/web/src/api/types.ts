@@ -7,20 +7,21 @@ export type PlanStatus = 'pending' | 'running' | 'ready' | 'failed' | 'supersede
 
 export type Position = [number, number]
 export interface Feature<G, P> { type: 'Feature'; id?: string; geometry: G; properties: P }
-export interface FC<G, P> { type: 'FeatureCollection'; features: Feature<G, P>[]; total?: number }
+export interface FC<G, P> { type: 'FeatureCollection'; features: Feature<G, P>[]; total?: number; restricted?: boolean }
 export interface PointGeom { type: 'Point'; coordinates: Position }
 export interface LineGeom { type: 'LineString'; coordinates: Position[] }
 export interface PolyGeom { type: 'Polygon' | 'MultiPolygon'; coordinates: Position[][] | Position[][][] }
 
 export interface RuleHit { rule: string; delta: number; detail: string; reject?: boolean }
 
+/** Les champs marqués « ? » manquent dans la vue publique (visiteur non connecté, lot A4). */
 export interface ReportProps {
-  id: string; status: ReportStatus; score: number; rule_hits: RuleHit[]
-  waste_type: WasteType; volume_class: VolumeClass; comment: string | null
-  reported_at: string; received_at: string; gps_accuracy_m: number | null
-  device_id: string | null; external_id: string | null; duplicate_of: string | null
-  dump_site_id: string | null; quartier_id: string | null; import_batch_id: string | null
-  photo_url: string | null; forced_status: boolean; moderated_by: string | null; moderated_at: string | null
+  id: string; status: ReportStatus; score: number; rule_hits?: RuleHit[]
+  waste_type: WasteType; volume_class: VolumeClass; comment?: string | null
+  reported_at: string; received_at?: string; gps_accuracy_m?: number | null
+  device_id?: string | null; external_id?: string | null; duplicate_of?: string | null
+  dump_site_id: string | null; quartier_id: string | null; import_batch_id?: string | null
+  photo_url: string | null; forced_status?: boolean; moderated_by?: string | null; moderated_at?: string | null
   related?: { id: string; status: ReportStatus; score: number; relation: 'original' | 'duplicate' }[]
   dump_site?: { id: string; status: DumpStatus; n_reports: number }
 }

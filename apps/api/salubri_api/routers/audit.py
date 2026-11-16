@@ -6,8 +6,10 @@ from sqlalchemy.orm import Session
 
 from salubri_api.db import get_session
 from salubri_api.models import AuditLog
+from salubri_api.routers.deps import require_staff_read
 
-router = APIRouter(prefix="/audit", tags=["Journal"])
+# le journal contient des identifiants d'appareil, des notes et des noms de comptes : réservé à la mairie (lot A4)
+router = APIRouter(prefix="/audit", tags=["Journal"], dependencies=[Depends(require_staff_read)])
 
 
 @router.get("", summary="Journal d'audit (plus récent d'abord)")

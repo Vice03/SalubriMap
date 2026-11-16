@@ -5,6 +5,7 @@ import hashlib
 import io
 from dataclasses import dataclass
 from datetime import UTC, datetime
+from functools import lru_cache
 from pathlib import Path
 
 import imagehash
@@ -106,3 +107,17 @@ def store(data: bytes, info: PhotoInfo, photos_dir: Path) -> str:
     if not target.exists():
         target.write_bytes(data)
     return name
+
+
+@lru_cache(maxsize=256)
+def _public_jpeg(path: str, mtime: float) -> bytes:
+    with Image.open(path) as im:
+        im = ImageOps.exif_transpose(im).convert("RGB")
+        buf = io.BytesIO()
+        im.save(buf, "JPEG", quality=85)  # nouvel encodage : aucune métadonnée EXIF (GPS, appareil, date)
+        return buf.getvalue()
+
+
+def public_jpeg(path: Path) -> bytes:
+    """Copie publique d'une photo, sans EXIF (lot A4). Mise en cache par chemin et date de modification."""
+    return _public_jpeg(str(path), path.stat().st_mtime)

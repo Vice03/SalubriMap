@@ -8,7 +8,6 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.staticfiles import StaticFiles
 
 from salubri_api import __version__
 from salubri_api.config import get_settings
@@ -108,8 +107,8 @@ def create_app() -> FastAPI:
             except Exception:  # base absente ou pas encore migrée : le seed s'en charge
                 logging.getLogger(__name__).exception("reprise au démarrage impossible")
 
+    # pas de montage public de photos_dir : les photos passent par GET /api/reports/{id}/photo (lot A4)
     settings.photos_dir.mkdir(parents=True, exist_ok=True)
-    app.mount("/photos", StaticFiles(directory=settings.photos_dir), name="photos")
     return app
 
 

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { Flag } from 'lucide-react'
+import { Flag, Lock } from 'lucide-react'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { api } from '../api/client'
+import { api, signIn } from '../api/client'
 import type { ReportStatus, WasteType } from '../api/types'
 import { ReportDrawer } from '../components/reports/ReportDrawer'
 import { StatusBadge } from '../components/ui/Overlay'
@@ -37,6 +37,12 @@ export function ReportsPage() {
     <div className="content">
       <div className="card">
         <div className="card-head"><Flag color="#0f2b55" /><h2>Signalements</h2><span className="spacer" /><span className="muted">{total} résultat(s)</span></div>
+        {data?.restricted && (
+          <div className="restricted-note">
+            <Lock size={16} /> Vue publique : seuls les signalements vérifiés ou nettoyés, sans appareil ni commentaire.
+            <button className="btn ghost" onClick={() => { if (signIn()) window.location.reload() }}>Se connecter</button>
+          </div>
+        )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
           <div className="chips">
             {(Object.keys(STATUS) as ReportStatus[]).map((s) => (
@@ -69,9 +75,9 @@ export function ReportsPage() {
                   <td><div style={{ display: 'flex', alignItems: 'center', gap: 8 }}><WasteIcon type={r.waste_type} size={30} />{WASTE[r.waste_type]}</div></td>
                   <td><StatusBadge status={r.status} /></td>
                   <td><b>{r.score}</b></td>
-                  <td>{r.rule_hits.length ? r.rule_hits.map((h) => <span key={h.rule + h.detail} className="rule" title={h.detail}>{h.rule} {h.reject ? 'rejet' : h.delta}</span>) : <span className="muted">—</span>}</td>
+                  <td>{r.rule_hits?.length ? r.rule_hits.map((h) => <span key={h.rule + h.detail} className="rule" title={h.detail}>{h.rule} {h.reject ? 'rejet' : h.delta}</span>) : <span className="muted">—</span>}</td>
                   <td>{VOLUME[r.volume_class]}</td>
-                  <td>{ago(r.received_at)}</td>
+                  <td>{ago(r.received_at ?? r.reported_at)}</td>
                   <td className="muted">{r.external_id ?? r.id.slice(0, 8)}</td>
                 </tr>
               )

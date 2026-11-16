@@ -61,3 +61,11 @@ Choix faits là où la consigne laissait le choix (option la plus simple et sûr
 - L'adresse IP des échecs de connexion n'est pas écrite dans le journal (donnée personnelle, lot A4).
 - En mode démonstration, un compte `demo` désactivé par un administrateur n'est pas réactivé automatiquement.
 
+## Données personnelles (0.3, lot A4)
+
+- « Public » = statut `verified` ou `cleaned`. Un signalement `probable` reste invisible aux visiteurs tant que la mairie ou la corroboration ne l'a pas vérifié.
+- Champs retirés pour le public : appareil, identifiant client et externe, commentaire, précision GPS, heure de réception, règles déclenchées (leur texte peut citer l'appareil ou l'EXIF), nom du modérateur, EXIF. Le score et le type restent visibles.
+- Les photos restent dans le même volume (aucune migration de fichiers) ; seul le chemin d'accès change. La copie publique est réencodée sans métadonnées à la volée (cache en mémoire de 256 photos) ; le lot A5 enlèvera l'EXIF dès l'enregistrement.
+- Le journal contient des identifiants d'appareil, des notes et des noms de comptes : sa lecture exige un compte modérateur ou admin. Les compteurs agrégés (`/api/reports/stats`) restent publics.
+- Démonstration : le navigateur qui a déjà saisi `ouaga2026` voit tout ; sur un navigateur neuf, cliquer « Se connecter » dans Signalements avant la scène « Filtre Rejetés » (ajouté à docs/DEMO.md).
+

@@ -25,9 +25,9 @@ export async function loadAlerts(sc: Scenario | null): Promise<Alert[]> {
   for (const f of rej.features) {
     const r = f.properties
     out.push({ id: `r-${r.id}`, level: r.status === 'rejected' ? 'orange' : 'blue',
-               text: `Signalement ${r.status === 'rejected' ? 'rejeté' : 'à revoir'} : ${r.rule_hits[0]?.detail ?? 'règles déclenchées'}`, at: r.received_at })
+               text: `Signalement ${r.status === 'rejected' ? 'rejeté' : 'à revoir'} : ${r.rule_hits?.[0]?.detail ?? 'règles déclenchées'}`, at: r.received_at ?? r.reported_at })
   }
-  const audit = await api.audit(4)
+  const audit = await api.audit(4).catch(() => []) // journal réservé à la mairie : rien pour un visiteur
   for (const a of audit) {
     out.push({ id: `a-${a.id}`, level: 'green', text: `${AUDIT_ACTION[a.action] ?? a.action} (${a.entity})`, at: a.at })
   }

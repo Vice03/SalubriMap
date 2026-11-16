@@ -6,7 +6,7 @@
          \   HTTPS / JSON / SSE /
           v                    v
       ┌──────────── nginx (port 80) ─────────────┐
-      │ /  /go/  /photos/  →  fichiers statiques │
+      │ /  /go/            →  fichiers statiques │
       │ /api/  →  api:8000 (SSE non bufferisé)    │
       └──────────────────┬───────────────────────┘
                          v
