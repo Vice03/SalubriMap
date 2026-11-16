@@ -10,7 +10,7 @@ from sse_starlette.sse import EventSourceResponse
 
 from salubri_api.db import get_session, get_sessionmaker
 from salubri_api.models import CollectionPoint, PlanVersion, Route, RouteStop, SimRun, UnservedPoint, Vehicle
-from salubri_api.routers.deps import parse_uuid, require_mairie
+from salubri_api.routers.deps import parse_uuid, require_admin
 from salubri_api.schemas.plans import SimulateIn
 from salubri_api.services import background
 from salubri_api.services.geo import feature, feature_collection
@@ -21,7 +21,7 @@ from salubri_api.services.plan.pipeline import latest_ready, plan_view, snapshot
 from salubri_api.services.simulation.engine import replicate
 from salubri_api.services.simulation.params import SimParams
 
-router = APIRouter(prefix="/plans", tags=["Plans"], dependencies=[Depends(require_mairie)])
+router = APIRouter(prefix="/plans", tags=["Plans"], dependencies=[Depends(require_admin)])
 
 
 def _get(s: Session, plan_id: str) -> PlanVersion:

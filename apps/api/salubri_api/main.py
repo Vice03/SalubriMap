@@ -14,6 +14,7 @@ from salubri_api import __version__
 from salubri_api.config import get_settings
 from salubri_api.routers import (
     audit,
+    auth,
     communes,
     dumps,
     export,
@@ -68,7 +69,21 @@ def create_app() -> FastAPI:
         errs = [{"loc": list(e.get("loc", [])), "msg": e.get("msg")} for e in exc.errors()]
         return problem(422, "Données invalides", "Certains champs sont invalides", errs)
 
-    for r in (health, communes, quartiers, reports, imports, dumps, scenarios, plans, sim, export, audit, validation):
+    for r in (
+        health,
+        auth,
+        communes,
+        quartiers,
+        reports,
+        imports,
+        dumps,
+        scenarios,
+        plans,
+        sim,
+        export,
+        audit,
+        validation,
+    ):
         app.include_router(r.router, prefix="/api")
 
     @app.on_event("startup")

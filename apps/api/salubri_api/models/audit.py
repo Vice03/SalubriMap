@@ -29,11 +29,18 @@ def audit(
     entity_id: object | None = None,
     before: dict[str, Any] | None = None,
     after: dict[str, Any] | None = None,
-    actor: str = "system",
+    actor: str | None = None,
 ) -> None:
+    """Journalise une action. Sans `actor` explicite : l'utilisateur connecté de la requête en cours
+    (« login (rôle) »), sinon « system » (tâches de fond, seed)."""
+    if actor is None:
+        from salubri_api.services.auth import current_principal
+
+        p = current_principal.get()
+        actor = p.label if p else "system"
     session.add(
         AuditLog(
-            actor=actor,
+            actor=actor[:64],
             action=action,
             entity=entity,
             entity_id=str(entity_id) if entity_id is not None else None,

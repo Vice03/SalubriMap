@@ -7,13 +7,13 @@ from sqlalchemy.orm import Session
 from salubri_api.db import get_session
 from salubri_api.models import Commune, ImportBatch, Report
 from salubri_api.models.audit import audit
-from salubri_api.routers.deps import get_commune, parse_uuid, require_mairie
+from salubri_api.routers.deps import get_commune, parse_uuid, require_admin
 from salubri_api.schemas.imports import ImportResult
 from salubri_api.services.consolidation import consolidate
 from salubri_api.services.importers.run import run_import
 from salubri_api.services.plan.trigger import reports_changed
 
-router = APIRouter(prefix="/imports", tags=["Import"], dependencies=[Depends(require_mairie)])
+router = APIRouter(prefix="/imports", tags=["Import"], dependencies=[Depends(require_admin)])
 
 
 @router.post(

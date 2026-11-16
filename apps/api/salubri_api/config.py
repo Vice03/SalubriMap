@@ -24,6 +24,10 @@ class Settings(BaseSettings):
     # Code d'accès « mairie » exigé (en-tête X-Salubri-Token) sur toutes les écritures sauf l'envoi d'un
     # signalement citoyen. Vide = contrôle désactivé (développement local uniquement).
     admin_token: str = ""
+    # Clé de signature des sessions (connexion des comptes mairie). Vide = clé aléatoire tirée au démarrage :
+    # les sessions ouvertes ne survivent pas à un redémarrage de l'API (il suffit de se reconnecter).
+    secret_key: str = ""
+    session_hours: float = 8.0
     reports_debounce_s: float = 2.0
     auto_recompute: bool = True
     # au démarrage, relancer les recalculs interrompus par un redémarrage (désactivé dans les tests)

@@ -32,3 +32,15 @@ Source : *Actualisation du Schéma directeur de gestion des déchets solides de 
 Utilisation dans les calculs (v0.2) :
 - les décharges SDGD (sauvages, encadrées DSPH, autres) sont chargées comme **signalements officiels vérifiés** (`external_id = sdgd2020:…`, sans passer par les règles anti-pièges) et deviennent des dépotoirs ;
 - les CCT existants qui desservent la zone active sont **gardés comme points de regroupement fixes** (paramètre « Garder les CCT existants », activé par défaut) ; l'algorithme n'ajoute des points que là où aucun CCT n'est à distance de marche.
+
+## Comptes et rôles (0.3, lot A1)
+
+Choix faits là où la consigne laissait le choix (option la plus simple et sûre) :
+
+- **Rôles** : `moderateur` (modération des signalements, actions sur les dépotoirs) et `admin` (en plus : imports et annulation, scénarios, flotte, quartiers, recalculs, réplications de simulation). L'admin a tous les droits du modérateur. Les lectures restent publiques ; `POST /api/reports` reste ouvert aux citoyens.
+- **Réplications** (`POST /api/plans/{id}/simulate`) classées *admin* : elles lancent un calcul lourd, comme un recalcul de scénario.
+- **Sessions** : jeton signé HMAC-SHA256 (bibliothèque standard), valable 8 h (`SALUBRI_SESSION_HOURS`), envoyé en `Authorization: Bearer …`. Révocation par un compteur `session_version` sur le compte : déconnexion, changement de mot de passe et désactivation ferment toutes les sessions du compte (pas de table de sessions).
+- **Clé de signature** : `SALUBRI_SECRET_KEY`. Vide → clé aléatoire tirée au démarrage de l'API : les sessions ne survivent pas à un redémarrage (on se reconnecte). Le lot A2 rendra la clé obligatoire hors mode démonstration.
+- **Mots de passe** : argon2id (`argon2-cffi`), 8 caractères minimum ; login enregistré en minuscules.
+- **Identifiant de service** : `X-Salubri-Token` (= `SALUBRI_ADMIN_TOKEN`) garde les droits admin pour les scripts (`rehearse.py`, `bench_pipeline.py`) et pour l'interface web tant que l'écran de connexion (lot A7) n'existe pas ; le journal le signe « service (admin) ».
+- **Journal** : chaque action d'un humain est signée « login (rôle) » ; « system » est réservé aux tâches de fond et au chargement des données, « console » à l'outil `python -m salubri_api.users`. Le champ `actor` envoyé par l'interface lors d'une modération est ignoré : l'auteur est le compte connecté.

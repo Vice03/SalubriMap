@@ -11,9 +11,10 @@ from sqlalchemy.orm import Session
 from salubri_api.db import get_session
 from salubri_api.models import Commune, DumpSite, Photo, Report, utcnow
 from salubri_api.models.audit import audit
-from salubri_api.routers.deps import get_commune, parse_uuid, require_mairie
+from salubri_api.routers.deps import get_commune, parse_uuid, require_moderateur
 from salubri_api.routers.serializers import report_feature
 from salubri_api.schemas.reports import MergeIn, ReportCreated, ReportIn, ReportPatch
+from salubri_api.services.auth import Principal
 from salubri_api.services.consolidation import consolidate
 from salubri_api.services.geo import feature_collection, shape
 from salubri_api.services.plan.trigger import reports_changed
@@ -216,15 +217,20 @@ def get_report(report_id: str, s: Session = Depends(get_session)) -> dict[str, A
     return f
 
 
-@router.patch("/{report_id}", dependencies=[Depends(require_mairie)], summary="Modérer : forcer un statut (journalisé)")
+@router.patch("/{report_id}", summary="Modérer : forcer un statut (journalisé)")
 def patch_report(
-    report_id: str, body: ReportPatch, s: Session = Depends(get_session), commune: Commune = Depends(get_commune)
+    report_id: str,
+    body: ReportPatch,
+    s: Session = Depends(get_session),
+    commune: Commune = Depends(get_commune),
+    who: Principal = Depends(require_moderateur),
 ) -> dict[str, Any]:
     r = _get(s, report_id)
     before = {"status": r.status, "score": r.score}
     r.status, r.forced_status = body.status, True
-    r.moderated_by, r.moderated_at = body.actor, utcnow()
-    audit(s, "moderate", "report", r.id, before, {"status": body.status, "note": body.note}, actor=body.actor)
+    # l'auteur est le compte connecté (le champ « actor » du corps n'est plus pris en compte)
+    r.moderated_by, r.moderated_at = who.login, utcnow()
+    audit(s, "moderate", "report", r.id, before, {"status": body.status, "note": body.note})
     s.flush()
     consolidate(s, commune.id)
     s.commit()
@@ -234,7 +240,7 @@ def patch_report(
 
 @router.post(
     "/{report_id}/revalidate",
-    dependencies=[Depends(require_mairie)],
+    dependencies=[Depends(require_moderateur)],
     summary="Rejouer les règles R1–R12 sur ce signalement",
 )
 def revalidate(
@@ -256,7 +262,7 @@ def revalidate(
 
 @router.post(
     "/{report_id}/merge",
-    dependencies=[Depends(require_mairie)],
+    dependencies=[Depends(require_moderateur)],
     summary="Fusionner dans un autre signalement (doublon confirmé)",
 )
 def merge(

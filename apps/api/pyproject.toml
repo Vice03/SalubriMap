@@ -25,6 +25,8 @@ dependencies = [
   "osmium>=3.7",
   "python-multipart>=0.0.9",
   "pyyaml>=6.0",
+  # hachage des mots de passe des comptes mairie (argon2id, référence OWASP ; petite roue compilée)
+  "argon2-cffi>=23.1",
 ]
 
 [dependency-groups]

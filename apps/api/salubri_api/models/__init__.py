@@ -41,8 +41,10 @@ from salubri_api.models.plans import (  # noqa: E402
 from salubri_api.models.quartiers import Ilot, Quartier  # noqa: E402
 from salubri_api.models.reports import Device, DumpSite, ImportBatch, Photo, Report  # noqa: E402
 from salubri_api.models.sim import SimRun  # noqa: E402
+from salubri_api.models.users import User  # noqa: E402
 
 __all__ = [
+    "User",
     "AuditLog",
     "Base",
     "Building",

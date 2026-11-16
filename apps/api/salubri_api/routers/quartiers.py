@@ -11,13 +11,13 @@ from sqlalchemy.orm import Session
 from salubri_api.db import get_session
 from salubri_api.models import Commune, Ilot, Quartier, Scenario
 from salubri_api.models.audit import audit
-from salubri_api.routers.deps import get_commune, require_mairie
+from salubri_api.routers.deps import get_commune, require_admin
 from salubri_api.services.geo import feature, feature_collection, to_wkb
 from salubri_api.services.ilots import rebuild_ilots
 from salubri_api.services.params import ScenarioParams
 from salubri_api.services.plan.pipeline import request_recompute
 
-router = APIRouter(prefix="/quartiers", tags=["Quartiers"], dependencies=[Depends(require_mairie)])
+router = APIRouter(prefix="/quartiers", tags=["Quartiers"], dependencies=[Depends(require_admin)])
 
 
 class QuartierFeature(BaseModel):

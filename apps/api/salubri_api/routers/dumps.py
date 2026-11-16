@@ -9,13 +9,13 @@ from sqlalchemy.orm import Session
 from salubri_api.db import get_session
 from salubri_api.models import Commune, DumpSite
 from salubri_api.models.audit import audit
-from salubri_api.routers.deps import get_commune, parse_uuid, require_mairie
+from salubri_api.routers.deps import get_commune, parse_uuid, require_moderateur
 from salubri_api.routers.serializers import dump_feature
 from salubri_api.services.consolidation import mark_cleaned
 from salubri_api.services.geo import feature_collection
 from salubri_api.services.plan.trigger import reports_changed
 
-router = APIRouter(prefix="/dump-sites", tags=["Dépotoirs"], dependencies=[Depends(require_mairie)])
+router = APIRouter(prefix="/dump-sites", tags=["Dépotoirs"], dependencies=[Depends(require_moderateur)])
 
 
 @router.get("", summary="Dépotoirs consolidés (FeatureCollection, triés par priorité)")
@@ -62,7 +62,6 @@ def cleaned(
         "dump_site",
         d.id,
         after={"device_id": device_id, "photo": photo is not None},
-        actor=device_id or "mairie",
     )
     s.commit()
     reports_changed(commune.id)
@@ -73,9 +72,7 @@ def cleaned(
 def to_laabal(site_id: str, s: Session = Depends(get_session)) -> dict[str, Any]:
     """La brigade Laabal ne ramasse pas : elle contrôle, sensibilise et sanctionne les riverains."""
     d = _get(s, site_id)
-    audit(
-        s, "laabal_alert", "dump_site", d.id, after={"recurring": bool(getattr(d, "recurring", False))}, actor="mairie"
-    )
+    audit(s, "laabal_alert", "dump_site", d.id, after={"recurring": bool(getattr(d, "recurring", False))})
     s.commit()
     out = dump_feature(d)
     out["properties"]["laabal_alerted"] = True

@@ -41,7 +41,7 @@ class ReportCreated(BaseModel):
 class ReportPatch(BaseModel):
     status: Literal["verified", "rejected", "to_review", "probable", "cleaned"]
     note: str | None = None
-    actor: str = "moderateur"
+    actor: str = "moderateur"  # ignoré depuis 0.3 : l'auteur est le compte connecté
 
 
 class MergeIn(BaseModel):

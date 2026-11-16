@@ -1,5 +1,9 @@
 # Journal des versions
 
+## 0.3.0 — en cours
+
+- **Comptes et rôles (lot A1)** : comptes de la mairie (`moderateur`, `admin`), connexion `POST /api/auth/login` avec session signée de 8 h, `GET /api/auth/me`, `POST /api/auth/logout` ; chaque route d'écriture exige le bon rôle (modération pour les signalements et dépotoirs, admin pour imports, scénarios, flotte, quartiers, recalculs) ; le journal signe chaque action « login (rôle) » au lieu de « system » ; outil `python -m salubri_api.users add|passwd|disable|list` ; `X-Salubri-Token` reste l'identifiant de service des scripts. Mots de passe en argon2id.
+
 ## 0.2.1 — 16 novembre 2026
 
 - Tournées : sur une grande zone (ville entière, 1 000+ points), la limite de temps du solveur s'adapte à la taille et le meilleur de OR-Tools et de l'heuristique de repli est retenu. Avant, un recalcul pouvait rendre un plan à 0 tournée.

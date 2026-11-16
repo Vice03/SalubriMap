@@ -742,3 +742,11 @@ Le backend est testé (82 tests). S'il manque un champ ou un endpoint pour un é
 - `DELETE /api/scenarios/{id}/vehicles/{vid}` → `{plan_version_id}` ; le camion est **retiré** (pas effacé, l'historique des plans reste intact) ; 409 sur le dernier camion.
 - `POST /api/dump-sites/{id}/laabal` : transmet un dépotoir à la brigade Laabal (police civique : contrôle et sensibilisation, **pas de ramassage**). Le nettoyage reste `POST /api/dump-sites/{id}/cleaned` (services techniques de la mairie).
 - Paramètres : `laabal_capacity_t_day` est remplacé par `cleanup_capacity_t_day` (ancienne clé acceptée), plus `laabal_operations_per_week` et `laabal_deterrence`.
+
+## Ajouts 0.3 — connexion des comptes mairie
+
+- `POST /api/auth/login` `{"login", "password"}` → `{"token", "token_type": "bearer", "expires_at", "user": {"login", "display_name", "role", "role_label", "active"}}` ; 401 si identifiants faux ou compte désactivé.
+- Envoyer ensuite `Authorization: Bearer <token>` sur les écritures. `GET /api/auth/me` → le compte (401 sinon) ; `POST /api/auth/logout` → 204 (ferme toutes les sessions du compte).
+- Rôles : `moderateur` (modération, dépotoirs) et `admin` (tout). 401 = pas connecté ou session expirée (reconnecter) ; 403 = connecté mais rôle insuffisant (message en français dans `detail`).
+- `X-Salubri-Token` reste accepté (identifiant de service, droits admin) pour les scripts.
+- Créer un compte : `docker compose exec api python -m salubri_api.users add <login> --role admin`.

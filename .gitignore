@@ -14,3 +14,4 @@ apps/*/dist/*
 data/osm/*.osm.pbf.tmp
 data/osm/*.osm.pbf
 data/osm/.seeded_osm
+*.tsbuildinfo
