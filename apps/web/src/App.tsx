@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { LoginHost } from './components/auth/LoginPanel'
 import { PipelineProgress, Toasts } from './components/layout/Feedback'
 import { Sidebar } from './components/layout/Sidebar'
 import { Topbar } from './components/layout/Topbar'
@@ -37,6 +38,7 @@ export function App() {
         </div>
         <PipelineProgress />
         <Toasts />
+        <LoginHost />
       </AppProvider>
     </BrowserRouter>
   )

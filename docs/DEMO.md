@@ -23,11 +23,11 @@ Sur téléphone, le GPS et l'installation de l'appli exigent une connexion sécu
 
 Sans l'un ou l'autre, la position se saisit à la main (champs vides par défaut) et le signalement est marqué « position saisie ».
 
-## Code d'accès mairie et mode démonstration
+## Connexion mairie et mode démonstration
 
 Lectures publiques, envoi d'un signalement libre ; toutes les autres écritures exigent un compte de la mairie : modération et dépotoirs pour le rôle `moderateur`, imports, scénarios, flotte et quartiers pour le rôle `admin`.
 
-`run/start` lance Salubri **en mode démonstration** (réglage par défaut, badge jaune « Mode démonstration » dans l'interface) : le compte `demo` (admin, mot de passe `ouaga2026`) est créé tout seul et le code `ouaga2026` reste accepté. L'interface le demande à la première action protégée (l'écran de connexion arrive au lot A7). Sans code, Salubri Map est en **vue publique** (signalements vérifiés seulement) : avant la démonstration, ouvrir Signalements et cliquer « Se connecter » une fois sur le navigateur de la démo, pour que le filtre « Rejetés » montre les pièges. Les scripts `run/rehearse` utilisent ce même code (`SALUBRI_ADMIN_TOKEN`).
+`run/start` lance Salubri **en mode démonstration** (réglage par défaut, badge jaune « Mode démonstration » dans l'interface) : le compte `demo` (admin, mot de passe `ouaga2026`) est créé tout seul. **Avant la démonstration**, cliquer « Se connecter » en haut à droite et saisir `demo` / `ouaga2026` : la barre affiche alors « Démonstration · administrateur ». Sans connexion, Salubri Map est en **vue publique** (signalements vérifiés seulement, boutons de modération et d'import grisés) et le filtre « Rejetés » ne montrerait pas les pièges. La session dure jusqu'à la fermeture de l'onglet (8 h au plus). Les scripts `run/rehearse` utilisent ce même code (`SALUBRI_ADMIN_TOKEN`).
 
 **Hors démonstration** (`SALUBRI_DEMO_MODE=false` dans `.env`) : `run/start` génère un code de service et une clé de session aléatoires dans `.env` et les affiche une seule fois ; créer le premier admin avec `run/admin <login>` et désactiver `demo` s'il existe (`docker compose run --rm seed python -m salubri_api.users disable demo`). Sans cela, l'API refuse de démarrer et dit pourquoi (`docker compose logs api`).
 

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useSession } from '../api/session'
 import { api } from '../api/client'
 import { followPlan } from '../api/sse'
 import type { PlanSummary, Scenario, StageRecord } from '../api/types'
@@ -117,6 +118,7 @@ function localStorageSet(k: string, v: string): void {
 /** Fetch helper: re-runs when deps or the global refresh key change. */
 export function useApi<T>(fn: () => Promise<T>, deps: unknown[]): { data: T | null; error: string | null; loading: boolean; reload: () => void } {
   const { refreshKey } = useApp()
+  const session = useSession() // connexion / déconnexion : les données se rechargent (vue publique ↔ mairie)
   const [data, setData] = useState<T | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
@@ -129,6 +131,6 @@ export function useApi<T>(fn: () => Promise<T>, deps: unknown[]): { data: T | nu
       .finally(() => { if (alive) setLoading(false) })
     return () => { alive = false }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [...deps, refreshKey, n])
+  }, [...deps, refreshKey, n, session?.token])
   return { data, error, loading, reload: () => setN((x) => x + 1) }
 }

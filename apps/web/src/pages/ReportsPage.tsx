@@ -2,7 +2,8 @@
 import { Flag, Lock } from 'lucide-react'
 import { useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { api, signIn } from '../api/client'
+import { api } from '../api/client'
+import { askLogin } from '../api/session'
 import type { ReportStatus, WasteType } from '../api/types'
 import { ReportDrawer } from '../components/reports/ReportDrawer'
 import { StatusBadge } from '../components/ui/Overlay'
@@ -40,7 +41,7 @@ export function ReportsPage() {
         {data?.restricted && (
           <div className="restricted-note">
             <Lock size={16} /> Vue publique : seuls les signalements vérifiés ou nettoyés, sans appareil ni commentaire.
-            <button className="btn ghost" onClick={() => { if (signIn()) window.location.reload() }}>Se connecter</button>
+            <button className="btn ghost" onClick={() => void askLogin()}>Se connecter</button>
           </div>
         )}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>

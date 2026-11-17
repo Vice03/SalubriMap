@@ -4,6 +4,7 @@ import type {
   Plan, PointGeom, PointProps, PolyGeom, QuartierProps, ReportProps, ReportStatus, RouteProps, Scenario, Stats,
   ValidationRules, Vehicle,
 } from './types'
+import { askLogin, authHeaders, getSession, setSession, type Session } from './session'
 
 export class ApiError extends Error {
   constructor(public status: number, public title: string, public detail: string) {
@@ -25,32 +26,18 @@ function qs(q?: Query): string {
   return s ? `?${s}` : ''
 }
 
-const TOKEN_KEY = 'salubri_mairie_code'
-const readToken = () => { try { return localStorage.getItem(TOKEN_KEY) ?? '' } catch { return '' } }
-const saveToken = (t: string) => { try { localStorage.setItem(TOKEN_KEY, t) } catch { /* stockage indisponible */ } }
-
-/** Demande le code d'accès mairie ; true s'il a été saisi. (L'écran de connexion arrive au lot A7.) */
-export function signIn(): boolean {
-  const code = window.prompt("Code d'accès mairie (modération, imports, scénarios) :")
-  if (!code) return false
-  saveToken(code.trim())
-  return true
-}
-
-/** Photo d'un signalement : chargée avec le code, car celles des signalements non vérifiés sont réservées. */
+/** Photo d'un signalement : chargée avec la session, car celles des signalements non vérifiés sont réservées. */
 export async function photoObjectUrl(url: string): Promise<string | null> {
-  const tok = readToken()
   try {
-    const res = await fetch(url, { headers: tok ? { 'X-Salubri-Token': tok } : {} })
+    const res = await fetch(url, { headers: authHeaders() })
     return res.ok ? URL.createObjectURL(await res.blob()) : null
   } catch { return null }
 }
 
 /** Les écritures (modération, imports, scénarios, flotte) exigent le code d'accès mairie. */
 async function request<T>(method: string, path: string, opts: { query?: Query; json?: unknown; form?: FormData } = {}, retry = true): Promise<T> {
-  // le code est aussi envoyé en lecture : la mairie voit alors les signalements non vérifiés (lot A4)
-  const tok = readToken()
-  const init: RequestInit = { method, headers: tok ? { 'X-Salubri-Token': tok } : {} }
+  // la session est aussi envoyée en lecture : la mairie voit alors les signalements non vérifiés (lot A4)
+  const init: RequestInit = { method, headers: authHeaders() }
   if (opts.json !== undefined) {
     init.body = JSON.stringify(opts.json)
     ;(init.headers as Record<string, string>)['Content-Type'] = 'application/json'
@@ -61,8 +48,11 @@ async function request<T>(method: string, path: string, opts: { query?: Query; j
   } catch {
     throw new ApiError(0, 'Réseau', "Impossible de joindre le serveur Salubri")
   }
-  // une écriture refusée propose la connexion ; une lecture ne fait jamais surgir la fenêtre
-  if (res.status === 401 && retry && method !== 'GET' && signIn()) return request<T>(method, path, opts, false)
+  if (res.status === 401) {
+    if (getSession() && !path.startsWith('/auth/')) setSession(null) // session expirée ou révoquée
+    // une écriture refusée ouvre le panneau de connexion puis réessaie ; une lecture ne l'ouvre jamais
+    if (retry && method !== 'GET' && !path.startsWith('/auth/') && (await askLogin())) return request<T>(method, path, opts, false)
+  }
   if (res.status === 204) return undefined as T
   const body = await res.json().catch(() => ({}))
   if (!res.ok) {
@@ -75,6 +65,16 @@ async function request<T>(method: string, path: string, opts: { query?: Query; j
 const get = <T,>(p: string, q?: Query) => request<T>('GET', p, { query: q })
 
 export const api = {
+  /** Connexion : le jeton reste dans cet onglet (sessionStorage), jamais dans l'URL. */
+  login: async (login: string, password: string): Promise<Session> => {
+    const r = await request<Session & { token_type: string }>('POST', '/auth/login', { json: { login, password } }, false)
+    const s: Session = { token: r.token, expires_at: r.expires_at, user: r.user }
+    setSession(s)
+    return s
+  },
+  logout: async (): Promise<void> => {
+    try { await request<void>('POST', '/auth/logout', {}, false) } finally { setSession(null) }
+  },
   health: () => get<Health>('/health'),
   commune: (slug = 'ouagadougou') => get<Commune>(`/communes/${slug}`),
   quartiers: () => get<FC<PolyGeom, QuartierProps>>('/quartiers'),

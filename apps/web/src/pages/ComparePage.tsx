@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { ArrowDownRight, ArrowLeftRight, ArrowUpRight } from 'lucide-react'
+import { RoleButton } from '../components/ui/RoleButton'
 import { useEffect, useState } from 'react'
 import { api } from '../api/client'
 import { LineChart } from '../components/ui/Charts'
@@ -66,7 +67,7 @@ export function ComparePage() {
             {scenarios.map((s) => <option key={s.id} value={s.id}>B — {s.name}</option>)}
           </select>
           <span className="muted">ou créer B à partir de A :</span>
-          {PRESETS.map((p) => <button key={p.name} className="pill-btn" onClick={() => void preset(p)}>{p.name}</button>)}
+          {PRESETS.map((p) => <RoleButton need="admin" key={p.name} className="pill-btn" onClick={() => void preset(p)}>{p.name}</RoleButton>)}
         </div>
       </div>
       {data && (

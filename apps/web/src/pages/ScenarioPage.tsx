@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { CloudRain, Copy, PenLine, RefreshCw, SlidersHorizontal, Sun } from 'lucide-react'
+import { RoleButton } from '../components/ui/RoleButton'
 import { useEffect, useMemo, useState } from 'react'
 import { api } from '../api/client'
 import type { ParamSchemaProp } from '../api/types'
@@ -80,18 +81,18 @@ export function ScenarioPage() {
         <div className="card">
           <div className="card-head">
             <SlidersHorizontal color="#0f2b55" /><h2>Scénario « {scenario?.name ?? '…'} »</h2><span className="spacer" />
-            <button className="pill-btn" onClick={async () => {
+            <RoleButton need="admin" className="pill-btn" onClick={async () => {
               if (!scenario) return
               const name = window.prompt('Nom du nouveau scénario', `${scenario.name} (copie)`)
               if (!name) return
               const sc = await api.createScenario(name, scenario.id)
               await reloadScenarios(); setScenarioId(sc.id); track(sc.plan_version_id, 'manual')
-            }}><Copy size={14} />Dupliquer</button>
-            <button className="pill-btn" onClick={async () => { if (scenario) { const r = await api.recompute(scenario.id); track(r.plan_version_id, 'manual') } }}><RefreshCw size={14} />Recalcul complet</button>
+            }}><Copy size={14} />Dupliquer</RoleButton>
+            <RoleButton need="admin" className="pill-btn" onClick={async () => { if (scenario) { const r = await api.recompute(scenario.id); track(r.plan_version_id, 'manual') } }}><RefreshCw size={14} />Recalcul complet</RoleButton>
           </div>
           <div className="season" style={{ marginBottom: 16 }}>
-            <button className={params.season === 'dry' ? 'on' : ''} onClick={() => params.season !== 'dry' && void apply({ season: 'dry' }, 'season_changed')}><Sun color="#f59e0b" size={28} />Saison sèche</button>
-            <button className={params.season === 'rain' ? 'on' : ''} onClick={() => params.season !== 'rain' && void apply({ season: 'rain' }, 'season_changed')}><CloudRain color="#2563eb" size={28} />Saison des pluies</button>
+            <RoleButton need="admin" className={params.season === 'dry' ? 'on' : ''} onClick={() => params.season !== 'dry' && void apply({ season: 'dry' }, 'season_changed')}><Sun color="#f59e0b" size={28} />Saison sèche</RoleButton>
+            <RoleButton need="admin" className={params.season === 'rain' ? 'on' : ''} onClick={() => params.season !== 'rain' && void apply({ season: 'rain' }, 'season_changed')}><CloudRain color="#2563eb" size={28} />Saison des pluies</RoleButton>
           </div>
           <div className="form-grid">
             {MAIN.filter((k) => props[k]).map((k) => <Field key={k} name={k} prop={props[k]} value={params[k]} onChange={(v) => setDraft({ ...draft, [k]: v })} />)}
@@ -99,9 +100,9 @@ export function ScenarioPage() {
           <button className="link" style={{ margin: '12px 0' }} onClick={() => setAdvanced(!advanced)}>{advanced ? 'Masquer' : 'Afficher'} les paramètres avancés</button>
           {advanced && <div className="form-grid">{others.map((k) => <Field key={k} name={k} prop={props[k]} value={params[k]} onChange={(v) => setDraft({ ...draft, [k]: v })} />)}</div>}
           <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
-            <button className="btn primary" disabled={!changed.length} onClick={() => void apply(Object.fromEntries(changed.map((k) => [k, draft[k]])), 'manual')}>
+            <RoleButton need="admin" className="btn primary" disabled={!changed.length} onClick={() => void apply(Object.fromEntries(changed.map((k) => [k, draft[k]])), 'manual')}>
               Appliquer {changed.length ? `(${changed.length})` : ''}
-            </button>
+            </RoleButton>
             {changed.length > 0 && <button className="btn ghost" onClick={() => setDraft({})}>Annuler</button>}
           </div>
         </div>
@@ -112,7 +113,7 @@ export function ScenarioPage() {
         <div className="card-head">
           <h2>Plan de collecte</h2><span className="spacer" />
           {plan && <span className="muted">version {plan.version} · {plan.distance_mode === 'osrm' ? 'réseau routier' : 'distances approximatives'} · solveur {s?.solver}</span>}
-          <button className={`pill-btn ${drawing ? 'on' : ''}`} onClick={() => { setDrawing(!drawing); setPoly([]) }}><PenLine size={14} />Nouveau quartier</button>
+          <RoleButton need="admin" className={`pill-btn ${drawing ? 'on' : ''}`} onClick={() => { setDrawing(!drawing); setPoly([]) }}><PenLine size={14} />Nouveau quartier</RoleButton>
         </div>
         <div className="map-wrap" style={{ height: 420 }}>
           <MapView commune={commune} quartiers={quartiers} points={points} routes={routes} layers={LAYERS} fitPlan
@@ -125,14 +126,14 @@ export function ScenarioPage() {
               <input type="number" value={qPop} onChange={(e) => setQPop(Number(e.target.value))} aria-label="Population" />
               <div style={{ display: 'flex', gap: 6 }}>
                 <button className="btn ghost" onClick={() => setPoly([])}>Effacer</button>
-                <button className="btn primary" disabled={poly.length < 3 || !scenario} onClick={async () => {
+                <RoleButton need="admin" className="btn primary" disabled={poly.length < 3 || !scenario} onClick={async () => {
                   try {
                     const r = await api.createQuartier(poly, qName, qPop, scenario?.id)
                     setDrawing(false); setPoly([])
                     const mine = r.plans.find((x) => x.scenario_id === scenario?.id) ?? r.plans[0]
                     if (mine) track(mine.plan_version_id, 'zone_changed')
                   } catch (e) { toast('error', (e as Error).message) }
-                }}>Valider</button>
+                }}>Valider</RoleButton>
               </div>
             </div>
           )}
@@ -157,7 +158,7 @@ export function ScenarioPage() {
       <div className="grid row-3">
         <div className="card" style={{ gridColumn: 'span 2' }}>
           <div className="card-head"><h2>Simulation sur {num(Number(params.horizon_days ?? 90))} jours</h2><span className="spacer" />
-            <button className="pill-btn" onClick={() => void runReplications()}>5 réplications</button></div>
+            <RoleButton need="admin" className="pill-btn" onClick={() => void runReplications()}>5 réplications</RoleButton></div>
           <LineChart yLabel="tonnes par semaine" labels={weekly(daily.truck_collected_t).map((_, i) => `S${i + 1}`)} series={[
             { name: 'Collecté', color: '#2563eb', values: weekly(daily.truck_collected_t), unit: ' t' },
             { name: 'Parti en dépôt sauvage', color: '#dc2626', values: weekly(daily.wild_new_t), unit: ' t' },

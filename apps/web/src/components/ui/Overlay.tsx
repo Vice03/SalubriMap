@@ -25,12 +25,12 @@ export function Drawer({ title, onClose, children }: { title: ReactNode; onClose
   )
 }
 
-export function Modal({ title, onClose, children }: { title: ReactNode; onClose: () => void; children: ReactNode }) {
+export function Modal({ title, onClose, children, narrow }: { title: ReactNode; onClose: () => void; children: ReactNode; narrow?: boolean }) {
   useEscape(onClose)
   return (
     <>
       <div className="overlay" onClick={onClose} />
-      <div className="modal" role="dialog" aria-modal="true">
+      <div className={`modal${narrow ? ' narrow' : ''}`} role="dialog" aria-modal="true">
         <div className="drawer-head"><h2 style={{ fontSize: 18, flex: 1 }}>{title}</h2><button className="icon-btn" onClick={onClose} aria-label="Fermer"><X /></button></div>
         <div className="drawer-body">{children}</div>
       </div>

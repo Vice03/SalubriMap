@@ -77,3 +77,9 @@ Choix faits là où la consigne laissait le choix (option la plus simple et sûr
 - Le nom aléatoire empêche de deviner une photo et de savoir si deux signalements portent la même. Deux envois de la même image produisent deux fichiers : la règle de doublon s'appuie sur la base, pas sur le nom.
 - Archive d'import : rien n'est extrait sur le disque ; le nom d'un fichier de l'archive ne sert que de clé pour retrouver la photo citée par la ligne.
 
+## Connexion web (0.3, lot A7)
+
+- Salubri Map ne se connecte plus avec le code de service : chaque personne utilise son compte (`demo` en démonstration). Le code de service reste pour les scripts (`run/rehearse`, imports automatisés).
+- Une session invalide (expirée, révoquée, clé changée) est effacée à la première réponse 401, même en lecture : l'interface repasse en vue publique sans fenêtre surgissante ; seule une écriture ouvre le panneau.
+- Les boutons réservés sont grisés d'après le rôle du compte ; l'API reste seule juge (un bouton forcé dans le navigateur reçoit 401/403).
+

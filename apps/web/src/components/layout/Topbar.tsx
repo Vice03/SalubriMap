@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { Bell, Download, FileUp, Search } from 'lucide-react'
+import { Bell, Download, FileUp, LogIn, LogOut, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../api/client'
+import { askLogin, roleLabel, useSession } from '../../api/session'
+import { RoleButton } from '../ui/RoleButton'
 import { loadAlerts } from '../../lib/alerts'
 import { ago } from '../../lib/format'
 import { useApi, useApp } from '../../state/app'
@@ -25,6 +27,8 @@ export function Topbar() {
   const [q, setQ] = useState('')
   const [menu, setMenu] = useState<'export' | 'alerts' | null>(null)
   const [importing, setImporting] = useState(false)
+  const session = useSession()
+  const initials = session ? session.user.display_name.split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase() : '?'
   const { data: quartiers } = useApi(() => api.quartiers(), [])
   const { data: health } = useApi(() => api.health(), [])
   const { data: alerts } = useApi(() => loadAlerts(scenario), [scenario?.id, scenario?.latest_ready_plan_id])
@@ -58,7 +62,7 @@ export function Topbar() {
         <select id="scn" className="select" value={scenario?.id ?? ''} onChange={(e) => setScenarioId(e.target.value)}>
           {scenarios.map((s) => <option key={s.id} value={s.id}>{s.name}{s.is_baseline ? ' (base)' : ''}</option>)}
         </select>
-        <button className="btn primary" onClick={() => setImporting(true)}><FileUp size={16} />Importer</button>
+        <RoleButton need="admin" className="btn primary" onClick={() => setImporting(true)}><FileUp size={16} />Importer</RoleButton>
         <div style={{ position: 'relative' }}>
           <button className="btn ghost" onClick={() => setMenu(menu === 'export' ? null : 'export')}><Download size={16} />Exporter</button>
           {menu === 'export' && (
@@ -91,10 +95,22 @@ export function Topbar() {
             Mode démonstration
           </span>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div style={{ width: 40, height: 40, borderRadius: '50%', background: '#0f2b55', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>MO</div>
-          <div style={{ lineHeight: 1.2 }}><b style={{ fontSize: 14 }}>Modérateur</b><div className="muted">Mairie de Ouagadougou</div></div>
-        </div>
+        {session ? (
+          <div className="user-chip" title={`Connecté en tant que ${session.user.display_name} (${roleLabel(session.user.role)})`}>
+            <div className="avatar" aria-hidden>{initials}</div>
+            <div style={{ lineHeight: 1.2 }}>
+              <span className="sr-only">Connecté en tant que </span>
+              <b style={{ fontSize: 14, display: 'block' }}>{session.user.display_name}</b>
+              <span className={`role-pill ${session.user.role}`}>{roleLabel(session.user.role)}</span>
+            </div>
+            <button className="icon-btn" aria-label="Se déconnecter" title="Se déconnecter" onClick={() => void api.logout()}><LogOut size={20} /></button>
+          </div>
+        ) : (
+          <div className="user-chip">
+            <div className="avatar off" aria-hidden>?</div>
+            <button className="btn ghost" onClick={() => void askLogin()}><LogIn size={16} />Se connecter</button>
+          </div>
+        )}
       </div>
       {importing && <ImportDialog onClose={() => setImporting(false)} />}
     </header>

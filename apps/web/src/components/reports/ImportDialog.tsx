@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { FileUp, Undo2 } from 'lucide-react'
+import { RoleButton } from '../ui/RoleButton'
 import { useState } from 'react'
 import { api } from '../../api/client'
 import type { ImportResult } from '../../api/types'
@@ -67,12 +68,12 @@ export function ImportDialog({ onClose }: { onClose: () => void }) {
           </div>
           <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
             {done?.batch_id && (
-              <button className="btn ghost" disabled={busy} onClick={async () => {
+              <RoleButton need="admin" className="btn ghost" disabled={busy} onClick={async () => {
                 const r = await api.rollback(done.batch_id as string)
                 toast('info', `Import annulé : ${r.reverted} signalement(s) supprimé(s)`); refresh(); onClose()
-              }}><Undo2 size={16} />Annuler l'import</button>
+              }}><Undo2 size={16} />Annuler l'import</RoleButton>
             )}
-            {res.dry_run && file && <button className="btn primary" disabled={busy} onClick={() => void run(file, false)}>Importer pour de vrai</button>}
+            {res.dry_run && file && <RoleButton need="admin" className="btn primary" disabled={busy} onClick={() => void run(file, false)}>Importer pour de vrai</RoleButton>}
           </div>
         </>
       )}

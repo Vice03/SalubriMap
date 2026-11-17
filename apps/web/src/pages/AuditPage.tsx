@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { ClipboardList, Lock } from 'lucide-react'
-import { api, signIn } from '../api/client'
+import { api } from '../api/client'
+import { askLogin } from '../api/session'
 import { date } from '../lib/format'
 import { AUDIT_ACTION } from '../lib/labels'
 import { useApi } from '../state/app'
@@ -18,7 +19,7 @@ export function AuditPage() {
         {error && (
           <div className="restricted-note">
             <Lock size={16} /> Le journal (appareils, notes, comptes) est réservé à la mairie.
-            <button className="btn ghost" onClick={() => { if (signIn()) window.location.reload() }}>Se connecter</button>
+            <button className="btn ghost" onClick={() => void askLogin()}>Se connecter</button>
           </div>
         )}
         <table className="table">

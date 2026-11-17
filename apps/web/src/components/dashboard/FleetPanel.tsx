@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { AlertTriangle, ArrowRight, Plus, Trash2, Truck } from 'lucide-react'
+import { RoleButton } from '../ui/RoleButton'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../../api/client'
@@ -63,11 +64,11 @@ export function FleetPanel({ scenario, routes, compact = false }: { scenario: Sc
             <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6 }}>
               <span className="truck-pct">{v.out_of_service ? '0 %' : rs.length ? `${Math.round(ratio * 100)} %` : '—'}</span>
               <div style={{ display: 'flex', gap: 4 }}>
-                <button className={`toggle ${v.out_of_service ? '' : 'danger'}`} disabled={busy} onClick={() => void toggle(v.id, !v.out_of_service, v.label)}>
+                <RoleButton need="admin" className={`toggle ${v.out_of_service ? '' : 'danger'}`} disabled={busy} onClick={() => void toggle(v.id, !v.out_of_service, v.label)}>
                   {v.out_of_service ? 'Réparer' : 'Panne'}
-                </button>
-                <button className="toggle" title={`Retirer ${v.label} de la flotte`} disabled={busy || scenario.vehicles.length <= 1}
-                  onClick={() => remove(v.id, v.label)}><Trash2 size={13} /></button>
+                </RoleButton>
+                <RoleButton need="admin" className="toggle" title={`Retirer ${v.label} de la flotte`} disabled={busy || scenario.vehicles.length <= 1}
+                  onClick={() => remove(v.id, v.label)}><Trash2 size={13} /></RoleButton>
               </div>
             </div>
           </div>
@@ -77,9 +78,9 @@ export function FleetPanel({ scenario, routes, compact = false }: { scenario: Sc
         <select value={kind} onChange={(e) => setKind(e.target.value)} disabled={busy}>
           {Object.entries(kinds ?? { truck_8t: { label: 'Benne 8 t' } }).map(([k, v]) => <option key={k} value={k}>{v.label}</option>)}
         </select>
-        <button className="btn primary" disabled={busy} onClick={() => void run(() => api.addVehicle(scenario.id, kind), `${kinds?.[kind]?.label ?? 'Camion'} ajouté`)}>
+        <RoleButton need="admin" className="btn primary" disabled={busy} onClick={() => void run(() => api.addVehicle(scenario.id, kind), `${kinds?.[kind]?.label ?? 'Camion'} ajouté`)}>
           <Plus size={16} />Ajouter un camion
-        </button>
+        </RoleButton>
       </div>
     </div>
   )

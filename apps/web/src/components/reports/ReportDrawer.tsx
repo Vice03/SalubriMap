@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { Check, RotateCcw, ShieldAlert, X } from 'lucide-react'
+import { RoleButton } from '../ui/RoleButton'
 import { useEffect, useState } from 'react'
 import { api, photoObjectUrl } from '../../api/client'
 import type { ReportStatus } from '../../api/types'
@@ -68,10 +69,10 @@ export function ReportDrawer({ id, onClose, onOpen }: { id: string; onClose: () 
           )}
           {r.dump_site && <div className="muted">Rattaché au dépotoir {r.dump_site.id.slice(0, 8)} ({r.dump_site.n_reports} signalements)</div>}
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-            <button className="btn green" onClick={() => void set('verified', 'Signalement vérifié')}><Check size={16} />Vérifier</button>
-            <button className="btn red" onClick={() => void set('rejected', 'Signalement rejeté')}><X size={16} />Rejeter</button>
-            <button className="btn ghost" onClick={() => void set('to_review', 'Remis à revoir')}>À revoir</button>
-            <button className="btn ghost" onClick={() => void act(() => api.revalidate(id), 'Règles rejouées')}><RotateCcw size={16} />Rejouer les règles</button>
+            <RoleButton need="moderateur" className="btn green" onClick={() => void set('verified', 'Signalement vérifié')}><Check size={16} />Vérifier</RoleButton>
+            <RoleButton need="moderateur" className="btn red" onClick={() => void set('rejected', 'Signalement rejeté')}><X size={16} />Rejeter</RoleButton>
+            <RoleButton need="moderateur" className="btn ghost" onClick={() => void set('to_review', 'Remis à revoir')}>À revoir</RoleButton>
+            <RoleButton need="moderateur" className="btn ghost" onClick={() => void act(() => api.revalidate(id), 'Règles rejouées')}><RotateCcw size={16} />Rejouer les règles</RoleButton>
           </div>
           {r.forced_status && <div className="muted">Statut forcé par {r.moderated_by ?? 'un modérateur'} {r.moderated_at ? ago(r.moderated_at) : ''}</div>}
         </>

@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { api } from '../api/client'
+import { can } from '../api/session'
 import type { Scenario } from '../api/types'
 import { AUDIT_ACTION } from './labels'
 
@@ -27,7 +28,8 @@ export async function loadAlerts(sc: Scenario | null): Promise<Alert[]> {
     out.push({ id: `r-${r.id}`, level: r.status === 'rejected' ? 'orange' : 'blue',
                text: `Signalement ${r.status === 'rejected' ? 'rejeté' : 'à revoir'} : ${r.rule_hits?.[0]?.detail ?? 'règles déclenchées'}`, at: r.received_at ?? r.reported_at })
   }
-  const audit = await api.audit(4).catch(() => []) // journal réservé à la mairie : rien pour un visiteur
+  // journal réservé à la mairie : un visiteur ne le demande même pas (pas de 401 inutile)
+  const audit = can('moderateur') ? await api.audit(4).catch(() => []) : []
   for (const a of audit) {
     out.push({ id: `a-${a.id}`, level: 'green', text: `${AUDIT_ACTION[a.action] ?? a.action} (${a.entity})`, at: a.at })
   }
