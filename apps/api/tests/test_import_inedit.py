@@ -80,3 +80,28 @@ def test_points_hors_de_la_commune(client) -> None:  # type: ignore[no-untyped-d
         assert rows[i]["report_status"] == "rejected"
         assert any(h["rule"] == "R5" for h in rows[i]["rule_hits"])
         assert any("Hors de la commune : à" in w and " km " in w for w in rows[i]["warnings"])
+
+
+def test_photos_manquantes_ou_renommees(client) -> None:  # type: ignore[no-untyped-def]
+    """Archive dont les photos ont été renommées (casse, extension, chemin Windows) ou oubliées : les lignes entrent,
+    la photo retrouvée est dite sous quel nom, la photo absente est signalée, rien n'est deviné en cas de doute."""
+    body = post(client, "6_photos_renommees.zip")
+    assert body["accepted"] == 5 and body["rejected"] == 0, body["report"]
+    warn = {row["row"]: " ".join(row["warnings"]) for row in body["report"]}
+    assert warn[1] == ""  # même nom
+    assert "trouvée dans l'archive sous le nom « img_0002.jpeg »" in warn[2]
+    assert warn[3] == ""  # chemin Windows (C:\\Users\\…) ignoré : même nom de fichier
+    assert "« IMG_0004.jpg » absente de l'archive" in warn[4]
+    assert warn[5] == ""  # pas de photo déclarée : rien à dire
+    reports = client.get("/api/reports", params={"limit": 100}).json()
+    feats = reports["features"] if isinstance(reports, dict) else reports
+    with_photo = {f["properties"].get("external_id"): bool(f["properties"].get("photo_url")) for f in feats}
+    assert {k: with_photo.get(k) for k in ("PH-1", "PH-2", "PH-3", "PH-4")} == {
+        "PH-1": True, "PH-2": True, "PH-3": True, "PH-4": False}  # fmt: skip
+
+
+def test_photo_ambigue_non_devinee() -> None:
+    from salubri_api.services.importers.common import _photo
+
+    data, msg = _photo("IMG_9.JPG", {"img_9.jpeg": b"a", "IMG_9.png": b"b"})
+    assert data is None and "ambiguë" in (msg or "")

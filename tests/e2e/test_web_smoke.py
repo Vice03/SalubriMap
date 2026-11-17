@@ -48,3 +48,15 @@ def test_journal_sentences_and_filters(browser, base):  # type: ignore[no-untype
     page.select_option("select[aria-label=\"Filtrer par type d'action\"]", index=1)
     assert page.locator("table tbody tr").count() >= 1
     page.close()
+
+
+def test_public_map_shows_licence_and_scope(browser, base):  # type: ignore[no-untyped-def]
+    """Lot 7.5 : sous la carte publique, une ligne visible dit ce qui est montré et sous quelle licence."""
+    page = browser.new_context(viewport={"width": 1440, "height": 860}, locale="fr-FR").new_page()
+    page.goto(f"{base}/carte")
+    line = page.get_by_test_id("map-licence")
+    line.wait_for(timeout=15000)
+    txt = line.inner_text()
+    assert "signalements vérifiés uniquement" in txt and "photos masquées" in txt
+    assert "ODbL 1.0" in txt and "OpenStreetMap" in txt
+    page.close()

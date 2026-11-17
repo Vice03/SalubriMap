@@ -169,6 +169,17 @@ def _photo(value: Any, photos: dict[str, bytes]) -> tuple[bytes | None, str | No
     name = s.replace("\\", "/").split("/")[-1]
     if name in photos:
         return photos[name], None
+
+    # photo renommée entre le tableur et l'archive : casse, extension (.JPG / .jpeg) ; seulement si une seule
+    # photo de l'archive correspond, sinon on ne devine pas
+    def stem(n: str) -> str:
+        return n.rsplit(".", 1)[0].strip().lower()
+
+    same = [k for k in photos if stem(k) == stem(name)]
+    if len(same) == 1:
+        return photos[same[0]], f"Photo « {name} » trouvée dans l'archive sous le nom « {same[0]} »"
+    if len(same) > 1:
+        return None, f"Photo « {name} » ambiguë ({', '.join(sorted(same))}) : signalement importé sans photo"
     return None, f"Photo « {name} » absente de l'archive : signalement importé sans photo"
 
 
