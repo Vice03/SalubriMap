@@ -23,3 +23,4 @@ data/eval/masquage/*
 !data/eval/masquage/annotations.json
 !data/eval/masquage/resultat.json
 !data/eval/masquage/floutees/
+.verify/

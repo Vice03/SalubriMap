@@ -4,7 +4,7 @@ COMPOSE ?= docker compose
 API_RUN = $(COMPOSE) run --rm --no-deps api
 TEST_DB = postgresql+psycopg://salubri:salubri@db:5432/salubri_test
 
-.PHONY: up down reset logs seed reseed test test-api lint format traps rehearse bench gen-data gen-traps osm ci-api ci-front ci-audit ci-stack
+.PHONY: up down reset logs seed reseed test test-api lint format traps rehearse bench gen-data gen-traps osm ci-api ci-front ci-audit ci-stack verify
 
 up:            ## build and start everything (http://localhost)
 	$(COMPOSE) up --build -d
@@ -68,3 +68,6 @@ ci-audit:      ## job « audit » : pip-audit et pnpm audit --prod
 
 ci-stack:      ## job « stack » : docker compose up --build, répétition, e2e, puis down -v (efface la base de la pile)
 	bash scripts/ci/stack.sh
+
+verify:        ## tous les jobs, puis un tableau récapitulatif (SKIP="audit stack" pour en sauter)
+	bash scripts/ci/verify.sh
