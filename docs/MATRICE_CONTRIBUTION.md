@@ -6,12 +6,12 @@
 Une ligne par membre, une colonne par couche ; mettre la part (en %) de chaque membre dans chaque couche, chaque
 colonne totalisant 100 %.
 
-| Membre | Données / terrain | App mobile (Salubri Go) | API | Optimisation | Simulation | Web (Map, Sim) | Infrastructure | Rapport / vidéo |
-|---|---|---|---|---|---|---|---|---|
-| [Nom 1] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
-| [Nom 2] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
-| [Nom 3] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
-| [Nom 4] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
+| Membre | Données / terrain | App mobile (Salubri Go) | Masquage (visages, plaques) | API | Optimisation | Simulation | Web (Map, Sim) | Infrastructure | Rapport / vidéo |
+|---|---|---|---|---|---|---|---|---|---|
+| [Nom 1] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
+| [Nom 2] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
+| [Nom 3] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
+| [Nom 4] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
 
 Outils d'aide au développement utilisés : [à compléter par l'équipe].
 
@@ -23,8 +23,8 @@ Outils d'aide au développement utilisés : [à compléter par l'équipe].
 | Google Open Buildings v3 | CC BY 4.0 / ODbL | données | bâtiments → îlots → demande |
 | OSRM (profils sec / pluie) | BSD-2-Clause | optimisation | matrice de distances routières |
 | PostGIS | GPL-2.0 | API | géométries, distances |
-| YuNet 2023mar (OpenCV Zoo) | MIT | app mobile, API | détection des visages |
-| YOLOv9-t plaques (open-image-models) | MIT | app mobile, API | détection des plaques |
+| YuNet 2023mar (OpenCV Zoo) | MIT | masquage (app mobile, API) | détection des visages |
+| YOLOv9-t plaques (open-image-models) | MIT | masquage (app mobile, API) | détection des plaques |
 | WIDER Face (validation), plaques Roboflow | recherche / CC BY 4.0 | validation | jeu de contrôle du masquage (non redistribué) |
 | Polices Inter | OFL-1.1 | web, app mobile | typographie |
 

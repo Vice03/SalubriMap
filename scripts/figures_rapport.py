@@ -28,11 +28,11 @@ def intervals(data: dict, key: str, title: str, unit: str) -> str:  # type: igno
     names = list(data)
     vals = [data[k]["sim"][key] for k in names]
     hi = max(v["p95"] for v in vals) * 1.1
-    w, left, row = 640, 170, 34
+    w, left, row = 700, 200, 34
     h = 50 + row * len(names) + 30
     out = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" font-family="sans-serif" font-size="12">',
            f'<text x="10" y="20" font-size="14" fill="{INK}">{title}</text>']  # fmt: skip
-    sx = lambda v: left + v / hi * (w - left - 30)  # noqa: E731
+    sx = lambda v: left + v / hi * (w - left - 70)  # noqa: E731
     for t in range(0, 5):
         v = hi * t / 4
         out.append(f'<line x1="{sx(v):.0f}" y1="35" x2="{sx(v):.0f}" y2="{h - 25}" stroke="{GRID}"/>')

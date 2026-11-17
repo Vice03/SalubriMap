@@ -2,7 +2,7 @@
 # Salubri — rapport technique
 
 Hackathon des universités 2026 (finale, thème Open Source), défi 01 « Assainissement de Ouaga ». Rapport du
-dépôt au 17 novembre 2026. Les chiffres viennent de calculs relancés dans le dépôt ; chaque section donne le
+dépôt au 17 novembre 2026 (version 0.4.0). Les chiffres viennent de calculs relancés dans le dépôt ; chaque section donne le
 script ou le test qui les produit. Les figures sont tracées par `scripts/figures_rapport.py` et
 `scripts/plan_arrondissement.py` depuis ces résultats.
 
@@ -76,7 +76,14 @@ VRP avec capacités, fenêtres horaires, deux rotations par camion et points aba
 locale guidée). Chaque plan donne les km, une **borne inférieure garantie** et l'écart majorant
 (`summary.vrp`). Banc d'essai ([`BENCHMARK_TOURNEES.md`](BENCHMARK_TOURNEES.md)) : sur la zone pilote, à 1 s,
 0,7 % de la meilleure solution connue (9 exécutions) ; sur la ville entière, la flotte de démonstration
-(8 camions) ne dessert que 74 points sur 1 034 : il manque des camions, pas du calcul.
+(8 camions) ne dessert que 74 points sur 1 034 : il manque des camions, pas du calcul. Le banc compare aussi
+l'heuristique de repli (économies + 2-opt, utilisée si OR-Tools échoue) : 603,5 km et 6,8 t non desservies
+contre 503,2 km et 0 t pour OR-Tools sur la zone pilote. Sans OSRM, les distances sont « vol d'oiseau ×
+facteur » ; ce facteur est un paramètre par saison (1,35 / 1,5), calable sur OSRM par
+`scripts/calibrer_detour.py` — mesure **à faire sur la machine de démonstration** (OSRM indisponible là où ce
+rapport a été produit, [`DETOUR_CALIBRATION.md`](DETOUR_CALIBRATION.md)). Les demandes sont arrondies au kg
+supérieur dans le solveur : un arrondi au plus proche avait laissé passer 8,001 t dans un camion de 8 t
+(trouvé par la répétition, § 8.2).
 
 ### 6.3 Cohérence entre versions
 
@@ -84,7 +91,9 @@ Pour chaque nouvelle version : part des points inchangés, déplacement moyen et
 des paires (camion, point), écarts de coût et de km, couverture avant et après. La répétition vérifie qu'une
 panne, la saison des pluies ou un nouveau quartier **ne déplacent aucun point existant** (100 % inchangés,
 `docs/REHEARSAL_REPORT.md`). Limite constatée : après une panne, les tournées sont presque entièrement refaites
-(Jaccard ≈ 0,1) car le VRP repart de zéro.
+(Jaccard ≈ 0,1) car le VRP repart de zéro. La répétition enchaîne aussi **10 changements de paramètres tirés
+au hasard** : chaque plan garde ≥ 70 % des points en place, un déplacement moyen sur tous les points ≤ 30 m et
+sa couverture quand le paramètre ne touche pas au placement.
 
 ### 6.4 Simulation à agents (résumé ODD)
 
@@ -101,57 +110,76 @@ Protocole complet : [`SIMULATION_ODD.md`](SIMULATION_ODD.md).
   emportait des déchets de non-abonnés : 12 % de dépôts sauvages en moins), corrigé.
 - **Vitesse** : 0,3 s pour 19 000 ménages, 5 s pour 357 000 (ville entière) sur 2 cœurs.
 - **Incertitude** : 30 réplications par scénario, médiane et intervalle à 90 % (5ᵉ–95ᵉ centiles).
+- **Paramètres** : les 34 paramètres de comportement des deux modèles sont dans le fichier documenté (section
+  `comportement`, unité, intervalle, source) et modifiables par scénario.
+- **Calage** : une seule référence chiffrée, les décharges sauvages du SDGD 2020 (4 dans la zone pilote).
+  Simulée dans sa situation de 2019 (CCT existants seuls), la zone ne la reproduit pour **aucune** combinaison
+  de `p0` × `slope_dist` au seuil de 10 t : le SDGD compte de grands sites, le modèle des tas par îlot. Les
+  paramètres restent des hypothèses ; une référence de débit (tonnes de dépôts enlevées par mois) est à demander
+  à la mairie ([`SIMULATION_CALIBRATION.md`](SIMULATION_CALIBRATION.md)).
 
 ## 7. Scénarios simulés — Arrondissement 9
 
 Plan complet, tables par point et par tournée, coûts, personnel, risques et consignes de saison des pluies :
-[`PLAN_ARRONDISSEMENT_9.md`](PLAN_ARRONDISSEMENT_9.md) (et le PDF). Quatre variantes, 30 réplications chacune.
+[`PLAN_ARRONDISSEMENT_9.md`](PLAN_ARRONDISSEMENT_9.md) (et le PDF). Six variantes, 30 réplications chacune : référence, 2 camions en panne, saison des pluies,
++20 % d'abonnements, budget −30 %, pluies + 2 camions en panne. Population réelle de l'arrondissement :
+336 483 habitants (INSD, RGPH 2019), 3,2 fois la population de démonstration simulée ; les limites des
+secteurs 37 à 40 ne sont pas en données ouvertes (à demander à la mairie).
 
 ![Carte des points et tournées](figures/plan_arr9_carte.svg)
 
 ![Dépôts sauvages par scénario](figures/scenarios_arr9.svg)
 
 Lecture : la saison des pluies et la perte de deux camions augmentent nettement les dépôts sauvages ; +20 %
-d'abonnements ne change presque rien tant que la capacité des pré-collecteurs ne suit pas. Avec 8 camions, une
+d'abonnements ne change presque rien tant que la capacité des pré-collecteurs ne suit pas ; les deux ensemble
+font +69 % de dépôts sauvages. Le budget −30 % ne change rien : le plan coûte ~3,3 M FCFA par mois, sous le
+budget réduit. Avec 8 camions, une
 partie des points n'est pas desservie : le plan chiffre le nombre de camions nécessaire.
 
 ## 8. Validation
 
 ### 8.1 Tests
 
-API : 194 tests (pytest, base PostGIS réelle), couverture de code 92 % (≥ 91 % exigé en CI) ; applications :
-tests Vitest ; parcours complets dans un vrai navigateur (Playwright, `tests/e2e`, 17 tests dont le signalement
-hors ligne avec masquage). CI : ruff épinglé, tests, builds, à chaque push.
+API : 213 tests (pytest, base PostGIS réelle), couverture de code 92 % (≥ 91 % exigé en CI) ; applications :
+22 tests Vitest ; parcours complets dans un vrai navigateur (Playwright, `tests/e2e`, 20 tests dont le
+signalement hors ligne avec masquage, le mode manuel et la ligne de licence de la carte publique). CI : ruff épinglé, tests, builds, à chaque push.
 
 ### 8.2 Répétition du test en direct
 
 `scripts/rehearse.py` rejoue les pièges anti-triche (photo réutilisée, GPS faux, hors commune, pourriel…) et les
 changements de scénario du jury (pannes, pluie, budget, nouveau quartier) contre la pile lancée ; chaque
 recalcul doit tenir en quelques secondes et respecter les invariants. Résultat et durées :
-[`REHEARSAL_REPORT.md`](REHEARSAL_REPORT.md).
+[`REHEARSAL_REPORT.md`](REHEARSAL_REPORT.md). S'y ajoutent 10 changements de paramètres tirés au hasard
+(§ 6.3) ; le premier passage a trouvé une vraie erreur (surcharge de 1 kg due à un arrondi), corrigée.
 
 ### 8.3 Masquage des visages et des plaques
 
 ![Masquage](figures/masquage.svg)
 
-Sur un jeu public de contrôle (WIDER Face et plaques Roboflow, **pas Ouagadougou**) : rappel 0,928 sur les
-visages (cible 0,95 **non atteinte**), 0,935 sur les plaques. Le jeu de terrain (≥ 60 photos de l'équipe) reste
+Sur un jeu public de contrôle (WIDER Face et plaques Roboflow, **pas Ouagadougou**) : rappel 0,933 sur les
+visages au téléphone, 0,938 avec la seconde passe du serveur (cible 0,95 **non atteinte** ; petits visages
+0,875), 0,935 sur les plaques. Image de travail de 1 280 px et tuiles de 512 px pour les petits visages :
+2,2 s par photo sur un profil de téléphone ralenti ×4 (4,9 s la première). Aucune photo non masquée n'est
+publiée : mode manuel avec zone tracée ou confirmation, et photo mise de côté (dossier privé, « à vérifier »)
+si la détection du serveur échoue. Le jeu de terrain (≥ 60 photos de l'équipe) reste
 à constituer (`data/eval/masquage/README.md`). Détails : [`MASQUAGE.md`](MASQUAGE.md).
 
 ### 8.4 Sensibilité
 
 ![Sensibilité](figures/sensibilite.svg)
 
-Morris sur 8 paramètres puis Sobol sur les 4 plus influents : la quantité de déchets par habitant explique ~90 %
-de la variance des dépôts sauvages ; les hypothèses de comportement pèsent peu dans leurs bornes.
+30 réplications au point nominal (médiane et intervalle à 90 % de chaque indicateur), Morris puis Sobol sur les
+8 paramètres : la quantité de déchets par habitant explique ~93 % de la variance des dépôts sauvages (S1) ; les
+hypothèses de comportement pèsent peu dans leurs bornes.
 [`SIMULATION_SENSIBILITE.md`](SIMULATION_SENSIBILITE.md).
 
 ## 9. Limites
 
 - Quartiers et populations de démonstration ; plan de l'arrondissement 9 approximatif tant qu'ils ne sont pas
   remplacés.
-- Paramètres de comportement des ménages non calés sur une enquête : les simulations comparent des scénarios,
-  elles ne prédisent pas.
+- Paramètres de comportement des ménages non calés : la seule référence (SDGD 2020) ne suffit pas ; les
+  simulations comparent des scénarios, elles ne prédisent pas.
+- Facteur de détour sans OSRM pas encore mesuré contre OSRM.
 - Masquage : rappel visages sous la cible sur le jeu de contrôle, pas encore mesuré à Ouagadougou ; un bouton
   « flouter une zone » reste indispensable.
 - Tournées refaites entièrement après une panne ; pas de démarrage depuis les tournées précédentes.
