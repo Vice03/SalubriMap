@@ -60,6 +60,9 @@ class ScenarioParams(BaseModel):
     collection_point_capacity_t: float = Field(2.5, gt=0)
     collection_point_max: int = Field(80, ge=1, le=500)
     pickup_frequency_per_week: float = Field(2, gt=0, le=7)
+    # plafond quand la capacité d'un enlèvement ne suffit pas : le plan passe à 3 enlèvements par semaine plutôt
+    # que de laisser déborder les points (capacité par enlèvement = contrainte dure du placement)
+    pickup_frequency_max_per_week: float = Field(3, gt=0, le=7)
     walk_distance_max_m: float = Field(300, gt=0)
     season: Literal["dry", "rain"] = "dry"
     flood_speed_factor: float = Field(0.7, gt=0, le=1)
@@ -101,6 +104,7 @@ PARAM_EVENT: dict[str, str] = {
     "collection_point_capacity_t": "frequency_changed",
     "collection_point_max": "frequency_changed",
     "pickup_frequency_per_week": "frequency_changed",
+    "pickup_frequency_max_per_week": "frequency_changed",
     "walk_distance_max_m": "frequency_changed",
     "season": "season_changed",
     "flood_speed_factor": "season_changed",

@@ -27,6 +27,7 @@ Sources : **mairie** (donnée à obtenir ou obtenue), **littérature** (référe
 | `collection_point_capacity_t` | Capacité d'un point de regroupement | t | 0,5 – 10 | 2,5 | hypothèse : bac de 6 m³ ≈ 2,5 t (densité 0,4 t/m³) | E3 placement, E5 tournées, simulation |
 | `collection_point_max` | Nombre maximum de points | points | 1 – 500 | 80 | mairie : nombre de bacs ou de sites disponibles ; 80 par défaut pour la démo | E3 placement |
 | `pickup_frequency_per_week` | Enlèvements par camion | par semaine | 1 – 7 | 2 | hypothèse : 2 enlèvements par semaine et par point | E3 placement, E5 tournées, simulation |
+| `pickup_frequency_max_per_week` | Enlèvements par semaine, au plus | par semaine | 1 – 7 | 3 | hypothèse : un troisième passage hebdomadaire est possible avec la flotte existante (lundi, mercredi, vendredi) ; au-delà, ajouter des points ou des bacs | E3 placement, E5 tournées, simulation |
 | `walk_distance_max_m` | Distance de marche acceptable | m | 100 – 800 | 300 | hypothèse : 300 m, valeur courante des schémas de gestion des déchets (à confirmer par enquête ménages) | E3 placement, simulation |
 | `season` | Saison | dry ou rain | dry / rain | dry | fiche du défi : scénario saison des pluies | E2 demande (+15 %), E4 distances, simulation |
 | `flood_speed_factor` | Vitesse en saison des pluies | facteur | 0,3 – 1 | 0,7 | hypothèse : × 0,7 sur les vitesses, voies en terre presque impraticables | E4 distances |

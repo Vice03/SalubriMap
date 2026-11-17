@@ -46,7 +46,12 @@ from salubri_api.services.params import ScenarioParams, widest_event
 from salubri_api.services.plan import bus
 from salubri_api.services.plan.diff import PlanView, diff_plans
 from salubri_api.services.plan.events import INCREMENTAL_POINTS, INVALIDATES, STAGES
-from salubri_api.services.planning.collection_points import PlacedPoint, PlacementResult, place_points
+from salubri_api.services.planning.collection_points import (
+    PlacedPoint,
+    PlacementResult,
+    effective_frequency,
+    place_points,
+)
 from salubri_api.services.planning.distance import Matrix, build_matrix, route_geometry
 from salubri_api.services.planning.vrp import VehicleSpec, VrpSolution, lower_bound_km, solve_vrp
 from salubri_api.services.reference import existing_cct
@@ -476,6 +481,32 @@ def _execute(pv_id: str) -> None:
             loads_week = np.bincount(placement.assignment, weights=w_week, minlength=len(placement.points))
             for i, p in enumerate(placement.points):
                 p.demand_t_week = float(loads_week[i])
+            # Capacité par enlèvement (contrainte dure) : fréquence la plus basse où chaque point tient dans son bac
+            # avec la demande du moment (saison, population), au plus `pickup_frequency_max_per_week` ; les points
+            # qui débordent encore sont listés, jamais tronqués en silence.
+            caps = np.array([p.capacity_t for p in placement.points])
+            f_base = float((placement.optimisation or {}).get("capacite", {}).get("enlevements_semaine")
+                           or params.pickup_frequency_per_week)  # fmt: skip
+            f_eff, over_idx = effective_frequency(
+                loads_week, caps, max(f_base, params.pickup_frequency_per_week), params.pickup_frequency_max_per_week
+            )
+            capacite = {
+                "enlevements_semaine_demandes": params.pickup_frequency_per_week,
+                "enlevements_semaine": f_eff,
+                "respectee": not over_idx,
+                "points_debordants": [
+                    {
+                        "point": placement.points[i].key,
+                        "demande_par_enlevement_t": round(float(loads_week[i] / f_eff), 2),
+                        "capacite_t": float(caps[i]),
+                    }
+                    for i in over_idx
+                ],  # fmt: skip
+                "non_collecte_t_semaine": round(float(np.maximum(loads_week - caps * f_eff, 0).sum()), 2),
+            }
+            if f_eff != params.pickup_frequency_per_week:
+                params = params.model_copy(update={"pickup_frequency_per_week": f_eff})
+                pv.params_snapshot = params.model_dump()  # paramètres effectivement utilisés (summary.capacite)
 
             # E4 distance matrix
             depot = shape(commune.depot_geom)
@@ -575,6 +606,7 @@ def _execute(pv_id: str) -> None:
                 "points": len(placement.points),
                 "points_constraint_relaxed": sum(1 for p in placement.points if not p.constrained_ok),
                 "placement": placement.optimisation,
+                "capacite": capacite,
                 "vrp": _vrp_quality(vrp, matrix.distance_km, demand_nodes),
                 "coverage_walk": coverage_walk,
                 "routes": len(vrp.solution.routes),

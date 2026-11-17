@@ -162,6 +162,22 @@ def main() -> int:
         qgeo = [q for q in geo if (q.get("properties") or {}).get("arrondissement") == arr]
         variants: dict[str, dict[str, Any]] = {}
         variants["Référence"] = {"plan": plan, "sim": simulate(c, plan_id, a.replications)}
+        # flotte nécessaire : camions ajoutés un par un jusqu'à ce que tout soit desservi (10 au plus), puis retirés
+        added: list[str] = []
+        pf = plan
+        while pf["summary"]["unserved_points"] > 0 and len(added) < 10:
+            r = c.post(f"/api/scenarios/{sid}/vehicles", json={"kind": "truck_8t"}).json()
+            added.append(r["vehicle"]["id"])
+            pf = wait(c, r["plan_version_id"])
+        if added:
+            variants["Flotte nécessaire"] = {
+                "plan": pf,
+                "sim": simulate(c, pf["id"], a.replications),
+                "added": len(added),
+            }
+            for vid in added:
+                last = c.delete(f"/api/scenarios/{sid}/vehicles/{vid}").json()
+            wait(c, last["plan_version_id"])
         # 2 camions en panne : les deux premiers camions du scénario
         vids = [v["id"] for v in sc["vehicles"] if not v.get("out_of_service")][:2]
         pid = c.patch(f"/api/scenarios/{sid}", json={"vehicles": [{"id": v, "out_of_service": True} for v in vids]})
@@ -212,6 +228,47 @@ def main() -> int:
     return 0
 
 
+def fleet_section(variants, s, pickups) -> list[str]:  # type: ignore[no-untyped-def]
+    """Flotte actuelle (ce qui n'est pas desservi et ce qu'en dit la simulation) et flotte nécessaire (son coût)."""
+    cap = s.get("capacite") or {}
+    out = [
+        "## Capacité des points et flotte",
+        "",
+        f"- **Capacité par enlèvement** (contrainte du placement) : {n(cap.get('enlevements_semaine', pickups), 0)} "
+        f"enlèvement(s) par semaine (demandé : {n(cap.get('enlevements_semaine_demandes', pickups), 0)}) ; "
+        + (
+            "chaque point tient dans son bac à chaque enlèvement."
+            if cap.get("respectee", True)
+            else f"{len(cap.get('points_debordants', []))} point(s) débordent encore, "
+            f"{n(cap.get('non_collecte_t_semaine', 0))} t/semaine non collectées : "
+            + ", ".join(x["point"] for x in cap.get("points_debordants", []))
+            + "."
+        ),
+        "",
+    ]
+    if "Flotte nécessaire" not in variants:
+        return out + ["Avec la flotte actuelle, tous les points sont desservis.", ""]
+    ref, need = variants["Référence"], variants["Flotte nécessaire"]
+    rows = []
+    for name, v in (("Flotte actuelle", ref), ("Flotte nécessaire", need)):
+        ps, sim = v["plan"]["summary"], v["sim"]["metrics_summary"]
+        rows.append(
+            f"| {name} | {ps['vehicles_available']} | {ps['unserved_points']} | {n(ps['unserved_t_per_pickup'])} "
+            f"| {n(ps['cost_day_fcfa'], 0)} | {n(ps['cost_day_fcfa'] * pickups * 52 / 12, 0)} "
+            f"| {iv(sim, 'wild_dump_t')} | {iv(sim, 'coverage_rate', 0, 100.0)} |"
+        )
+    return out + [
+        f"Flotte nécessaire : {need['added']} camion(s) de 8 t de plus, ajoutés un par un jusqu'à ce que tous les "
+        "points soient desservis (simulation : 30 réplications, médiane [intervalle à 90 %], 90 jours).",
+        "",
+        "| Flotte | Camions | Points non desservis | Tonnes non enlevées par enlèvement | Coût par jour (FCFA) "
+        "| Coût par mois (FCFA) | Dépôts sauvages simulés (t) | Couverture simulée (%) |",
+        "|---|---|---|---|---|---|---|---|",
+        *rows,
+        "",
+    ]
+
+
 def quartier_of(lon: float, lat: float, qgeo: list[dict]) -> str:  # type: ignore[type-arg]
     from shapely.geometry import Point, shape
 
@@ -225,7 +282,7 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
     ref = variants["Référence"]["sim"]["metrics_summary"]
     pop = sum(p["population"] for p in props)
     trucks = sorted({r["properties"]["vehicle_label"] for r in routes})
-    pickups = bp["pickup_frequency_per_week"]
+    pickups = (s.get("capacite") or {}).get("enlevements_semaine") or bp["pickup_frequency_per_week"]
     days = {1: "lundi", 2: "lundi, jeudi", 3: "lundi, mercredi, vendredi"}.get(pickups, f"{pickups} jours par semaine")
     load_by_point: dict[str, tuple[str, float]] = {}
     for r in routes:
@@ -275,6 +332,7 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
         "",
         f"![Carte des points et des tournées](figures/plan_arr{arr}_carte.svg)",
         "",
+        *fleet_section(variants, s, pickups),
         "## Tournées (par jour d'enlèvement)",
         "",
         "| Camion | Rotation | Jours | 1er passage | Dernier passage | Points | Tonnage (t) | km | Coût (FCFA) |",

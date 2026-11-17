@@ -12,7 +12,8 @@ paires proches (rayon de recherche ou K plus proches). Minimiser
 
   + pénalité × walk_distance_max_m × surcharge_j          capacité dépassée (un îlot seul peut dépasser un bac)
 
-sous : chaque îlot servi une fois ; x_ij ≤ y_j ; Σ_i w_i x_ij ≤ capacité_hebdo · y_j + surcharge_j ;
+sous : chaque îlot servi une fois ; x_ij ≤ y_j ; Σ_i w_i x_ij ≤ capacité_hebdo · y_j + surcharge_j
+(surcharge_j = 0 avec `hard_capacity` : la capacité par enlèvement est alors une contrainte dure) ;
 Σ y_j ≤ maximum ; points figés ouverts. d_ij = distance à vol d'oiseau × 1,2 (détour, la même valeur que la simulation).
 Le k-means pondéré sert de solution de départ (indice) et de repli si CP-SAT ne trouve rien. On rend l'objectif,
 la meilleure borne et l'écart (gap).
@@ -89,6 +90,7 @@ def optimise(
     k_nearest: int = 12,
     time_limit_s: float = 5.0,
     seed: int = 42,
+    hard_capacity: bool = False,
 ) -> OptResult:
     from ortools.sat.python import cp_model
 
@@ -125,7 +127,9 @@ def optimise(
     tot = int(round(w_week.sum() * 1000)) + 1
     for j in used_c:
         terms = [(int(round(w_week[i] * 1000)), x[i, j]) for i in range(n) if (i, j) in x]
-        if terms:
+        if terms and hard_capacity:  # capacité par enlèvement : contrainte dure
+            mdl.Add(sum(c * v for c, v in terms) <= cap * y[j])
+        elif terms:
             over[j] = mdl.NewIntVar(0, tot, f"o{j}")  # kg/semaine au-delà de la capacité
             mdl.Add(sum(c * v for c, v in terms) <= cap * y[j] + over[j])
     for j in fixed:
@@ -162,7 +166,8 @@ def optimise(
     st = solver.Solve(mdl)
     if st not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         nan = math.nan
-        return OptResult([], np.zeros(n, int), "repli", nan, nan, nan, nan, nan, nan,
+        status = "infaisable" if st == cp_model.INFEASIBLE else "repli"  # infaisable = prouvé, repli = pas trouvé
+        return OptResult([], np.zeros(n, int), status, nan, nan, nan, nan, nan, nan,
                          int((time.perf_counter() - t0) * 1000), warm_obj)  # fmt: skip
     opened = [j for j in used_c if solver.Value(y[j])]
     pos = {j: k for k, j in enumerate(opened)}

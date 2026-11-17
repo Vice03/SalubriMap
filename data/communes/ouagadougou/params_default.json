@@ -9,6 +9,7 @@
   "collection_point_capacity_t": 2.5,
   "collection_point_max": 80,
   "pickup_frequency_per_week": 2.0,
+  "pickup_frequency_max_per_week": 3.0,
   "walk_distance_max_m": 300.0,
   "season": "dry",
   "flood_speed_factor": 0.7,

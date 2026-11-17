@@ -104,6 +104,28 @@ def _fix_constraints(
     return proj.xy(np.array(pts, dtype=float)), ok
 
 
+def frequencies(base: float, top: float) -> list[float]:
+    """Fréquences essayées : celle du scénario, puis chaque entier au-dessus jusqu'au plafond."""
+    out = [float(base)]
+    f = math.floor(base) + 1
+    while f <= top + 1e-9:
+        out.append(float(f))
+        f += 1
+    return out
+
+
+def effective_frequency(
+    loads_week: np.ndarray, capacity_t: np.ndarray, base: float, top: float
+) -> tuple[float, list[int]]:
+    """Plus petite fréquence (parmi `frequencies`) où chaque point tient dans son bac à chaque enlèvement, et les
+    points qui débordent encore au plafond (liste vide si tout tient)."""
+    for f in frequencies(base, top):
+        if not len(loads_week) or (loads_week / f <= capacity_t + 1e-9).all():
+            return f, []
+    f = frequencies(base, top)[-1]
+    return f, np.flatnonzero(loads_week / f > capacity_t + 1e-9).tolist()
+
+
 def place_points(
     ilot_lonlat: np.ndarray,
     demand_kg_day: np.ndarray,
@@ -231,21 +253,52 @@ def _optimise(
         stability = {len(frozen) + k: float(load[k] * p.placement_stability_m) for k in range(len(stab_pts))}
     off = len(frozen) + len(stab_pts)
     max_points = max(p.collection_point_max, len(frozen), len(warm.points))
-    r = optimise(
-        xy,
-        w_week,
-        cand_xy,
-        cap_week,
-        p.walk_distance_max_m,
-        max_points,
-        fixed=list(range(len(frozen))),
-        stability=stability,
-        # départ : les points de la version précédente s'il y en a (stabilité), sinon le k-means
-        warm_open=list(range(len(frozen)))
-        + (list(range(len(frozen), off)) if stab_pts else list(range(off, off + len(warm_new)))),
-        time_limit_s=p.placement_time_limit_s,
-        seed=seed,
-    )
+    warm_open = list(range(len(frozen))) + (
+        list(range(len(frozen), off)) if stab_pts else list(range(off, off + len(warm_new)))
+    )  # départ : les points de la version précédente s'il y en a (stabilité), sinon le k-means
+
+    def run(cap_w: float, hard: bool):  # type: ignore[no-untyped-def]
+        return optimise(
+            xy,
+            w_week,
+            cand_xy,
+            cap_w,
+            p.walk_distance_max_m,
+            max_points,
+            fixed=list(range(len(frozen))),
+            stability=stability,
+            warm_open=warm_open,
+            time_limit_s=p.placement_time_limit_s,
+            seed=seed,
+            hard_capacity=hard,
+        )
+
+    # Capacité par enlèvement = contrainte dure : demande hebdomadaire ÷ enlèvements ≤ capacité du point. On essaie
+    # la fréquence demandée, puis une de plus jusqu'au plafond ; sinon on le dit et on garde le placement pénalisé.
+    essais: list[dict[str, object]] = []
+    r = None
+    freq = p.pickup_frequency_per_week
+    for f in frequencies(p.pickup_frequency_per_week, p.pickup_frequency_max_per_week):
+        rr = run(p.collection_point_capacity_t * f, True)
+        essais.append({"enlevements_semaine": f, "statut": rr.status})
+        if rr.status in ("optimal", "faisable"):
+            r, freq = rr, f
+            break
+    capacite: dict[str, object] = {"contrainte": "dure", "essais": essais}
+    if r is None:
+        r = run(cap_week, False)
+        capacite["contrainte"] = "non respectée"
+        prouve = all(e["statut"] == "infaisable" for e in essais)
+        capacite["raison"] = (
+            f"Aucun placement de {max_points} points au plus ne tient dans la capacité des bacs, même à "
+            f"{p.pickup_frequency_max_per_week:g} enlèvements par semaine : ajouter des points (maximum), des bacs "
+            "plus grands ou des enlèvements"
+            if prouve
+            else "CP-SAT n'a pas trouvé, dans le temps imparti, de placement qui tienne dans la capacité : placement "
+            "pénalisé gardé (des points peuvent déborder)"
+        )
+        freq = p.pickup_frequency_per_week
+    capacite["enlevements_semaine"] = freq
     info: dict[str, object] = {
         "methode": "CP-SAT",
         "statut": r.status,
@@ -260,6 +313,7 @@ def _optimise(
         "demande_hors_marche_t_semaine": None if math.isnan(r.uncovered_t) else round(r.uncovered_t, 3),
         "surcharge_t_semaine": None if math.isnan(r.overload_t) else round(r.overload_t, 3),
         "duree_ms": r.duration_ms,
+        "capacite": capacite,
     }
     if r.status == "repli":  # sinon la solution part de l'indice : au moins aussi bonne, aux arrondis près
         info["statut"] = "repli"

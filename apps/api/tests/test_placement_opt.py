@@ -81,3 +81,42 @@ def test_place_points_avec_candidats_ne_fait_pas_pire_que_le_kmeans() -> None:
     )
     assert {q.key for q in again.points} == {q.key for q in prev}
     assert len(km.points) >= 1
+
+
+def test_capacite_dure_jamais_depassee_ou_infaisabilite_dite() -> None:
+    """Étape 0.2 : avec `hard_capacity`, aucun point ne dépasse sa capacité ; sinon le statut dit « infaisable »."""
+    xy = np.array([[0.0, 0], [10, 0], [20, 0], [30, 0]])
+    cand = np.array([[15.0, 0], [0, 0], [30, 0]])
+    w = np.ones(4)
+    r = optimise(xy, w, cand, cap_week=2, walk_max=300, max_points=2, open_cost=1, k_nearest=3, hard_capacity=True)
+    load = np.bincount(r.assignment, weights=w)
+    assert r.status in ("optimal", "faisable") and (load <= 2 + 1e-9).all() and r.overload_t == 0
+    soft = optimise(xy, w, cand, cap_week=1.5, walk_max=300, max_points=2, open_cost=1, k_nearest=3)
+    hard = optimise(xy, w, cand, cap_week=1.5, walk_max=300, max_points=2, open_cost=1, k_nearest=3,
+                    hard_capacity=True)  # fmt: skip
+    assert soft.overload_t > 0  # l'ancien comportement débordait
+    assert hard.status == "infaisable" and hard.open == []
+
+
+def test_frequence_effective() -> None:
+    from salubri_api.services.planning.collection_points import effective_frequency, frequencies
+
+    assert frequencies(2, 3) == [2.0, 3.0] and frequencies(2.5, 4) == [2.5, 3.0, 4.0] and frequencies(3, 3) == [3.0]
+    cap = np.array([2.5, 2.5])
+    assert effective_frequency(np.array([4.0, 5.0]), cap, 2, 3) == (2.0, [])
+    assert effective_frequency(np.array([4.0, 6.0]), cap, 2, 3) == (3.0, [])  # 6 t ÷ 2 > 2,5 t ; ÷ 3 tient
+    assert effective_frequency(np.array([4.0, 9.0]), cap, 2, 3) == (3.0, [1])  # 9 ÷ 3 = 3 t : déborde encore
+
+
+def test_placement_monte_a_trois_enlevements_plutot_que_deborder() -> None:
+    """Demande trop forte pour 2 enlèvements avec le nombre maximal de points : le placement passe à 3."""
+    rng = np.random.default_rng(1)
+    lonlat = np.column_stack([-1.52 + rng.uniform(0, 0.01, 40), 12.37 + rng.uniform(0, 0.01, 40)])
+    kg_day = np.full(40, 600 / 7)  # 0,6 t/semaine par îlot, 24 t au total
+    road = [(-1.52 + i * 0.001, 12.37 + j * 0.001) for i in range(11) for j in range(11)]
+    p = ScenarioParams(collection_point_capacity_t=2.5, collection_point_max=4, pickup_frequency_per_week=2,
+                       pickup_frequency_max_per_week=3, walk_distance_max_m=600, placement_time_limit_s=2)  # fmt: skip
+    res = place_points(lonlat, kg_day, p, candidates=lambda bbox: road)
+    cap = res.optimisation["capacite"]  # type: ignore[index]
+    assert cap["contrainte"] == "dure" and cap["enlevements_semaine"] == 3.0  # 4 points × 2,5 t × 2 = 20 t < 24 t
+    assert all(q.demand_t_week / 3 <= 2.5 + 1e-6 for q in res.points)

@@ -130,11 +130,12 @@ secteurs 37 à 40 ne sont pas en données ouvertes (à demander à la mairie).
 
 ![Dépôts sauvages par scénario](figures/scenarios_arr9.svg)
 
-Lecture : la saison des pluies et la perte de deux camions augmentent nettement les dépôts sauvages ; +20 %
-d'abonnements ne change presque rien tant que la capacité des pré-collecteurs ne suit pas ; les deux ensemble
-font +69 % de dépôts sauvages. Le budget −30 % ne change rien : le plan coûte ~3,3 M FCFA par mois, sous le
-budget réduit. Avec 8 camions, une
-partie des points n'est pas desservie : le plan chiffre le nombre de camions nécessaire.
+Lecture : la capacité de chaque point par enlèvement est une contrainte dure du placement ; à 2 enlèvements par
+semaine elle est impossible avec 80 points au plus, le plan passe donc à 3 (lundi, mercredi, vendredi). La
+saison des pluies et la perte de deux camions augmentent nettement les dépôts sauvages ; +20 % d'abonnements ne
+change presque rien tant que la capacité des pré-collecteurs ne suit pas. Le budget −30 % ne change rien : le
+plan reste sous le budget réduit. Avec 8 camions, 1 point n'est pas desservi ; le plan publie la flotte actuelle
+et la flotte nécessaire (9 camions) avec leur coût et leurs dépôts sauvages simulés.
 
 ## 8. Validation
 

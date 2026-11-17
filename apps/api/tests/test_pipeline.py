@@ -166,3 +166,14 @@ def test_restart_resumes_interrupted_plans_and_fails_open_simulations(db):
     db.expire_all()
     assert db.get(PlanVersion, stuck.id).status == "ready"
     assert db.get(SimRun, run.id).status == "failed"
+
+
+def test_capacity_per_pickup_is_respected_or_reported(db, client):  # type: ignore[no-untyped-def]
+    """Étape 0.2 : chaque point tient dans son bac à chaque enlèvement, ou le plan dit lesquels débordent."""
+    pv = first_plan(db)
+    cap = pv.summary["capacite"]
+    pts = client.get(f"/api/plans/{pv.id}/points").json()["features"]
+    over = [f["properties"]["key"] for f in pts if f["properties"]["fill_ratio_per_pickup"] > 1 + 1e-3]
+    assert sorted(over) == sorted(x["point"] for x in cap["points_debordants"])
+    assert cap["respectee"] == (not over)
+    assert pv.params_snapshot["pickup_frequency_per_week"] == cap["enlevements_semaine"]
