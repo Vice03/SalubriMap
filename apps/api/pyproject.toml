@@ -39,7 +39,7 @@ dev = ["pytest==9.2.0", "pytest-cov==7.1.0", "ruff==0.17.5", "pip-audit==2.10.1"
 extend = "../../ruff.toml"
 
 [tool.pytest.ini_options]
-testpaths = ["tests"]
+testpaths = ["tests", "salubri_api/modules"]
 markers = ["integration: needs OSRM running (skipped otherwise)"]
 filterwarnings = ["ignore::DeprecationWarning"]
 

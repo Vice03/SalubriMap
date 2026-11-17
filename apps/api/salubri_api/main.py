@@ -90,6 +90,13 @@ def create_app() -> FastAPI:
         validation,
     ):
         app.include_router(r.router, prefix="/api")
+    # modules optionnels (docs/MODULES.md) : routes montées seulement quand le module est allumé
+    if settings.seasons_enabled:
+        from salubri_api.modules.seasons.router import public as seasons_public
+        from salubri_api.modules.seasons.router import router as seasons_router
+
+        app.include_router(seasons_router, prefix="/api")
+        app.include_router(seasons_public, prefix="/api")
 
     @app.on_event("startup")
     def _security() -> None:  # pas de secret par défaut hors mode démonstration (lève InsecureConfig)

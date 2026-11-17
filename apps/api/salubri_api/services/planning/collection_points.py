@@ -243,6 +243,12 @@ def _optimise(
     cand += [PlacedPoint("", lon, lat, p.collection_point_capacity_t) for lon, lat in road]
     cand_xy = proj.xy(np.array([[c.lon, c.lat] for c in cand]))
     xy = proj.xy(ilot_lonlat)
+    from salubri_api.config import get_settings
+
+    if get_settings().seasons_enabled:  # module « Saisons » : paires îlot-site coupées par une route impraticable
+        from salubri_api.modules.seasons.service import prepare_walk
+
+        prepare_walk(ilot_lonlat, np.array([[c.lon, c.lat] for c in cand]), p.walk_distance_max_m)
     cap_week = p.collection_point_capacity_t * p.pickup_frequency_per_week
     # déplacer un point existant coûte comme faire marcher sa charge de `placement_stability_m` de plus
     stability: dict[int, float] = {}

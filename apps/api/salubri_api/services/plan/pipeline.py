@@ -353,6 +353,11 @@ def _execute(pv_id: str) -> None:
             cache = _cache.setdefault(str(scenario.id), {})
             prev = latest_ready(s, scenario.id, pv.version)
             st = RunState()
+            seasons = None
+            if settings.seasons_enabled:  # module « Saisons » (docs/MODULES.md) : état des routes de la période
+                from salubri_api.modules.seasons import service as seasons
+
+                seasons.activate(seasons.load_context(s, commune.id, params.season))
 
             # E1 consolidation (database side effect, keyed on the verified-report signature)
             sig = s.execute(
@@ -446,6 +451,8 @@ def _execute(pv_id: str) -> None:
                 params.placement_time_limit_s,
                 params.placement_stability_m,
             )
+            if seasons is not None:  # routes impraticables : le placement complet en tient compte
+                e3_structural = _h(e3_structural, seasons.current().signature)
             e3_forced = forced_all or ("E3" in must and kind != "season_changed")
             cached_e3 = cache.get("E3")
             if (
@@ -481,6 +488,12 @@ def _execute(pv_id: str) -> None:
             loads_week = np.bincount(placement.assignment, weights=w_week, minlength=len(placement.points))
             for i, p in enumerate(placement.points):
                 p.demand_t_week = float(loads_week[i])
+            variant = None
+            if seasons is not None:  # points dont la route d'accès est impraticable : déplacés ou signalés
+                placement, variant = seasons.seasonal_variant(
+                    s, placement, ilots.lonlat, ilots.population * params.population_factor,
+                    _candidates_fn(s, commune.id), params.walk_distance_max_m,
+                )  # fmt: skip
             # Capacité par enlèvement (contrainte dure) : fréquence la plus basse où chaque point tient dans son bac
             # avec la demande du moment (saison, population), au plus `pickup_frequency_max_per_week` ; les points
             # qui débordent encore sont listés, jamais tronqués en silence.
@@ -526,6 +539,11 @@ def _execute(pv_id: str) -> None:
                 ),
             )
 
+            if seasons is not None and variant is not None:  # arcs coupés hors de prix, points inaccessibles abandonnés
+                inacc = {k + 1 for k, q in enumerate(placement.points)
+                         if q.key in {x["point"] for x in variant.inaccessible}}  # fmt: skip
+                matrix = seasons.penalise_matrix(matrix, nodes, inacc)
+                e4_key = _h(e4_key, seasons.current().signature, sorted(inacc))
             # E5 vehicle routing
             vehicles = (
                 s.query(Vehicle)
@@ -576,6 +594,10 @@ def _execute(pv_id: str) -> None:
             # E6 quick simulation
             sp = SimParams.from_scenario(params)
             snap = _snapshot(ilots, placement, vrp, params)
+            if seasons is not None and variant is not None and variant.inaccessible:
+                keys = {x["point"] for x in variant.inaccessible}
+                snap = seasons.adjust_snapshot(snap, ilots.lonlat, [(q.lon, q.lat) for q in placement.points],
+                                               {k for k, q in enumerate(placement.points) if q.key in keys})  # fmt: skip
             e6_key = _h(e5_key, e2_key, e3_key, sp.__dict__)
             sim: SimResult = _stage(
                 pv_id, st, cache, "E6", e6_key, forced_all, lambda: run_sim(snap, sp, params.seed, params.sim_mode)
@@ -607,6 +629,11 @@ def _execute(pv_id: str) -> None:
                 "points_constraint_relaxed": sum(1 for p in placement.points if not p.constrained_ok),
                 "placement": placement.optimisation,
                 "capacite": capacite,
+                **(
+                    {"saisons": seasons.summary(seasons.current(), variant or seasons.Variant([], []))}
+                    if seasons is not None
+                    else {}
+                ),  # fmt: skip
                 "vrp": _vrp_quality(vrp, matrix.distance_km, demand_nodes),
                 "coverage_walk": coverage_walk,
                 "routes": len(vrp.solution.routes),
@@ -809,7 +836,7 @@ def snapshot_from_db(s: Session, pv: PlanVersion) -> PlanSnapshot:
         idx_of[u.collection_point_id] for u in s.query(UnservedPoint).filter(UnservedPoint.plan_version_id == pv.id)
     }
     del params
-    return PlanSnapshot(
+    snap = PlanSnapshot(
         np.array(pop, dtype=float),
         np.array(assign, dtype=int),
         np.array(dist),
@@ -818,3 +845,11 @@ def snapshot_from_db(s: Session, pv: PlanVersion) -> PlanSnapshot:
         routes,
         unserved,
     )
+    inacc = {x["point"] for x in ((pv.summary or {}).get("saisons") or {}).get("points_inaccessibles", [])}
+    if inacc and get_settings().seasons_enabled:  # module « Saisons » : ménages d'un point inaccessible
+        from salubri_api.modules.seasons.service import adjust_snapshot
+
+        il = np.array([[rows[i].lon, rows[i].lat] for i in ilot_ids])
+        snap = adjust_snapshot(snap, il, [(shape(p.geom).x, shape(p.geom).y) for p in pts],
+                               {p.idx for p in pts if p.key in inacc})  # fmt: skip
+    return snap

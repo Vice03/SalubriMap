@@ -42,6 +42,15 @@ class Settings(BaseSettings):
     # temps déterministe, OR-Tools routage arrêté à un nombre de solutions et non à l'horloge. Plus lent ; jamais
     # en démonstration. Faux par défaut : rien ne change.
     deterministic_solvers: bool = False
+    # Modules optionnels (docs/MODULES.md) : éteints par défaut, aucun effet tant qu'ils sont éteints.
+    seasons_enabled: bool = False  # points et tournées qui suivent l'état des routes selon la saison
+    assistant_enabled: bool = False  # assistant local qui explique plans et simulations (lecture seule)
+    # assistant : n'importe quel serveur local compatible avec l'API de chat d'OpenAI (Ollama, LM Studio…)
+    llm_url: str = "http://localhost:11434/v1"
+    llm_model: str = "qwen2.5:7b-instruct"
+    llm_api_key: str = ""
+    llm_timeout_s: float = 60.0
+    llm_during_demo: bool = False  # jamais de téléchargement de modèle au démarrage avant une démonstration
 
 
 DEMO_TOKEN = "ouaga2026"

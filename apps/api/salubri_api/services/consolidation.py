@@ -74,6 +74,13 @@ def consolidate(s: Session, commune_id: uuid.UUID, eps_m: float = 30.0) -> dict[
                              FROM reports WHERE commune_id = :c AND status = 'verified'"""),
         {"c": commune_id},
     ).all()
+    from salubri_api.config import get_settings
+
+    if get_settings().seasons_enabled:  # module « Saisons » : une route impraticable n'est pas un dépotoir
+        from salubri_api.modules.seasons.models import RoadReport
+
+        roads = {r for (r,) in s.query(RoadReport.report_id).all()}
+        rows = [r for r in rows if r[0] not in roads]
     clusters = cluster_reports([tuple(r) for r in rows], eps_m)  # type: ignore[misc]
     existing = s.query(DumpSite).filter(DumpSite.commune_id == commune_id).all()
     ex_pts = [(d, shape(d.geom)) for d in existing]

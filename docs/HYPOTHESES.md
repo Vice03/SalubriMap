@@ -83,3 +83,24 @@ Choix faits là où la consigne laissait le choix (option la plus simple et sûr
 - Une session invalide (expirée, révoquée, clé changée) est effacée à la première réponse 401, même en lecture : l'interface repasse en vue publique sans fenêtre surgissante ; seule une écriture ouvre le panneau.
 - Les boutons réservés sont grisés d'après le rôle du compte ; l'API reste seule juge (un bouton forcé dans le navigateur reçoit 401/403).
 
+
+## Module « Saisons » (optionnel, éteint par défaut)
+
+Approximations volontairement simples, sans imagerie ni apprentissage ni reconstruction du graphe OSRM
+(`apps/api/salubri_api/modules/seasons/service.py`) :
+
+- **Route impraticable = couloir infranchissable** de 10 m de part et d'autre de l'axe. Marche : une paire
+  (îlot, site) dont le segment à vol d'oiseau traverse le couloir est interdite ; on ne calcule pas de détour à
+  pied (le ménage va à un autre point ou perd la couverture). Un site à moins de 15 m d'une route impraticable
+  n'est pas utilisable.
+- **Route d'accès d'un point** : la route la plus proche à moins de 30 m. Si elle est impraticable, le point va au
+  site praticable le plus proche qui garde à portée de marche tous les ménages qu'il servait à portée, sans que
+  leur trajet traverse le couloir ; sinon il est « inaccessible » et n'est plus desservi.
+- **Tournées** : un arc dont le segment à vol d'oiseau traverse le couloir coûte 50 km et 120 min de plus
+  (prohibitif face à des arcs de 1 à 5 km) ; avec OSRM, c'est la matrice OSRM qui reçoit cette pénalité. Un camion
+  peut donc encore emprunter un tel arc s'il n'a aucune autre solution : le kilométrage le montre alors.
+- **Facteur de vitesse** d'une route praticable mais ralentie : enregistré et affiché, pas encore appliqué aux
+  temps de trajet (la matrice ne connaît pas les routes empruntées sans OSRM).
+- Le placement complet tient compte des routes coupées ; un simple changement de saison garde les points (cache
+  du placement) et applique seulement les déplacements ci-dessus : c'est ce qui garantit le retour exact aux
+  positions de saison sèche.

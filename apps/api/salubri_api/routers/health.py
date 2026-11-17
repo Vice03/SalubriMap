@@ -43,6 +43,8 @@ def health(s: Session = Depends(get_session)) -> dict[str, object]:
         "dataset": dataset,  # carte chargée : routes-osm_… (vraies rues) ou routes-synthetiques_…
         "queue": queue,
         # masquage des visages et plaques (seconde passe serveur) : sans modèles, les photos sont refusées (503)
+        # modules optionnels : les interfaces cachent ce qui est éteint
+        "modules": {"seasons": get_settings().seasons_enabled, "assistant": get_settings().assistant_enabled},
         "masking": "ok"
         if masking_available()
         else "indisponible",  # recalculs en attente : la répétition attend qu'ils soient tous finis

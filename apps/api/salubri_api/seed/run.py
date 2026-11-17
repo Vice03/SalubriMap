@@ -41,7 +41,11 @@ API_DIR = Path(__file__).resolve().parents[2]
 def migrate() -> None:
     cfg = Config(str(API_DIR / "alembic.ini"))
     cfg.set_main_option("script_location", str(API_DIR / "alembic"))
-    command.upgrade(cfg, "head")
+    # migrations des modules optionnels (salubri_api/modules/<nom>/migrations), chacune sur sa branche : un
+    # module supprimé disparaît de la liste ; « heads » applique toutes les branches (une seule sans module)
+    mods = sorted(str(d) for d in (API_DIR / "salubri_api" / "modules").glob("*/migrations") if d.is_dir())
+    cfg.set_main_option("version_locations", " ".join([str(API_DIR / "alembic" / "versions"), *mods]))
+    command.upgrade(cfg, "heads")
 
 
 def demo_photos(fc: dict) -> dict[str, bytes]:  # type: ignore[type-arg]

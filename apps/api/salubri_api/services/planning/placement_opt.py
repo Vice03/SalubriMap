@@ -101,6 +101,12 @@ def optimise(
     if open_cost is None:  # un point plein doit faire gagner au moins la moitié de la distance de marche
         open_cost = cap_week * walk_max / 2
     d = cost_matrix(xy, cand_xy)
+    from salubri_api.config import get_settings
+
+    if get_settings().seasons_enabled:  # module « Saisons » : paires interdites par une route impraticable
+        from salubri_api.modules.seasons.service import apply_walk
+
+        d = apply_walk(d)
     # paires considérées : à portée de marche (×1,5) ou parmi les K plus proches
     near = np.argsort(d, axis=1)[:, : min(k_nearest, m)]
     allowed = d <= 1.5 * walk_max
