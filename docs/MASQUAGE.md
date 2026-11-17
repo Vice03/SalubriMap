@@ -57,7 +57,7 @@ annonce, `server` le nombre de zones que le serveur a dû masquer lui-même (0 s
 | Taille | 232 589 octets | 7 771 218 octets |
 | SHA-256 | `8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4` | `888397b96d761c89db40bc9c305838e8652660f5e282c2cadebbe8d2951a77a8` |
 | Entrée | 640×640, BGR 0–255 | 384×384, RGB 0–1 (bandes grises 114) |
-| Seuil | 0,6 (défaut de `cv2.FaceDetectorYN`) | 0,25 (défaut d'open-image-models) |
+| Seuil | 0,5 (défaut de `cv2.FaceDetectorYN` : 0,6 ; voir « Réglage ») | 0,25 (défaut d'open-image-models) |
 | Qualité publiée | WIDER Face : AP 0,834 / 0,824 / 0,708 (facile / moyen / difficile) | jeu de l'auteur : précision 0,942, rappel 0,863, mAP50 0,92 |
 | Fichier dans l'app | `apps/go/public/models/visages-yunet-2023mar.onnx` | `apps/go/public/models/plaques-yolov9t-384.onnx` |
 
@@ -69,10 +69,20 @@ Pourquoi ceux-là :
   à 640 px pèsent toutes ~7,7 Mo ; 384 est le compromis rappel/vitesse de l'auteur) ;
 - **NMS intégrée** au modèle de plaques : pas de post-traitement à réécrire.
 
-Provenance du modèle de plaques : l'accès direct aux releases GitHub était bloqué dans l'environnement de
-développement ; le fichier vient du miroir Hugging Face `wide-video/open-image-models-v0.5.1` (licence MIT,
-copie de la release v0.5.1). Son empreinte SHA-256 est notée ci-dessus : **à recomparer avec le fichier de la
-release officielle** avant la finale (`sha256sum`).
+Provenance vérifiée le 17/11/2026 (lot 2.5) :
+
+| Modèle | Fichier officiel téléchargé | SHA-256 obtenu | Résultat |
+|---|---|---|---|
+| Plaques | `https://github.com/ankandrew/open-image-models/releases/download/assets/yolo-v9-t-384-license-plates-end2end.onnx` (7 771 218 octets) | `888397b9…2951a77a8` | **identique** au fichier de l'app (venu au départ du miroir Hugging Face `wide-video/open-image-models-v0.5.1`) |
+| Visages | `https://huggingface.co/opencv/face_detection_yunet/resolve/main/face_detection_yunet_2023mar.onnx` (organisation OpenCV, 232 589 octets) | `8f2383e4…2552fa4` | **identique** |
+| Visages | dépôt GitHub OpenCV Zoo (fichier stocké en Git LFS) | — | **à vérifier** : accès refusé depuis l'environnement de développement |
+
+Commande pour la dernière ligne (sur un poste avec Internet) :
+
+```bash
+curl -sSL -o yunet.onnx https://github.com/opencv/opencv_zoo/raw/main/models/face_detection_yunet/face_detection_yunet_2023mar.onnx
+sha256sum yunet.onnx   # attendu : 8f2383e4dd3cfbb4553ea8718107fc0423210dc964f9f4280604804ed2552fa4
+```
 
 Le moteur `onnxruntime-web` 1.31 (MIT, Microsoft) apporte le WebAssembly (14,8 Mo, ~3,5 Mo compressé). Modèles
 et moteur sont dans la liste du service worker : téléchargés une fois à l'installation, **aucun réseau à l'usage**.
