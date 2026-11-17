@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """Lot A3 : force brute sur la connexion et pourriel de signalements."""
 
-from salubri_api.services.ratelimit import LOGIN_MAX_FAILURES, SlidingWindow
 from tests.conftest import free_point, post_report
 from tests.test_accounts import make_user
+
+from salubri_api.services.ratelimit import LOGIN_MAX_FAILURES, SlidingWindow
 
 
 def _login(client, login: str, password: str, ip: str = "10.0.0.1"):  # type: ignore[no-untyped-def]

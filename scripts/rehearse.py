@@ -172,7 +172,9 @@ def wait_idle(c: httpx.Client, timeout: float = 300) -> None:
 
 def run_changes(c: httpx.Client, keep: bool) -> tuple[bool, list[str]]:
     spec = yaml.safe_load((DATA / "rehearsal" / "scenario_changes.yaml").read_text(encoding="utf-8"))
-    wait_idle(c)  # le recalcul différé déclenché par l'import doit être fini (sinon « 2 camions en panne » recalcule E1–E4)
+    wait_idle(
+        c
+    )  # le recalcul différé déclenché par l'import doit être fini (sinon « 2 camions en panne » recalcule E1–E4)
     base = next(s for s in c.get("/api/scenarios").json() if s["is_baseline"])
     clone = c.post(
         "/api/scenarios", json={"name": f"Répétition {datetime.now(UTC):%H:%M:%S}", "parent_id": base["id"]}
