@@ -97,6 +97,10 @@ def create_app() -> FastAPI:
 
         app.include_router(seasons_router, prefix="/api")
         app.include_router(seasons_public, prefix="/api")
+    if settings.assistant_enabled:
+        from salubri_api.modules.assistant.router import router as assistant_router
+
+        app.include_router(assistant_router, prefix="/api")
 
     @app.on_event("startup")
     def _security() -> None:  # pas de secret par défaut hors mode démonstration (lève InsecureConfig)

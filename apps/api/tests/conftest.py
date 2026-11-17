@@ -46,6 +46,21 @@ DEPOT = (-1.52, 12.39)
 NOW = datetime(2026, 11, 15, 12, 0, tzinfo=UTC)
 
 
+def _module_models() -> None:
+    """Tables des modules optionnels (salubri_api/modules/*/models.py) dans le schéma de test, qu'on lance leurs
+    tests ou non : sinon une table d'un module restée d'un passage précédent empêche de vider la base."""
+    import importlib
+    from pathlib import Path
+
+    import salubri_api
+
+    for f in sorted((Path(salubri_api.__file__).parent / "modules").glob("*/models.py")):
+        importlib.import_module(f"salubri_api.modules.{f.parent.name}.models")
+
+
+_module_models()
+
+
 @pytest.fixture(scope="session", autouse=True)
 def schema() -> Iterator[None]:
     eng = get_engine()
