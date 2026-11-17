@@ -39,8 +39,62 @@ def test_detector_finds_the_reference_boxes() -> None:
     boxes = detect(Image.open(io.BytesIO(PHOTO)).convert("RGB"))
     kinds = sorted(b.kind for b in boxes)
     assert kinds == ["plaque", "visage"]
+    # décodage exact sur l'image entière (même référence qu'avant les tuiles) …
+    face_s, _ = detector._sessions(str(get_settings().masking_models_dir))
+    whole = detector._faces(face_s, Image.open(io.BytesIO(PHOTO)).convert("RGB"))
+    assert len(whole) >= 1 and abs(whole[0].x - FACE[0]) < 4 and abs(whole[0].w - FACE[2]) < 4
+    # … et après fusion avec les tuiles, la boîte gardée recouvre la même tête
     face = next(b for b in boxes if b.kind == "visage")
-    assert abs(face.x - FACE[0]) < 4 and abs(face.w - FACE[2]) < 4
+    ref = Box(*FACE, kind="visage", score=1.0)
+    assert detector._iou(face, ref) > 0.8
+
+
+def test_tiles_same_as_phone() -> None:
+    """Même découpe que apps/go/src/__tests__/masking.test.ts ('même découpe que le serveur')."""
+    from salubri_api.services.masking.detector import tiles
+
+    assert tiles(600, 400, 640) == []
+    assert tiles(800, 600, 640) == [(0, 0, 640, 600), (160, 0, 800, 600)]
+    assert tiles(1309, 512, 640) == [(0, 0, 640, 512), (512, 0, 1152, 512), (669, 0, 1309, 512)]
+    assert tiles(1309, 512, 576) == [(0, 0, 576, 512), (460, 0, 1036, 512), (733, 0, 1309, 512)]
+    big = tiles(1920, 1440, 640)
+    assert len(big) == 12 and big[:3] == [(0, 0, 640, 640), (0, 512, 640, 1152), (0, 800, 640, 1440)]
+    # recouvrement : chaque pixel est dans une tuile
+    cov = np.zeros((1440, 1920), bool)
+    for x0, y0, x1, y1 in big:
+        cov[y0:y1, x0:x1] = True
+    assert cov.all()
+
+
+def test_tiles_merge_boxes_back_without_duplicates(monkeypatch) -> None:
+    """Une tête vue par l'image entière et par deux tuiles ne donne qu'une boîte, aux coordonnées de l'image."""
+    from salubri_api.services.masking import detector as d
+
+    def fake_faces(_sess, img):  # type: ignore[no-untyped-def]
+        # le visage est au pixel (700, 300)-(730, 330) de l'image de travail ; chaque vue le rend dans son repère
+        ox, oy = getattr(img, "_ox", 0), getattr(img, "_oy", 0)
+        return [d.Box(700 - ox, 300 - oy, 30, 30, "visage", 0.9)] if ox <= 700 <= ox + img.width else []
+
+    real_crop = Image.Image.crop
+
+    def crop(self, box):  # type: ignore[no-untyped-def]
+        out = real_crop(self, box)
+        out._ox, out._oy = box[0], box[1]
+        return out
+
+    monkeypatch.setattr(d, "_faces", fake_faces)
+    monkeypatch.setattr(d, "_plates", lambda *_a: [])
+    monkeypatch.setattr(Image.Image, "crop", crop)
+    boxes = d.detect(Image.new("RGB", (1200, 512)))  # ≤ WORK_MAX_SIDE : pas de mise à l'échelle
+    assert [(round(b.x), round(b.y)) for b in boxes] == [(700, 300)]
+
+
+def test_small_background_face_needs_the_tiles() -> None:
+    img = Image.open(Path(__file__).parent / "fixtures" / "petit_visage.jpg").convert("RGB")
+    face_s, _ = detector._sessions(str(get_settings().masking_models_dir))
+    assert detector._faces(face_s, img.resize((1280, 853))) == []  # image de travail entière seule : manqué
+    found = [b for b in detect(img) if b.kind == "visage"]
+    assert len(found) == 1 and abs(found[0].x - 1700) < 15 and abs(found[0].y - 500) < 15
 
 
 def test_pixelate_leaves_no_original_pixel() -> None:

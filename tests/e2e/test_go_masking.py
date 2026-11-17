@@ -4,6 +4,7 @@
 from pathlib import Path
 
 PHOTO = (Path(__file__).parent / "fixtures" / "visage_et_plaque.jpg").read_bytes()
+SMALL = (Path(__file__).parent / "fixtures" / "petit_visage.jpg").read_bytes()
 FACE = (181, 67, 88, 107)  # x, y, w, h dans l'image (référence Python)
 PLATE = (842, 197, 182, 69)
 
@@ -128,4 +129,18 @@ def test_manual_only_mode_requires_explicit_confirmation(browser, base):  # type
     page.wait_for_selector("text=Merci")
     items = page.evaluate(OUTBOX_JS)
     assert items[-1]["masking"]["mode"] == "manuel"
+    ctx.close()
+
+
+def test_small_background_face_found_by_tiles(browser, base):  # type: ignore[no-untyped-def]
+    """Lot 2.1 : un visage de 46 px sur une photo de 2400 px n'est vu que par les tuiles (pas par l'image entière)."""
+    ctx, page = _ctx(browser)
+    page.goto(f"{base}/go/")
+    page.wait_for_selector("text=Prendre une photo")
+    page.set_input_files("input[type=file]", files=[{"name": "loin.jpg", "mimeType": "image/jpeg", "buffer": SMALL}])
+    page.wait_for_selector(".mask-status:has-text('visage(s)'), .mask-status:has-text('Aucun visage')", timeout=60000)
+    status = page.inner_text(".mask-status")
+    assert "1 visage(s)" in status, status
+    ms = int(page.get_attribute(".mask-status", "data-ms") or 0)
+    print("temps de détection (photo 2400 px)", ms, "ms")
     ctx.close()

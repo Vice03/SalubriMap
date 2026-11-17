@@ -10,3 +10,10 @@
 
 Ce ne sont pas des photos de Ouagadougou : elles valident le fonctionnement, pas le taux de détection
 sur le terrain (voir `docs/MASQUAGE.md`, jeu d'évaluation `data/eval/masquage/`).
+
+## `petit_visage.jpg`
+
+Fond gris bruité de 2400 × 1600 px (généré), avec le visage de `visage_et_plaque.jpg` (photo NASA, domaine
+public) réduit à 46 px de haut en (1700, 500). Sur l'image entière ramenée à 640 px le visage ne fait plus que
+~12 px : il n'est trouvé que par les tuiles (lot 2.1, `tests/e2e/test_go_masking.py`,
+`apps/api/tests/test_masking.py`).

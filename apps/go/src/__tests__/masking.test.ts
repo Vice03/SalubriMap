@@ -90,9 +90,14 @@ describe('EXIF', () => {
 })
 
 describe('tuiles', () => {
-  it('même découpe que le serveur : rien sous 1000 px, 2×2 recouvrantes au-delà', async () => {
+  it('même découpe que le serveur (tests/test_masking.py::test_tiles_same_as_phone)', async () => {
     const { tiles } = await import('../masking/geometry')
-    expect(tiles(800, 600)).toEqual([])
-    expect(tiles(1309, 512)).toEqual([[0, 0, 818, 320], [0, 192, 818, 512], [490, 0, 1309, 320], [490, 192, 1309, 512]])
+    expect(tiles(600, 400, 640)).toEqual([])
+    expect(tiles(800, 600, 640)).toEqual([[0, 0, 640, 600], [160, 0, 800, 600]])
+    expect(tiles(1309, 512, 640)).toEqual([[0, 0, 640, 512], [512, 0, 1152, 512], [669, 0, 1309, 512]])
+    expect(tiles(1309, 512, 576)).toEqual([[0, 0, 576, 512], [460, 0, 1036, 512], [733, 0, 1309, 512]])
+    const big = tiles(1920, 1440, 640)
+    expect(big.length).toBe(12)
+    expect(big.slice(0, 3)).toEqual([[0, 0, 640, 640], [0, 512, 640, 1152], [0, 800, 640, 1440]])
   })
 })

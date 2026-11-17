@@ -5,6 +5,7 @@ Décodage identique à apps/go/src/masking/geometry.ts (testé des deux côtés 
 """
 
 import logging
+import math
 import threading
 from dataclasses import dataclass
 from functools import lru_cache
@@ -18,11 +19,20 @@ from salubri_api.config import get_settings
 log = logging.getLogger("salubri.masquage")
 
 FACE_SIZE, PLATE_SIZE = 640, 384
-# Visages : seuil 0,5 (défaut OpenCV 0,6) et passe supplémentaire sur 2×2 tuiles quand la photo dépasse 1000 px :
-# sur le jeu public de contrôle, rappel 0,82 → 0,93 pour une précision 0,98 → 0,86 (docs/MASQUAGE.md). Pour la
-# vie privée, un dépôt flouté en trop vaut mieux qu'un visage oublié.
-FACE_THRESHOLD, PLATE_THRESHOLD = 0.5, 0.25
-TILES, TILE_MIN_SIDE, TILE_OVERLAP = 2, 1000, 0.25
+# Réglage mesuré sur le jeu public de contrôle (docs/MASQUAGE.md, lot 2.1), identique sur le téléphone
+# (apps/go/src/masking/geometry.ts) :
+# - l'image est d'abord ramenée à WORK_MAX_SIDE px au plus (une photo de 4000 px coûterait trop sur un téléphone) ;
+# - visages : seuil 0,5, image entière + tuiles carrées de FACE_TILE = 512 px (agrandies à l'entrée du modèle, 640)
+#   recouvrantes de 20 % ; des tuiles de 1,5 × l'entrée (960 px) perdaient 2 points de rappel sur ce jeu, et à
+#   640 px un visage de 46 px sur une photo de 2400 px n'était plus trouvé (fixture petit_visage.jpg) ;
+# - plaques : image entière seulement (PLATE_TILE = 0). Des tuiles de 576 px ont été mesurées : à score ≥ 0,5,
+#   rappel 0,935 → 0,952 mais précision 0,881 → 0,741 et repasse instable (une photo déjà masquée redonnait une
+#   fausse plaque) ; à ≥ 0,85, aucun gain sur ce jeu. Elles doublaient le temps sur téléphone (5,6 s au lieu de
+#   ~3 s, profil « téléphone moyen ») : coupées, à réévaluer sur les plaques de moto du jeu de terrain.
+# - temps : WORK_MAX_SIDE = 1280 (1920 donnait 9,7 s par photo de 4000 px sur le profil « téléphone moyen »).
+FACE_THRESHOLD, PLATE_THRESHOLD, PLATE_TILE_THRESHOLD = 0.5, 0.25, 0.85
+WORK_MAX_SIDE = 1280
+FACE_TILE, PLATE_TILE, TILE_OVERLAP = 512, 0, 0.2  # PLATE_TILE = 0 : pas de tuiles pour les plaques
 TILE_MAX_FACE = 0.25  # les tuiles cherchent les PETITS visages ; plus haut qu'1/4 de tuile = faux positif probable
 FACE_FILE, PLATE_FILE = "visages-yunet-2023mar.onnx", "plaques-yolov9t-384.onnx"
 CELLS, MARGIN = 6, 0.2  # comme apps/go/src/masking/blur.ts
@@ -116,44 +126,56 @@ def _faces(face_s, img: Image.Image) -> list[Box]:  # type: ignore[no-untyped-de
     return faces
 
 
-def tiles(width: int, height: int) -> list[tuple[int, int, int, int]]:
-    """Tuiles (x0, y0, x1, y1) qui se recouvrent de 25 % ; aucune sous TILE_MIN_SIDE px (image entière suffit)."""
-    if max(width, height) < TILE_MIN_SIDE:
+def tiles(width: int, height: int, size: int) -> list[tuple[int, int, int, int]]:
+    """Tuiles carrées (x0, y0, x1, y1) de `size` px recouvrantes de 20 %, collées aux bords ; aucune si l'image
+    tient dans une tuile (à 5 % près)."""
+    if max(width, height) <= size * 1.05:
         return []
-    tw, th = width / TILES, height / TILES
+    step = size * (1 - TILE_OVERLAP)
+
+    def starts(n: int) -> list[int]:
+        if n <= size:
+            return [0]
+        k = math.ceil((n - size) / step) + 1
+        return [int(min(i * step, n - size)) for i in range(k)]
+
+    return [(x, y, min(width, x + size), min(height, y + size)) for x in starts(width) for y in starts(height)]
+
+
+def _plates(plate_s, img: Image.Image, threshold: float) -> list[Box]:  # type: ignore[no-untyped-def]
+    rgb, r = _square(img, PLATE_SIZE, (114, 114, 114))
+    blob = (rgb / 255.0).transpose(2, 0, 1)[None].astype(np.float32)  # RGB 0–1
+    with _lock:
+        pred = plate_s.run(None, {"images": blob})[0]
     out = []
-    for i in range(TILES):
-        for j in range(TILES):
-            x0, y0 = max(0, int(i * tw - TILE_OVERLAP * tw)), max(0, int(j * th - TILE_OVERLAP * th))
-            x1, y1 = (
-                min(width, int((i + 1) * tw + TILE_OVERLAP * tw)),
-                min(height, int((j + 1) * th + TILE_OVERLAP * th)),
-            )
-            out.append((x0, y0, x1, y1))
+    for p in pred:
+        if p[6] >= threshold:
+            x1, y1 = p[1] / r, p[2] / r
+            out.append(Box(float(x1), float(y1), float(p[3] / r - x1), float(p[4] / r - y1), "plaque", float(p[6])))
     return out
 
 
 def detect(img: Image.Image) -> list[Box]:
     """Visages et plaques d'une image RGB déjà redressée ; coordonnées dans cette image."""
     face_s, plate_s = _sessions(str(get_settings().masking_models_dir))
-    faces = _faces(face_s, img)
-    for x0, y0, x1, y1 in tiles(img.width, img.height):  # petits visages : vus de plus près
+    s = min(1.0, WORK_MAX_SIDE / max(img.size))
+    wk = img.resize((round(img.width * s), round(img.height * s)), Image.BILINEAR) if s < 1 else img
+    faces = _faces(face_s, wk)
+    for x0, y0, x1, y1 in tiles(wk.width, wk.height, FACE_TILE):  # petits visages : vus de plus près
         faces += [
             Box(b.x + x0, b.y + y0, b.w, b.h, b.kind, b.score)
-            for b in _faces(face_s, img.crop((x0, y0, x1, y1)))
+            for b in _faces(face_s, wk.crop((x0, y0, x1, y1)))
             if b.h <= TILE_MAX_FACE * (y1 - y0)
         ]
-    boxes = _nms(faces, 0.3)
-
-    rgb, r = _square(img, PLATE_SIZE, (114, 114, 114))
-    blob = (rgb / 255.0).transpose(2, 0, 1)[None].astype(np.float32)  # RGB 0–1
-    with _lock:
-        pred = plate_s.run(None, {"images": blob})[0]
-    for p in pred:
-        if p[6] >= PLATE_THRESHOLD:
-            x1, y1 = p[1] / r, p[2] / r
-            boxes.append(Box(float(x1), float(y1), float(p[3] / r - x1), float(p[4] / r - y1), "plaque", float(p[6])))
-    return boxes
+    plates = _plates(plate_s, wk, PLATE_THRESHOLD)
+    for x0, y0, x1, y1 in tiles(wk.width, wk.height, PLATE_TILE) if PLATE_TILE else []:
+        plates += [
+            Box(b.x + x0, b.y + y0, b.w, b.h, b.kind, b.score)
+            for b in _plates(plate_s, wk.crop((x0, y0, x1, y1)), PLATE_TILE_THRESHOLD)
+            if b.h <= 0.5 * (y1 - y0)
+        ]
+    boxes = _nms(faces, 0.3) + _nms(plates, 0.3)
+    return [Box(b.x / s, b.y / s, b.w / s, b.h / s, b.kind, b.score) for b in boxes]
 
 
 def pixelate(arr: np.ndarray, boxes: list[Box], margin: float = MARGIN) -> int:

@@ -4,7 +4,7 @@
  * Modèles et moteur (émis par Vite dans assets/) sont servis par l'application et mis en cache par le service worker : aucun réseau à l'usage.
  */
 import * as ort from 'onnxruntime-web/wasm'
-import { decodePlates, decodeYunet, FACE_SIZE, nms, PLATE_SIZE, TILE_MAX_FACE, tiles, type Box } from './geometry'
+import { decodePlates, decodeYunet, FACE_SIZE, FACE_TILE, nms, PLATE_SIZE, PLATE_THRESHOLD, PLATE_TILE, PLATE_TILE_THRESHOLD, TILE_MAX_FACE, tiles, WORK_MAX_SIDE, type Box } from './geometry'
 
 ort.env.wasm.numThreads = 1 // pas d'isolation cross-origin : un seul fil, comme sur tous les téléphones
 
@@ -50,21 +50,31 @@ export interface Detection { boxes: Box[]; ms: number }
 export async function detect(src: CanvasImageSource, width: number, height: number): Promise<Detection> {
   const t0 = performance.now()
   const s = await load()
+  // image de travail ≤ WORK_MAX_SIDE px : une photo de 4000 px coûterait trop sur un téléphone
+  const k = Math.min(1, WORK_MAX_SIDE / Math.max(width, height))
+  const W = Math.round(width * k), H = Math.round(height * k)
+  const wk = document.createElement('canvas')
+  wk.width = W; wk.height = H
+  wk.getContext('2d')!.drawImage(src, 0, 0, W, H)
   const faces = async (sx: number, sy: number, w: number, h: number) => {
-    const f = square(src, w, h, FACE_SIZE, '#000', sx, sy)
+    const f = square(wk, w, h, FACE_SIZE, '#000', sx, sy)
     const out = await s.face.run({ input: toTensor(f.rgba, FACE_SIZE, true, 1) })
     return decodeYunet(out as unknown as Record<string, { data: Float32Array }>, f.ratio).map((b) => ({ ...b, x: b.x + sx, y: b.y + sy }))
   }
-  let found = await faces(0, 0, width, height)
-  for (const [x0, y0, x1, y1] of tiles(width, height)) { // petits visages, vus de plus près
-    found = found.concat((await faces(x0, y0, x1 - x0, y1 - y0)).filter((b) => b.h <= TILE_MAX_FACE * (y1 - y0)))
+  const plates = async (sx: number, sy: number, w: number, h: number, threshold: number) => {
+    const p = square(wk, w, h, PLATE_SIZE, 'rgb(114,114,114)', sx, sy)
+    const out = await s.plate.run({ images: toTensor(p.rgba, PLATE_SIZE, false, 1 / 255) })
+    return decodePlates(out.output0 as unknown as { data: Float32Array; dims: number[] }, p.ratio, threshold).map((b) => ({ ...b, x: b.x + sx, y: b.y + sy }))
   }
-  const p = square(src, width, height, PLATE_SIZE, 'rgb(114,114,114)')
-  const plateOut = await s.plate.run({ images: toTensor(p.rgba, PLATE_SIZE, false, 1 / 255) })
-  const boxes = [
-    ...nms(found, 0.3),
-    ...decodePlates(plateOut.output0 as unknown as { data: Float32Array; dims: number[] }, p.ratio),
-  ]
+  let fs = await faces(0, 0, W, H)
+  for (const [x0, y0, x1, y1] of tiles(W, H, FACE_TILE)) { // petits visages, vus de plus près
+    fs = fs.concat((await faces(x0, y0, x1 - x0, y1 - y0)).filter((b) => b.h <= TILE_MAX_FACE * (y1 - y0)))
+  }
+  let ps = await plates(0, 0, W, H, PLATE_THRESHOLD)
+  for (const [x0, y0, x1, y1] of PLATE_TILE ? tiles(W, H, PLATE_TILE) : []) {
+    ps = ps.concat((await plates(x0, y0, x1 - x0, y1 - y0, PLATE_TILE_THRESHOLD)).filter((b) => b.h <= 0.5 * (y1 - y0)))
+  }
+  const boxes = [...nms(fs, 0.3), ...nms(ps, 0.3)].map((b) => ({ ...b, x: b.x / k, y: b.y / k, w: b.w / k, h: b.h / k }))
   return { boxes, ms: Math.round(performance.now() - t0) }
 }
 

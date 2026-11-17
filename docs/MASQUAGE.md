@@ -85,31 +85,39 @@ sur son grand côté ; chaque case est peinte de sa couleur moyenne (`apps/go/sr
 aucun pixel d'origine : un visage tient en quelques aplats, une plaque en 6 blocs pour 7 à 8 caractères. Ce n'est
 pas un flou gaussien, qu'on peut parfois inverser.
 
-## Réglage de la détection des visages
+## Réglage de la détection (lot 2.1 : petits visages et petites plaques)
 
-Deux réglages, **identiques sur le téléphone et le serveur** (`apps/go/src/masking/geometry.ts`,
-`apps/api/salubri_api/services/masking/detector.py`, test « même découpe que le serveur ») :
+**Identique sur le téléphone et le serveur** (`apps/go/src/masking/geometry.ts`, `detect.ts` ;
+`apps/api/salubri_api/services/masking/detector.py` ; tests « même découpe » des deux côtés) :
 
-- seuil de score des visages **0,5** (défaut OpenCV : 0,6) ;
-- quand la photo dépasse **1000 px** de côté, une seconde passe sur **2×2 tuiles** qui se recouvrent de 25 % ; une
-  tuile ne garde que les visages de moins d'un quart de sa hauteur (elle sert aux petits visages ; au-delà, c'est
-  le plus souvent une calandre ou une affiche, que la passe sur l'image entière aurait déjà vue si c'était un visage).
+1. La photo est ramenée à **1280 px** au plus (image de travail) ; les boîtes sont remises à l'échelle à la fin.
+2. **Visages** : détection sur l'image entière **et** sur des tuiles carrées de **512 px** recouvrantes de 20 %
+   (agrandies à l'entrée du modèle, 640 px), collées aux bords ; seuil 0,5 ; dans une tuile, seuls les visages de
+   moins d'un quart de la tuile sont gardés (les grands sont vus par l'image entière) ; fusion par suppression des
+   doublons (IoU > 0,3).
+3. **Plaques** : image entière seulement (voir le tableau : les tuiles n'apportaient rien de mesurable).
 
-Pourquoi : à 640 px d'entrée, un visage de 30 px sur une photo de téléphone de 4000 px n'en fait plus que 5. Sur
-le jeu public de contrôle (ci-dessous), les essais ont donné :
+Pourquoi : à l'entrée du modèle (640 px), un visage de 46 px sur une photo de 2400 px ne fait plus que ~12 px ;
+il n'est trouvé que par les tuiles (fixture `petit_visage.jpg`, test serveur et test navigateur).
 
-| Visages | Rappel | Précision | Temps serveur |
+| Réglage essayé (jeu public de contrôle) | Visages rappel / précision | Plaques rappel / précision | Temps téléphone* |
 |---|---|---|---|
-| seuil 0,6, image entière (réglage d'avant) | 0,822 | 0,979 | 75 ms |
-| seuil 0,5, image entière | 0,871 | 0,923 | 75 ms |
-| seuil 0,6, + 2×2 tuiles | 0,899 | 0,937 | ~340 ms |
-| **seuil 0,5, + 2×2 tuiles, filtre de taille (retenu)** | **0,928** | **0,849** | 99 ms (médiane*) |
-| seuil 0,5, + 3×3 tuiles | 0,943 | 0,814 | ~690 ms |
+| 2×2 tuiles fixes, image de travail entière (lot 0.4 étape 5) | 0,928 / 0,849 | 0,935 / 0,881 | — |
+| tuiles visages 960 px (1,5 × l'entrée), travail 1920 px | 0,911 / 0,841 | 0,935 / 0,881 | — |
+| tuiles visages 640 px, travail 1920 px, + tuiles plaques 576 px (score ≥ 0,5) | 0,931 / 0,844 | 0,952 / 0,741 | 9,7 s |
+| idem, tuiles plaques à score ≥ 0,85 | 0,931 / 0,844 | 0,935 / 0,881 | — |
+| tuiles visages 640 px, travail 1280 px, tuiles plaques 576 px (≥ 0,85) | 0,931 / 0,844 | 0,935 / 0,868 | 5,6 s |
+| **retenu : tuiles visages 512 px, travail 1280 px, plaques sans tuiles** | **0,933 / 0,812** | **0,935 / 0,881** | **2,2 s** |
 
-\* la médiane baisse parce que la moitié des photos du jeu font moins de 1000 px et n'ont pas de tuiles.
-Pour la vie privée, un dépôt flouté en trop coûte moins qu'un visage oublié : on accepte la perte de précision,
-et le bouton « annuler » sur chaque cadre reste là pour les faux positifs. Le 3×3 gagne peu pour deux fois le
-temps : écarté.
+\* photo de 4000 × 2667 px, Chrome sans écran avec le processeur ralenti ×4 (profil « téléphone moyen » de
+DevTools), détecteur déjà chargé ; la **première** photo, qui charge le détecteur, prend 4,9 s. Sans
+ralentissement : 0,5 s (1,5 s la première). Sur un vrai téléphone : protocole dans
+`docs/MASQUAGE_TELEPHONE.md` (lot 2.7), **non mesuré**.
+
+Les tuiles de plaques à score ≥ 0,5 gagnaient 1,7 point de rappel mais faisaient perdre 14 points de précision,
+rendaient la repasse instable (une photo déjà masquée redonnait une fausse plaque) et doublaient le temps : elles
+sont coupées tant que le jeu de terrain (plaques de moto, § jeu de terrain) n'a pas montré qu'elles servent.
+**Cible visages 0,95 : non atteinte** sur ce jeu (0,933).
 
 ## Mesures
 
