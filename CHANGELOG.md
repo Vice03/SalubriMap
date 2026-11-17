@@ -2,6 +2,7 @@
 
 ## 0.4.0 — en cours
 
+- **Masquage, étape 4 — règles sur images masquées** : tests montrant que R2 (photo réutilisée) repère toujours la même photo masquée envoyée par deux téléphones, et la copie masquée d'une photo envoyée en clair (pHash : 4/64 d'écart, seuil 8), et que R11 ne prend pas une photo masquée pour une photo vide. Aucun seuil modifié.
 - **Masquage, étape 3 — filet de sécurité serveur** : chaque photo reçue (Salubri Go, import ZIP) est relue par le serveur avec les mêmes modèles (onnxruntime) et ce qui reste est pixellisé avant l'enregistrement ; `reports.masking = {client, server}` (migration 0005). Sans modèles, aucune photo n'est enregistrée (503, ligne d'import refusée) et `/api/health` affiche `masking: indisponible`. Rattrapage des photos déjà enregistrées : `python -m salubri_api.services.masking.backfill`.
 - **Salubri Go, affichage** : l'étape « Reçu » du suivi et les étapes 1–4 du formulaire étaient décalées de 40 px (la classe `done` de l'écran « Merci » s'y appliquait) ; classe renommée `is-done`.
 - **Démarrage sans réseau fiable** : `run/start` ne reconstruit plus que les images de Salubri (API, interfaces) ; OSRM et PostGIS, déjà présents, ne sont plus redemandés à leurs registres (ghcr.io injoignable bloquait tout le démarrage). Si la reconstruction échoue, l'application démarre avec les images déjà présentes, avec un avertissement.
