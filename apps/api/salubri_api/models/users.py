@@ -4,7 +4,7 @@
 import uuid
 from datetime import datetime
 
-from sqlalchemy import Boolean, CheckConstraint, DateTime, Integer, String
+from sqlalchemy import BigInteger, Boolean, CheckConstraint, DateTime, Index, Integer, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -26,3 +26,15 @@ class User(Base):
     # invalide d'un coup toutes les sessions déjà délivrées à ce compte
     session_version: Mapped[int] = mapped_column(Integer, default=0, server_default="0")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class LoginFailure(Base):
+    """Échec de connexion (anti-force brute, services/ratelimit.py). En base pour que la commande
+    `python -m salubri_api.users unlock` atteigne l'API en cours d'exécution, et pour survivre à un redémarrage."""
+
+    __tablename__ = "login_failures"
+    __table_args__ = (Index("ix_login_failures_login_at", "login", "at"), Index("ix_login_failures_ip_at", "ip", "at"))
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    login: Mapped[str] = mapped_column(String(64))
+    ip: Mapped[str] = mapped_column(String(64))
+    at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

@@ -45,6 +45,8 @@ def main(argv: list[str] | None = None) -> int:
     d = sub.add_parser("disable", help="désactiver un compte (ferme les sessions ouvertes)")
     d.add_argument("login")
     sub.add_parser("list", help="lister les comptes")
+    un = sub.add_parser("unlock", help="effacer les échecs de connexion d'un compte (lève le blocage)")
+    un.add_argument("login")
     args = ap.parse_args(argv)
 
     with get_sessionmaker()() as s:
@@ -64,6 +66,14 @@ def main(argv: list[str] | None = None) -> int:
                 s.flush()
                 audit(s, "create", "user", u.id, after={"login": login, "role": args.role}, actor="console")
                 print(f"Compte « {login} » créé ({args.role}).")
+            elif args.cmd == "unlock":
+                from salubri_api.services.ratelimit import unlock
+
+                n = unlock(s, login)
+                audit(
+                    s, "unlock", "user", user.id if user else None, after={"login": login, "echecs": n}, actor="console"
+                )
+                print(f"Compte « {login} » : {n} échec(s) de connexion effacé(s), blocage levé.")
             elif args.cmd == "list":
                 for u in s.query(User).order_by(User.login):
                     print(f"{u.login:20} {u.role:11} {'actif' if u.active else 'désactivé':10} {u.display_name}")

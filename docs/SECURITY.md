@@ -20,7 +20,7 @@ parcourt toutes les routes du schéma OpenAPI pour n'en oublier aucune).
 
 | Menace | Protection | Où |
 |---|---|---|
-| Deviner un mot de passe | argon2id ; blocage 15 min après 5 échecs par identifiant ou par adresse ; nginx : 10 tentatives/min/IP | `services/auth.py`, `services/ratelimit.py`, `services/nginx/` |
+| Deviner un mot de passe | argon2id ; blocage 15 min après 5 échecs pour une paire (identifiant, adresse) et après 20 échecs par adresse ; sur un identifiant seul, jamais de blocage (un attaquant ne peut pas verrouiller le compte d'un autre) mais un délai de 1 à 8 s sur chaque échec au-delà de 20 ; levée : `python -m salubri_api.users unlock <login>` ; nginx : 10 tentatives/min/IP | `services/auth.py`, `services/ratelimit.py`, `services/nginx/` |
 | Voler une session | jeton signé HMAC-SHA256, 8 h, révoqué à la déconnexion (`session_version`) ; gardé en mémoire + `sessionStorage`, jamais dans une URL | `services/auth.py`, `apps/web/src/api/` |
 | Laisser le code de démonstration en production | hors mode démo, l'API **refuse de démarrer** si un secret est vide, faible ou égal à `ouaga2026`, si aucun admin n'existe ou si le compte `demo` est actif | `services/security_config.py` |
 | Inonder la mairie de faux signalements | 13 Mo par requête, 60 POST/min/IP (nginx), 30 signalements/h par téléphone (429), puis les 14 règles anti-pièges | `routers/reports.py`, `services/validation/` |
@@ -35,7 +35,7 @@ parcourt toutes les routes du schéma OpenAPI pour n'en oublier aucune).
 
 - **Démonstration** : le mode démo est public par construction (code `ouaga2026`, compte `demo`). Ne jamais l'exposer sur Internet.
 - **Certificat local** : en démonstration, le HTTPS de `:8443` est auto-signé ; le téléphone affiche un avertissement. Ce n'est pas une protection contre un attaquant sur le même Wi-Fi.
-- **Plusieurs processus API** : les compteurs anti-force brute sont en mémoire d'un seul processus (voir `docs/HYPOTHESES.md`).
+- **Plusieurs processus API** : les échecs de connexion sont en base (partagés) ; les compteurs anti-pourriel des signalements restent en mémoire d'un seul processus (voir `docs/HYPOTHESES.md`).
 - **Un téléphone qui change d'identifiant** contourne la limite par appareil ; la limite par adresse et les règles restent.
 - **Sauvegardes** : la base (`pgdata`) et les photos (`photos`) sont des volumes Docker ; leur sauvegarde et leur chiffrement sont à la charge de l'hébergeur.
 - **Dépendances** : `pip-audit` et `pnpm audit --prod` tournent en CI ; les exceptions sont listées dans `.github/workflows/ci.yml`.
