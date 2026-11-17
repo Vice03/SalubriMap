@@ -14,6 +14,7 @@ import argparse
 import io
 import json
 import os
+import random
 import sys
 import time
 import zipfile
@@ -280,9 +281,81 @@ def run_changes(c: httpx.Client, keep: bool) -> tuple[bool, list[str]]:
             f"| {_pct(coh.get('couverture_avant'))} → {_pct(coh.get('couverture_apres'))} "
             f"| {'✅' if good else '❌ ' + '; '.join(errs)} |"
         )
+    why = [f"- **{s['name']}** : {s['pourquoi']}" for s in spec["steps"] if s.get("pourquoi")]
+    if why:
+        lines += ["", "Ce qui change et pourquoi :", "", *why]
     if not keep:
         if created_quartier:
             c.delete(f"/api/quartiers/{created_quartier}")
+        c.delete(f"/api/scenarios/{sid}")
+    return all_ok, lines
+
+
+def _tirage(rng: random.Random, spec: dict[str, Any]) -> tuple[str, Any]:
+    name = rng.choice(sorted(spec))
+    dom = spec[name]
+    if isinstance(dom[0], str):
+        return name, rng.choice(dom)
+    lo, hi = dom
+    v = rng.uniform(lo, hi)
+    return name, (round(v) if isinstance(lo, int) and isinstance(hi, int) else round(v, 3))
+
+
+def run_perturbations(c: httpx.Client, keep: bool) -> tuple[bool, list[str]]:
+    """Le jury change 10 paramètres au hasard, l'un après l'autre : chaque nouveau plan reste dans les bornes de
+    cohérence documentées dans scenario_changes.yaml (section perturbations)."""
+    spec = yaml.safe_load((DATA / "rehearsal" / "scenario_changes.yaml").read_text(encoding="utf-8"))["perturbations"]
+    rng = random.Random(spec["graine"])
+    b = spec["bornes"]
+    wait_idle(c)
+    base = next(s for s in c.get("/api/scenarios").json() if s["is_baseline"])
+    clone = c.post(
+        "/api/scenarios", json={"name": f"Perturbations {datetime.now(UTC):%H:%M:%S}", "parent_id": base["id"]}
+    ).json()
+    sid = clone["id"]
+    wait_plan(c, clone["plan_version_id"])
+    budget0 = clone["params"]["budget_fcfa_month"]
+    lines = [
+        f"Graine {spec['graine']}, {spec['n']} changements tirés dans `perturbations.parametres`, enchaînés. Bornes : "
+        f"points inchangés ≥ {_pct(b['points_inchanges_min'])}, déplacement moyen sur tous les points ≤ "
+        f"{b['deplacement_moyen_tous_max_m']} m, "
+        f"perte de couverture ≤ {_pct(b['couverture_baisse_max'])} quand le paramètre ne touche pas au placement.",
+        "",
+        "| # | Paramètre → valeur | Points inchangés | Déplacement des points déplacés, moyen / max "
+        "| Déplacement moyen, tous points | Tournées (Jaccard) "
+        "| Couverture avant → après | Résultat |",
+        "|---|---|---|---|---|---|---|---|",
+    ]
+    all_ok = True
+    print(f"\n{'#':3} {'changement':44} inchangés  dépl. moyen  résultat")
+    for i in range(spec["n"]):
+        name, val = _tirage(rng, spec["parametres"])
+        body = {"budget_fcfa_month": round(budget0 * val)} if name == "budget_factor" else {name: val}
+        plan_id = c.patch(f"/api/scenarios/{sid}", json={"params": body}).json()["plan_version_id"]
+        plan, _ = wait_plan(c, plan_id)
+        errs = invariants(c, plan, None, {}, None)
+        coh = ((plan.get("summary") or {}).get("diff") or {}).get("coherence") or {}
+        part, moy = coh.get("points_inchanges_part"), coh.get("deplacement_moyen_m")
+        av, ap = coh.get("couverture_avant"), coh.get("couverture_apres")
+        if part is not None and part < b["points_inchanges_min"]:
+            errs.append(f"points inchangés {_pct(part)}")
+        # coherence.deplacement_moyen_m est la moyenne sur les seuls points déplacés : ramenée à tous les points
+        tous = round(moy * (1 - part), 1) if moy is not None and part is not None else None
+        if tous is not None and tous > b["deplacement_moyen_tous_max_m"]:
+            errs.append(f"déplacement moyen (tous points) {tous} m")
+        if name not in spec["touchent_placement"] and av is not None and ap is not None:
+            if av - ap > b["couverture_baisse_max"]:
+                errs.append(f"couverture {_pct(av)} → {_pct(ap)}")
+        good = not errs
+        all_ok &= good
+        print(f"{i + 1:<3} {name + ' → ' + str(val):44} {_pct(part):>9}  {str(moy):>10}  {ok(good)} {'; '.join(errs)}")
+        lines.append(
+            f"| {i + 1} | `{name}` → {val} | {_pct(part)} | {moy if moy is not None else '—'} / "
+            f"{coh.get('deplacement_max_m', '—')} m | {tous if tous is not None else '—'} m "
+            f"| {coh.get('tournees_jaccard', '—')} "
+            f"| {_pct(av)} → {_pct(ap)} | {'✅' if good else '❌ ' + '; '.join(errs)} |"
+        )
+    if not keep:
         c.delete(f"/api/scenarios/{sid}")
     return all_ok, lines
 
@@ -299,6 +372,7 @@ def main() -> None:
         print(f"API {a.api} : base {h['db']}, OSRM {h['osrm']}")
         traps_ok, traps_lines = run_traps(c)
         changes_ok, change_lines = (True, []) if a.traps_only else run_changes(c, a.keep)
+        pert_ok, pert_lines = (True, []) if a.traps_only else run_perturbations(c, a.keep)
     report = [
         "# Rapport de répétition de l'épreuve",
         "",
@@ -310,11 +384,16 @@ def main() -> None:
     ]
     if not a.traps_only:
         report += ["", "## Changements de paramètres", "", *change_lines]
-    report += ["", f"**Résultat : {'tout est vert' if traps_ok and changes_ok else 'des contrôles échouent'}.**", ""]
+        report += ["", "## Perturbations au hasard (comme un jury)", "", *pert_lines]
+    report += [
+        "",
+        f"**Résultat : {'tout est vert' if traps_ok and changes_ok and pert_ok else 'des contrôles échouent'}.**",
+        "",
+    ]
     out = ROOT / "docs" / "REHEARSAL_REPORT.md"
     out.write_text("\n".join(report), encoding="utf-8")
     print(f"\nRapport écrit dans {out.relative_to(ROOT)}")
-    sys.exit(0 if traps_ok and changes_ok else 1)
+    sys.exit(0 if traps_ok and changes_ok and pert_ok else 1)
 
 
 if __name__ == "__main__":

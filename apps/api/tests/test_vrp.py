@@ -78,3 +78,16 @@ def test_time_limited_ortools_never_serves_less_than_the_fallback() -> None:
     assert left(sol.unserved) <= left(fb.unserved) + 1e-9
     assert effective_time_limit(1.0, 56) == 1.0
     assert effective_time_limit(1.0, 1035) > 3
+
+
+def test_kg_rounding_never_overloads_a_truck():
+    """Lot 4.3 (perturbations) : 16 demandes de 0,5000625 t, soit 8,001 t pour 16 points ; arrondies au kg le plus
+    proche elles faisaient 8,000 t et tenaient « exactement » dans un camion de 8 t."""
+    nodes = [(-1.52, 12.37)] + [(-1.52 + 0.001 * i, 12.37 + 0.0005 * (i % 3)) for i in range(1, 17)]
+    m = approx_matrix(nodes, "dry")
+    dem = np.array([0.0] + [0.5000625] * 16)
+    sol = solve_vrp(m.distance_km, m.duration_min, dem, [VehicleSpec(8, 450, 20000)], [(0, 1440)] * 17,
+                    time_limit_s=0.5, rotations=1)  # fmt: skip
+    for r in sol.routes:
+        assert sum(dem[i] for i in r.stops) <= 8 + 1e-9
+    assert sol.unserved  # 16 points ne tiennent plus dans un seul tour

@@ -18,6 +18,11 @@ steps:
     must_hit: [E3]
     # la pluie change les vitesses et les volumes, pas l'emplacement des bacs : aucun déplacement justifié ici
     coherence: {points_inchanges_min: 1.0}
+    pourquoi: >-
+      aucun point ne bouge (exigé : 100 %), la pluie ne change pas où sont les bacs. Les tournées, elles, sont
+      refaites : distances plus longues (graphe OSRM « pluie » ou détour ×1,5 sans OSRM), vitesse ×0,7 sur les
+      voies inondables et +15 % de déchets mouillés (E2). Les nouvelles tournées évitent les voies coupées et
+      tiennent dans les journées des chauffeurs ; c'est attendu qu'elles diffèrent beaucoup (Jaccard bas).
     max_s: 3
   - name: "Nouveau quartier (45 000 hab.)"
     action: new_quartier
@@ -51,3 +56,30 @@ steps:
   - name: "Deux modifications en 100 ms"
     action: double_patch
     max_s: 5
+
+# Perturbations au hasard (lot 4.3) : n changements tirés avec la graine, enchaînés sur un clone du scénario de
+# base. Chaque plan doit rester prêt, sans tournée surchargée ni point hors contraintes, et dans ces bornes :
+#   points_inchanges_min : la pénalité de stabilité du placement (300 m) doit garder en place la plupart des points ;
+#   deplacement_moyen_tous_max_m : déplacement moyen sur TOUS les points (immobiles compris) ; 30 m = au plus 10 %
+#     des points déplacés de la distance de stabilité (300 m). Un point déplacé seul peut aller plus loin quand
+#     le changement le justifie (capacité, marche) : c'est la moyenne qui dit si le plan a été refait.
+#     (Première version : borne de 300 m sur la moyenne des seuls points déplacés, mal définie — un unique point
+#     déplacé de 312 m la faisait échouer ; corrigée le 17/11, voir CHANGELOG 0.4.0.)
+#   couverture_baisse_max : un paramètre qui ne touche pas au placement ne doit pas faire perdre de couverture.
+# Bornes fixées a priori (pas réglées sur une mesure) : si un tirage les dépasse, c'est le modèle qu'on corrige.
+perturbations:
+  graine: 2026
+  n: 10
+  bornes: {points_inchanges_min: 0.7, deplacement_moyen_tous_max_m: 30, couverture_baisse_max: 0.0}
+  touchent_placement: [waste_kg_per_person_day, walk_distance_max_m, collection_point_capacity_t, pickup_frequency_per_week]
+  parametres:
+    waste_kg_per_person_day: [0.45, 0.8]
+    walk_distance_max_m: [250.0, 400.0]
+    collection_point_capacity_t: [2.0, 3.5]
+    pickup_frequency_per_week: [1, 4]
+    budget_factor: [0.6, 1.3]
+    subscription_rate: [0.2, 0.5]
+    season: [dry, rain]
+    laabal_operations_per_week: [1.0, 6.0]
+    truck_breakdown_rate_per_day: [0.01, 0.08]
+    fuel_cost_fcfa_per_km: [350.0, 650.0]

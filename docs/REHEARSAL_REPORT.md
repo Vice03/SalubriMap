@@ -1,6 +1,6 @@
 # Rapport de répétition de l'épreuve
 
-Généré le 17/11/2026 13:45 UTC — API http://localhost:8088, OSRM down.
+Généré le 17/11/2026 18:53 UTC — API http://localhost:8088, OSRM down.
 
 ## Signalements piégés
 
@@ -69,12 +69,33 @@ Dépotoirs consolidés avant/après : 195 → 195 ✅
 
 | Étape | Événement | Étapes recalculées | En cache | Durée serveur | Durée totale | Points inchangés | Déplacement moyen / max | Tournées (Jaccard) | Δ coût | Couverture avant → après | Invariants |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.14 s | 1.29 s | 100 % | 0.0 / 0.0 m | 0.028 | -41447 | 100 % → 100 % | ✅ |
-| Saison des pluies | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.16 s | 1.28 s | 100 % | 0.0 / 0.0 m | 0.114 | 18923 | 100 % → 100 % | ✅ |
-| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 3.63 s | 4.07 s | 100 % | 0.0 / 0.0 m | 0.815 | 30 | 100 % → 97 % | ✅ |
-| Budget −30 % | budget_changed | E6, E7 | E1, E2, E3, E4, E5 | 0.22 s | 0.44 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 97 % → 97 % | ✅ |
-| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.21 s | 1.39 s | 100 % | 0.0 / 0.0 m | 0.067 | 60287 | 97 % → 97 % | ✅ |
-| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.25 s | 1.41 s | 100 % | 0.0 / 0.0 m | 0.141 | -13962 | 97 % → 97 % | ✅ |
-| Deux modifications en 100 ms | subscription_changed | E7 | E1, E2, E3, E4, E5, E6 | 0.00 s | 0.25 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 97 % → 97 % | ✅ |
+| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.15 s | 1.30 s | 100 % | 0.0 / 0.0 m | 0.058 | -41126 | 100 % → 100 % | ✅ |
+| Saison des pluies | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.16 s | 1.28 s | 100 % | 0.0 / 0.0 m | 0.132 | 18507 | 100 % → 100 % | ✅ |
+| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 3.53 s | 3.79 s | 100 % | 0.0 / 0.0 m | 0.635 | 6669 | 100 % → 100 % | ✅ |
+| Budget −30 % | budget_changed | E6, E7 | E1, E2, E3, E4, E5 | 0.22 s | 0.43 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 100 % → 100 % | ✅ |
+| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.24 s | 1.39 s | 100 % | 0.0 / 0.0 m | 0.04 | 59707 | 100 % → 100 % | ✅ |
+| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.24 s | 1.39 s | 100 % | 0.0 / 0.0 m | 0.088 | -18387 | 100 % → 100 % | ✅ |
+| Deux modifications en 100 ms | subscription_changed | E7 | E1, E2, E3, E4, E5, E6 | 0.00 s | 0.27 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 100 % → 100 % | ✅ |
+
+Ce qui change et pourquoi :
+
+- **Saison des pluies** : aucun point ne bouge (exigé : 100 %), la pluie ne change pas où sont les bacs. Les tournées, elles, sont refaites : distances plus longues (graphe OSRM « pluie » ou détour ×1,5 sans OSRM), vitesse ×0,7 sur les voies inondables et +15 % de déchets mouillés (E2). Les nouvelles tournées évitent les voies coupées et tiennent dans les journées des chauffeurs ; c'est attendu qu'elles diffèrent beaucoup (Jaccard bas).
+
+## Perturbations au hasard (comme un jury)
+
+Graine 2026, 10 changements tirés dans `perturbations.parametres`, enchaînés. Bornes : points inchangés ≥ 70 %, déplacement moyen sur tous les points ≤ 30 m, perte de couverture ≤ 0 % quand le paramètre ne touche pas au placement.
+
+| # | Paramètre → valeur | Points inchangés | Déplacement des points déplacés, moyen / max | Déplacement moyen, tous points | Tournées (Jaccard) | Couverture avant → après | Résultat |
+|---|---|---|---|---|---|---|---|
+| 1 | `collection_point_capacity_t` → 2.479 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
+| 2 | `walk_distance_max_m` → 347.08 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.276 | 100 % → 100 % | ✅ |
+| 3 | `collection_point_capacity_t` → 3.326 | 99 % | 311.9 / 311.9 m | 4.1 m | 0.189 | 100 % → 100 % | ✅ |
+| 4 | `waste_kg_per_person_day` → 0.668 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.047 | 100 % → 100 % | ✅ |
+| 5 | `subscription_rate` → 0.435 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
+| 6 | `walk_distance_max_m` → 376.36 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
+| 7 | `truck_breakdown_rate_per_day` → 0.063 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
+| 8 | `waste_kg_per_person_day` → 0.604 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.099 | 100 % → 100 % | ✅ |
+| 9 | `budget_factor` → 1.03 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
+| 10 | `collection_point_capacity_t` → 2.431 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.287 | 100 % → 100 % | ✅ |
 
 **Résultat : tout est vert.**

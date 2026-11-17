@@ -100,7 +100,9 @@ def solve_vrp(
     routing = pywrapcp.RoutingModel(manager)
     dist_i = np.rint(dist_km * SCALE).astype(int)
     dur_i = np.rint(dur_min).astype(int)
-    dem_i = np.rint(demand_t * SCALE).astype(int)
+    # demandes arrondies au kg supérieur, capacités au kg inférieur : la charge réelle ne dépasse jamais la
+    # capacité (un arrondi au plus proche laissait passer 8,001 t dans un camion de 8 t)
+    dem_i = np.ceil(np.round(demand_t * SCALE, 6)).astype(int)
     svc = int(service_min)
 
     for v, (vi, rot) in enumerate(fleet):
@@ -119,7 +121,7 @@ def solve_vrp(
 
     dcb = routing.RegisterUnaryTransitCallback(demand_cb)
     routing.AddDimensionWithVehicleCapacity(
-        dcb, 0, [int(vehicles[vi].capacity_t * SCALE) for vi, _ in fleet], True, "Capacity"
+        dcb, 0, [int(np.floor(round(vehicles[vi].capacity_t * SCALE, 6))) for vi, _ in fleet], True, "Capacity"
     )
 
     def time_cb(a: int, b: int) -> int:
