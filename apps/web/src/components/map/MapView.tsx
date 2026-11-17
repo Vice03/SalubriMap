@@ -1,8 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import maplibregl, { type GeoJSONSource, type Map as MLMap } from 'maplibre-gl'
+/// <reference types="geojson" />
+import * as maplibregl from 'maplibre-gl'
+import type { GeoJSONSource, Map as MLMap } from 'maplibre-gl'
 import 'maplibre-gl/dist/maplibre-gl.css'
+// MapLibre 6 charge son worker à côté de son module : Vite doit l'emballer lui-même (lot A6, mise à jour de sécurité)
+import workerUrl from 'maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url'
 import { useEffect, useRef, useState } from 'react'
 import type { Commune, DumpProps, FC, Feature, LineGeom, PointGeom, PointProps, PolyGeom, QuartierProps, ReportProps, RouteProps } from '../../api/types'
+
+maplibregl.setWorkerUrl(workerUrl)
 
 export interface Layers { quartiers: boolean; dumps: boolean; reports: boolean; points: boolean; routes: boolean; trucks: boolean; sdgd?: boolean }
 

@@ -22,6 +22,7 @@ RUN apk add --no-cache openssl && mkdir -p /etc/nginx/salubri \
 COPY services/nginx/nginx.conf /etc/nginx/conf.d/default.conf
 COPY services/nginx/locations.conf /etc/nginx/salubri/locations.conf
 COPY services/nginx/api_proxy.conf /etc/nginx/salubri/api_proxy.conf
+COPY services/nginx/security_headers.conf /etc/nginx/salubri/security_headers.conf
 COPY services/nginx/placeholder/ /srv/placeholder/
 COPY --from=build /src/apps/web/dist /srv/web
 COPY --from=build /src/apps/go/dist /srv/go
