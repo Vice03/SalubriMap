@@ -2,6 +2,7 @@
 
 ## 0.4.0 — en cours
 
+- **Lot 1.2 — outils épinglés** : ruff 0.17.5 (déjà), pytest 9.2.0, pytest-cov 7.1.0, pip-audit 2.10.1, playwright 1.65.2 (`pyproject.toml` [dev] et CI), uv 0.11.32 et Node 22.23.4 dans la CI (mêmes versions qu'en local). Lint et format : aucun écart.
 - **Lot 1.1 — verrouillage de connexion** : blocage dur seulement par paire (identifiant, adresse) après 5 échecs en 15 min et par adresse après 20 ; un identifiant seul n'est jamais bloqué, ses échecs au-delà de 20 sont ralentis (1, 2, 4, puis 8 s), le bon mot de passe passe tout de suite d'une autre adresse. Échecs en base (`login_failures`, migration 0006) pour que `python -m salubri_api.users unlock <login>` agisse sur l'API lancée. Les deux tests qui exigeaient l'ancien comportement (blocage du compte depuis toute adresse, adresse bloquée à 5) sont réécrits pour la nouvelle règle.
 - **Carte vide corrigée** : la feuille de style de MapLibre, chargée après celle de l'application, remettait la carte en `position: relative`, donc à 0 px de haut : fond beige sans tuiles ni couches. Règle rendue plus précise.
 - **Livrables, étape 6 — liste de contrôle** : `docs/CHECKLIST_FINALE.md`, chaque exigence de la fiche, où elle est satisfaite (fichier, test, commande) et son statut ; ce que seule l'équipe peut faire est marqué « à faire par l'équipe ».

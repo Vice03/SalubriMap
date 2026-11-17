@@ -32,7 +32,8 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest>=8", "ruff==0.17.5"]  # ruff épinglé : même formatage en local et en CI
+# outils de vérification épinglés : mêmes résultats en local (make ci-*) et en CI (.github/workflows/ci.yml)
+dev = ["pytest==9.2.0", "pytest-cov==7.1.0", "ruff==0.17.5", "pip-audit==2.10.1", "playwright==1.65.2"]
 
 [tool.ruff]
 extend = "../../ruff.toml"
