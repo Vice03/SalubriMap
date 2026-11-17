@@ -72,10 +72,9 @@ def test_same_photo_twice_is_not_confirmed_and_explains_why(browser, base):  # t
 
 def test_pwa_manifest_has_png_icons(browser, base):  # type: ignore[no-untyped-def]
     ctx, page = _ctx(browser)
-    page.goto(f"{base}/go/manifest.webmanifest")
-    import json
-
-    icons = json.loads(page.locator("body").inner_text())["icons"]
+    r = page.request.get(f"{base}/go/manifest.webmanifest")  # requête, pas navigation : le type compte, pas le rendu
+    assert r.ok and r.headers["content-type"].split(";")[0] == "application/manifest+json"
+    icons = r.json()["icons"]
     sizes = {(i["sizes"], i.get("purpose")) for i in icons}
     assert ("192x192", "any") in sizes and ("512x512", "any") in sizes and ("512x512", "maskable") in sizes
     for i in icons:
