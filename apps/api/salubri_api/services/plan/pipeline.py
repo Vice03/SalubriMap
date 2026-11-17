@@ -322,6 +322,7 @@ def plan_view(s: Session, pv: PlanVersion) -> PlanView:
         km=float(sum(r.distance_km for r in routes)),
         cost=float(sum(r.cost for r in routes)),
         unserved=s.query(UnservedPoint).filter(UnservedPoint.plan_version_id == pv.id).count(),
+        coverage=(pv.summary or {}).get("coverage_walk"),
     )
 
 
@@ -549,6 +550,13 @@ def _execute(pv_id: str) -> None:
             # Persist the version (immutable rows, copied even when stages were cached)
             cp_ids = _persist(s, pv, ilots, placement, points.time_windows, vrp)
             new_view = plan_view(s, pv)
+            pop_il = ilots.population * params.population_factor
+            coverage_walk = (
+                round(float(pop_il[snap.ilot_dist_m <= params.walk_distance_max_m].sum() / pop_il.sum()), 4)
+                if pop_il.sum() > 0
+                else None
+            )
+            new_view.coverage = coverage_walk
 
             # E7 diff
             old_view = plan_view(s, prev) if prev is not None else None
@@ -564,6 +572,7 @@ def _execute(pv_id: str) -> None:
                 "points": len(placement.points),
                 "points_constraint_relaxed": sum(1 for p in placement.points if not p.constrained_ok),
                 "placement": placement.optimisation,
+                "coverage_walk": coverage_walk,
                 "routes": len(vrp.solution.routes),
                 "vehicles_available": len(vehicles),
                 "km_day": round(sum(r.distance_km for r in vrp.solution.routes), 1),

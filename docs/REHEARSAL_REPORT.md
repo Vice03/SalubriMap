@@ -1,8 +1,10 @@
 # Rapport de répétition de l'épreuve
 
-Généré le 16/11/2026 20:38 UTC — API http://localhost:8000, OSRM down.
+Généré le 17/11/2026 11:00 UTC — API http://localhost:8088, OSRM down.
 
 ## Signalements piégés
+
+Jeu de pièges : `routes-synthetiques_batiments-synthetiques`
 
 | Piège | Attendu | Obtenu | Règles | Résultat |
 |---|---|---|---|---|
@@ -30,8 +32,8 @@ Généré le 16/11/2026 20:38 UTC — API http://localhost:8000, OSRM down.
 | trap-022-r6-building | to_review/rejected R6 | to_review (50) | R6 | ✅ |
 | trap-023-r6-building | to_review/rejected R6 | to_review (50) | R6 | ✅ |
 | trap-024-r7-reservoir | rejected R7 | rejected (0) | R7 | ✅ |
-| trap-025-r7-reservoir | rejected R7 | rejected (0) | R5, R7 | ✅ |
-| trap-026-r7-river | to_review/rejected R7 | rejected (0) | R5, R7 | ✅ |
+| trap-025-r7-reservoir | rejected R7 | rejected (0) | R7 | ✅ |
+| trap-026-r7-river | to_review/rejected R7 | to_review (55) | R7 | ✅ |
 | trap-027-r8-zero | rejected R8 | rejected (0) | R5, R8 | ✅ |
 | trap-028-r8-rounded | probable/to_review R8 | probable (75) | R8 | ✅ |
 | trap-029-r8-accuracy | probable R8 | probable (85) | R8 | ✅ |
@@ -61,18 +63,18 @@ Généré le 16/11/2026 20:38 UTC — API http://localhost:8000, OSRM down.
 | trap-053-r12-medical | probable R12 | probable (90) | R12 | ✅ |
 | trap-054-combined | rejected R2 R6 | rejected (0) | R2, R6 | ✅ |
 
-Dépotoirs consolidés avant/après : 194 → 194 ✅
+Dépotoirs consolidés avant/après : 195 → 195 ✅
 
 ## Changements de paramètres
 
-| Étape | Événement | Étapes recalculées | En cache | Durée serveur | Durée totale | Invariants |
-|---|---|---|---|---|---|---|
-| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.03 s | 1.16 s | ✅ |
-| Saison des pluies | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.04 s | 1.26 s | ✅ |
-| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 1.73 s | 2.14 s | ✅ |
-| Budget −30 % | budget_changed | E6, E7 | E1, E2, E3, E4, E5 | 0.07 s | 0.24 s | ✅ |
-| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.06 s | 1.29 s | ✅ |
-| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.11 s | 1.46 s | ✅ |
-| Deux modifications en 100 ms | subscription_changed | E7 | E1, E2, E3, E4, E5, E6 | 0.00 s | 0.89 s | ✅ |
+| Étape | Événement | Étapes recalculées | En cache | Durée serveur | Durée totale | Points inchangés | Déplacement moyen / max | Tournées (Jaccard) | Δ coût | Couverture avant → après | Invariants |
+|---|---|---|---|---|---|---|---|---|---|---|---|
+| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.17 s | 1.31 s | 100 % | 0.0 / 0.0 m | 0.13 | -40963 | 100 % → 100 % | ✅ |
+| Saison des pluies | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.19 s | 1.39 s | 100 % | 0.0 / 0.0 m | 0.14 | 18284 | 100 % → 100 % | ✅ |
+| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 3.58 s | 3.80 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 100 % → 98 % | ✅ |
+| Budget −30 % | budget_changed | E6, E7 | E1, E2, E3, E4, E5 | 0.24 s | 0.44 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 98 % → 98 % | ✅ |
+| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.33 s | 1.49 s | 100 % | 0.0 / 0.0 m | 0.04 | 59936 | 98 % → 98 % | ✅ |
+| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.30 s | 1.50 s | 100 % | 0.0 / 0.0 m | 0.147 | -14018 | 98 % → 98 % | ✅ |
+| Deux modifications en 100 ms | subscription_changed | E7 | E1, E2, E3, E4, E5, E6 | 0.00 s | 0.26 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 98 % → 98 % | ✅ |
 
 **Résultat : tout est vert.**

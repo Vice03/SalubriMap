@@ -55,6 +55,11 @@ export interface PlanDiff {
   first_version: boolean; points_added: number; points_removed: number; points_moved: number
   routes_changed: number; km_delta: number; km_delta_pct: number | null; cost_delta: number
   unserved_delta: number; text: string
+  coherence?: {
+    points_inchanges_part: number | null; deplacement_moyen_m: number; deplacement_max_m: number
+    tournees_jaccard: number; cout_delta: number; km_delta: number
+    couverture_avant: number | null; couverture_apres: number | null
+  } | null
 }
 export interface SimSummary { [k: string]: number }
 export interface PlanSummary {

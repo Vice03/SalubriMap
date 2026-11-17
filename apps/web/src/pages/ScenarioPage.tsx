@@ -150,6 +150,18 @@ export function ScenarioPage() {
           )}
         </div>
         {s?.diff && <div style={{ marginTop: 12, fontWeight: 600 }}>Dernier changement : {s.diff.text}</div>}
+        {s?.diff?.coherence && (() => {
+          const c = s.diff.coherence
+          return (
+            <div className="muted" style={{ marginTop: 4 }}>
+              Cohérence avec la version précédente : {c.points_inchanges_part == null ? '—' : pct(c.points_inchanges_part)} des points inchangés
+              {c.deplacement_max_m > 0 && <> · déplacement moyen {num(c.deplacement_moyen_m)} m (max {num(c.deplacement_max_m)} m)</>}
+              {' '}· mêmes camions sur les mêmes points : {pct(c.tournees_jaccard)}
+              {' '}· coût {c.cout_delta >= 0 ? '+' : ''}{fcfa(c.cout_delta)}
+              {c.couverture_apres != null && <> · couverture {c.couverture_avant == null ? '—' : pct(c.couverture_avant)} → {pct(c.couverture_apres)}</>}
+            </div>
+          )
+        })()}
         {!!s?.unserved_points && s.points ? (
           <div className="fleet-gap">
             <b>Flotte insuffisante pour cette zone.</b> Avec {s.vehicles_available} camion(s), {pct(1 - s.unserved_points / s.points)} des points

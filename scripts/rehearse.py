@@ -155,6 +155,10 @@ def invariants(
     return errors
 
 
+def _pct(x: float | None) -> str:
+    return "—" if x is None else f"{100 * x:.0f} %"
+
+
 def wait_idle(c: httpx.Client, timeout: float = 300) -> None:
     """Attend que la file de recalculs du serveur soit vide (/api/health → queue), au plus `timeout` s."""
     time.sleep(0.5)
@@ -184,8 +188,9 @@ def run_changes(c: httpx.Client, keep: bool) -> tuple[bool, list[str]]:
     vehicles = {v["label"]: v["id"] for v in c.get(f"/api/scenarios/{sid}").json()["vehicles"]}
     original_budget = clone["params"]["budget_fcfa_month"]
     lines = [
-        "| Étape | Événement | Étapes recalculées | En cache | Durée serveur | Durée totale | Invariants |",
-        "|---|---|---|---|---|---|---|",
+        "| Étape | Événement | Étapes recalculées | En cache | Durée serveur | Durée totale | Points inchangés "
+        "| Déplacement moyen / max | Tournées (Jaccard) | Δ coût | Couverture avant → après | Invariants |",
+        "|---|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     all_ok = True
     created_quartier = None
@@ -246,6 +251,12 @@ def run_changes(c: httpx.Client, keep: bool) -> tuple[bool, list[str]]:
         errs = invariants(c, plan, prev_pts, step, polygon)
         if not set(step.get("must_run", [])) <= set(ran):
             errs.append(f"aurait dû recalculer {sorted(set(step['must_run']) - set(ran))}")
+        coh = ((plan.get("summary") or {}).get("diff") or {}).get("coherence") or {}
+        lim = step.get("coherence") or {}
+        if "points_inchanges_min" in lim:
+            part = coh.get("points_inchanges_part")
+            if part is None or part < lim["points_inchanges_min"]:
+                errs.append(f"points inchangés {part} < {lim['points_inchanges_min']}")
         if not set(step.get("must_hit", [])) <= set(hit):
             errs.append(f"aurait dû réutiliser {sorted(set(step['must_hit']) - set(hit))}")
         server = (plan.get("summary") or {}).get("duration_ms", 0) / 1000
@@ -263,7 +274,11 @@ def run_changes(c: httpx.Client, keep: bool) -> tuple[bool, list[str]]:
         )
         lines.append(
             f"| {step['name']} | {plan.get('event')} | {', '.join(ran)} | {', '.join(hit) or '—'} | {server:.2f} s "
-            f"| {total:.2f} s | {'✅' if good else '❌ ' + '; '.join(errs)} |"
+            f"| {total:.2f} s | {_pct(coh.get('points_inchanges_part'))} "
+            f"| {coh.get('deplacement_moyen_m', '—')} / {coh.get('deplacement_max_m', '—')} m "
+            f"| {coh.get('tournees_jaccard', '—')} | {coh.get('cout_delta', '—')} "
+            f"| {_pct(coh.get('couverture_avant'))} → {_pct(coh.get('couverture_apres'))} "
+            f"| {'✅' if good else '❌ ' + '; '.join(errs)} |"
         )
     if not keep:
         if created_quartier:

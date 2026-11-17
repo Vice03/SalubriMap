@@ -1,24 +1,30 @@
 # Séquence rejouée par scripts/rehearse.py sur un clone du scénario de base.
 # must_run : étapes qui doivent être recalculées ; must_hit : étapes qui doivent venir du cache ;
 # max_s : durée serveur maximale du recalcul (secondes).
+# coherence : bornes sur la cohérence avec la version précédente (summary.diff.coherence) —
+#   points_inchanges_min : part minimale des points précédents restés à leur place (5 m près).
 steps:
   - name: "2 camions en panne"
     action: breakdown
     vehicles: [BF-01, BF-06]
     must_run: [E5, E6, E7]
     must_hit: [E1, E2, E3, E4]
+    coherence: {points_inchanges_min: 1.0}  # une panne ne déplace aucun point
     max_s: 2
   - name: "Saison des pluies"
     action: params
     params: {season: rain}
     must_run: [E2, E4, E5, E6, E7]
     must_hit: [E3]
+    # la pluie change les vitesses et les volumes, pas l'emplacement des bacs : aucun déplacement justifié ici
+    coherence: {points_inchanges_min: 1.0}
     max_s: 3
   - name: "Nouveau quartier (45 000 hab.)"
     action: new_quartier
     name: "Secteur nouveau (répétition)"
     population: 45000
     check_frozen: true
+    coherence: {points_inchanges_min: 1.0}  # les points existants ailleurs restent en place
     # polygone au sud de la zone urbanisée de démo (hors des quartiers existants) ; à adapter avec les vrais quartiers
     polygon: [[-1.5550, 12.2840], [-1.5250, 12.2840], [-1.5250, 12.2980], [-1.5550, 12.2980], [-1.5550, 12.2840]]
     must_run: [E2, E3, E4, E5, E6, E7]
