@@ -77,12 +77,13 @@ def test_scenario_change_shows_live_progress(browser, base):  # type: ignore[no-
     page.goto(f"{base}/scenario")
     page.wait_for_selector("text=Saison sèche")
     seasons = page.locator("button:has-text('Saison des pluies'), button:has-text('Saison sèche')")
-    target = seasons.nth(1) if "on" in (seasons.nth(0).get_attribute("class") or "") else seasons.nth(0)
+    dry_on = "on" in (seasons.nth(0).get_attribute("class") or "")
+    target, other = (seasons.nth(1), seasons.nth(0)) if dry_on else (seasons.nth(0), seasons.nth(1))
     target.click()
     page.wait_for_selector("text=Recalcul du plan en cours", timeout=10000)  # flux SSE en direct
     page.wait_for_selector("text=Plan recalculé", timeout=60000)
     # remettre la saison d'origine pour ne pas gêner les autres tests
-    other = seasons.nth(0) if target == seasons.nth(1) else seasons.nth(1)
+    page.wait_for_timeout(500)
     other.click()
     page.wait_for_selector("text=Plan recalculé", timeout=60000)
     assert not errors, errors

@@ -27,3 +27,36 @@ def test_openapi_lists_core_routes(client):
         "/api/validation/rules",
     ):
         assert p in paths
+
+
+def test_version_in_sync_and_health_details(client):  # type: ignore[no-untyped-def]
+    """Lot F : version unique (pyproject = __version__), carte et file de recalculs dans /api/health."""
+    import tomllib
+    from pathlib import Path
+
+    from salubri_api import __version__
+
+    py = tomllib.loads((Path(__file__).parents[1] / "pyproject.toml").read_text())["project"]["version"]
+    assert py == __version__
+    h = client.get("/api/health").json()
+    assert h["version"] == __version__ and set(h["queue"]) >= {"debounced", "pending", "running"}
+
+
+def test_request_id_and_json_logs(client, caplog):  # type: ignore[no-untyped-def]
+    import json
+    import logging
+
+    from salubri_api.logs import JsonFormatter
+
+    r = client.get("/api/communes/ouagadougou", headers={"X-Request-ID": "essai-123"})
+    assert r.headers["X-Request-ID"] == "essai-123"
+    assert client.get("/api/communes/ouagadougou").headers["X-Request-ID"]  # créé s'il manque
+    rec = logging.LogRecord("salubri.test", logging.INFO, __file__, 1, "bonjour %s", ("Ouaga",), None)
+    line = json.loads(JsonFormatter().format(rec))
+    assert line["message"] == "bonjour Ouaga" and line["niveau"] == "INFO" and "requete" in line
+
+
+def test_audit_pagination(client):  # type: ignore[no-untyped-def]
+    first = client.get("/api/audit", params={"limit": 2}).json()
+    second = client.get("/api/audit", params={"limit": 2, "offset": 2}).json()
+    assert not {a["id"] for a in first} & {a["id"] for a in second}

@@ -1,6 +1,6 @@
 [project]
 name = "salubri-api"
-version = "0.1.0"
+version = "0.3.0"
 description = "Salubri — API d'aide à la décision pour l'assainissement de Ouagadougou"
 license = { text = "AGPL-3.0-or-later" }
 requires-python = ">=3.12,<3.14"

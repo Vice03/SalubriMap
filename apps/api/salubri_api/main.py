@@ -11,6 +11,7 @@ from fastapi.responses import JSONResponse
 
 from salubri_api import __version__
 from salubri_api.config import get_settings
+from salubri_api.logs import RequestIdMiddleware, setup_logging
 from salubri_api.routers import (
     audit,
     auth,
@@ -27,7 +28,7 @@ from salubri_api.routers import (
     validation,
 )
 
-logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
+setup_logging()
 
 
 def problem(status: int, title: str, detail: Any, errors: list[Any] | None = None) -> JSONResponse:
@@ -48,6 +49,7 @@ def create_app() -> FastAPI:
         openapi_url="/api/openapi.json",
         redoc_url=None,
     )
+    app.add_middleware(RequestIdMiddleware)  # journaux JSON avec identifiant de requête (lot F)
     origins = [o.strip() for o in settings.cors_origins.split(",") if o.strip()]
     if origins:
         app.add_middleware(CORSMiddleware, allow_origins=origins, allow_methods=["*"], allow_headers=["*"])

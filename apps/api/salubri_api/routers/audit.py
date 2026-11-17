@@ -14,7 +14,10 @@ router = APIRouter(prefix="/audit", tags=["Journal"], dependencies=[Depends(requ
 
 @router.get("", summary="Journal d'audit (plus récent d'abord)")
 def list_audit(
-    entity: str | None = None, limit: Annotated[int, Query(ge=1, le=1000)] = 200, s: Session = Depends(get_session)
+    entity: str | None = None,
+    limit: Annotated[int, Query(ge=1, le=1000)] = 200,
+    offset: Annotated[int, Query(ge=0)] = 0,  # pagination (lot F)
+    s: Session = Depends(get_session),
 ) -> list[dict[str, Any]]:
     q = s.query(AuditLog)
     if entity:
@@ -30,5 +33,5 @@ def list_audit(
             "after": a.after,
             "at": a.at.isoformat(),
         }
-        for a in q.order_by(AuditLog.at.desc()).limit(limit)
+        for a in q.order_by(AuditLog.at.desc()).offset(offset).limit(limit)
     ]

@@ -29,6 +29,8 @@ Premier démarrage : construction des images puis chargement de la ville (le job
 | `run/rehearse` | rejouer l'épreuve du jury (pièges + changements de paramètres) |
 | `make bench` | mesurer les temps de recalcul |
 
+Sécurité (comptes, rôles, mise en production) : [docs/SECURITY.md](docs/SECURITY.md). Bilan de la version 0.3 : [docs/RAPPORT_0.3.md](docs/RAPPORT_0.3.md).
+
 ## Épreuve en direct : comment la rejouer
 
 ```bash
