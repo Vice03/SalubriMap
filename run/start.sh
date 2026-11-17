@@ -14,7 +14,10 @@ sh "$(dirname "$0")/secrets.sh" || exit 1
 # Les interfaces sont construites dans l'image Docker « web » : pas besoin de Node ici.
 PROFILES=""
 [ -s data/osm/ouaga.osm.pbf ] && PROFILES="--profile osrm"
-docker compose $PROFILES up --build -d || exit 1
+# On ne reconstruit que nos images (API, interfaces) : OSRM et PostGIS viennent de registres (ghcr.io, Docker Hub)
+# parfois injoignables ; déjà présentes, elles servent telles quelles (compose ne construit que celles qui manquent).
+docker compose build seed api web || echo "Attention : reconstruction impossible (réseau ?) — démarrage avec les images déjà présentes."
+docker compose $PROFILES up -d || exit 1
 if [ -s data/osm/ouaga.osm.pbf ] && [ ! -f data/osm/.seeded_osm ]; then
   echo "Premier chargement des vraies rues OpenStreetMap (1 à 2 minutes)..."
   docker compose run --rm seed python -m salubri_api.seed.run --force && echo charge > data/osm/.seeded_osm

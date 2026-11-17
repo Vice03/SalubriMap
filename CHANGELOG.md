@@ -2,6 +2,7 @@
 
 ## 0.4.0 — en cours
 
+- **Démarrage sans réseau fiable** : `run/start` ne reconstruit plus que les images de Salubri (API, interfaces) ; OSRM et PostGIS, déjà présents, ne sont plus redemandés à leurs registres (ghcr.io injoignable bloquait tout le démarrage). Si la reconstruction échoue, l'application démarre avec les images déjà présentes, avec un avertissement.
 - **Masquage des visages et des plaques, étapes 1–2** : choix et documentation des modèles (`docs/MASQUAGE.md`, `docs/LICENCES_TIERCES.md`) — YuNet (OpenCV Zoo, MIT) pour les visages, YOLOv9-t 384 d'open-image-models (MIT) pour les plaques, exécutés hors ligne par onnxruntime-web et mis en cache par le service worker. Salubri Go détecte et pixellise visages et plaques juste après la photo, montre les cadres, permet d'annuler un faux positif ou de « Flouter une zone » à la main ; seule l'image masquée entre dans la file d'attente et part au serveur. GPS et date EXIF, lus avant le masquage, sont envoyés à part (`exif_lat`, `exif_lon`, `exif_taken_at`) et alimentent les règles comme avant. CSP : `'wasm-unsafe-eval'` pour le WebAssembly.
 
 ## 0.3.0 — 17 novembre 2026

@@ -21,7 +21,11 @@ if errorlevel 1 ( echo Generation des secrets impossible : voir .env.example & p
 rem Avec l'extrait OSM (scripts/prepare_osm_extract.sh) : vraies rues + calcul d'itineraires OSRM
 set PROFILES=
 if exist "data\osm\ouaga.osm.pbf" set PROFILES=--profile osrm
-docker compose %PROFILES% up --build -d
+rem On ne reconstruit que nos images (API, interfaces) : celles d'OSRM et de PostGIS viennent de registres
+rem (ghcr.io, Docker Hub) parfois injoignables ; deja presentes, elles servent telles quelles.
+docker compose build seed api web
+if errorlevel 1 echo Attention : reconstruction impossible (reseau ?) - demarrage avec les images deja presentes.
+docker compose %PROFILES% up -d
 if errorlevel 1 ( pause & exit /b 1 )
 if exist "data\osm\ouaga.osm.pbf" if not exist "data\osm\.seeded_osm" (
   echo Premier chargement des vraies rues OpenStreetMap ^(1 a 2 minutes^)...
