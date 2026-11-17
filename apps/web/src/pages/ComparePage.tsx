@@ -3,6 +3,7 @@ import { ArrowDownRight, ArrowLeftRight, ArrowUpRight } from 'lucide-react'
 import { RoleButton } from '../components/ui/RoleButton'
 import { useEffect, useState } from 'react'
 import { api } from '../api/client'
+import type { CompareResult } from '../api/types'
 import { LineChart } from '../components/ui/Charts'
 import { num } from '../lib/format'
 import { useApi, useApp } from '../state/app'
@@ -70,6 +71,7 @@ export function ComparePage() {
           {PRESETS.map((p) => <RoleButton need="admin" key={p.name} className="pill-btn" onClick={() => void preset(p)}>{p.name}</RoleButton>)}
         </div>
       </div>
+      {data && <Verdict data={data} />}
       {data && (
         <div className="grid row-map">
           <div className="card" style={{ overflowX: 'auto' }}>
@@ -108,4 +110,20 @@ export function ComparePage() {
       {!data && !loading && <div className="card"><div className="empty">Choisir deux scénarios</div></div>}
     </div>
   )
+}
+
+/** Lot E : une phrase de conclusion, en français, avant les chiffres. */
+function Verdict({ data }: { data: CompareResult }) {
+  const scored = Object.entries(data.delta).filter(([k, d]) => !['points', 'routes', 'demand_t_week'].includes(k) && d.value !== 0)
+  const better = scored.filter(([k, d]) => (d.value < 0) === data.better_when_lower.includes(k))
+  const worse = scored.length - better.length
+  const top = [...better].sort((x, y) => Math.abs(y[1].pct ?? 0) - Math.abs(x[1].pct ?? 0))[0]
+  const text = !scored.length
+    ? `« ${data.b.name} » donne les mêmes résultats que « ${data.a.name} ».`
+    : better.length > worse
+      ? `« ${data.b.name} » fait mieux que « ${data.a.name} » sur ${better.length} indicateur(s) sur ${scored.length}${top ? `, surtout ${(LABELS[top[0]] ?? top[0]).toLowerCase()}` : ''}.`
+      : better.length < worse
+        ? `« ${data.b.name} » fait moins bien que « ${data.a.name} » sur ${worse} indicateur(s) sur ${scored.length}.`
+        : `« ${data.b.name} » et « ${data.a.name} » s'équilibrent : ${better.length} indicateur(s) meilleur(s), ${worse} moins bon(s).`
+  return <div className="card verdict" role="status"><b>En bref :</b> {text}</div>
 }

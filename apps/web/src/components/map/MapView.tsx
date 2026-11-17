@@ -12,14 +12,8 @@ maplibregl.setWorkerUrl(workerUrl)
 
 export interface Layers { quartiers: boolean; dumps: boolean; reports: boolean; points: boolean; routes: boolean; trucks: boolean; sdgd?: boolean }
 
-/** Une couleur = une seule signification sur toute la carte (voir MAP_KEY). */
-export const MAP_KEY = {
-  plan: '#1e3a8a',      // plan de collecte : tournées, camions, points de regroupement
-  problem: '#dc2626',   // problème : dépotoirs, points non desservis
-  reference: '#7c3aed', // référence officielle SDGD 2020
-  zone: '#475569',      // découpage (quartiers)
-  verified: '#0f766e', probable: '#64748b', review: '#b45309', rejected: '#94a3b8', // signalements
-}
+import { MAP_KEY } from './mapKey'
+export { MAP_KEY }
 const REPORT_FILL = ['match', ['get', 'status'], 'verified', MAP_KEY.verified, 'probable', MAP_KEY.probable, 'cleaned', MAP_KEY.verified, '#ffffff']
 const REPORT_STROKE = ['match', ['get', 'status'], 'to_review', MAP_KEY.review, 'rejected', MAP_KEY.rejected, 'pending', MAP_KEY.rejected, '#ffffff']
 let sdgdCache: Promise<unknown> | null = null

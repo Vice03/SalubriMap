@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import { LoginHost } from './components/auth/LoginPanel'
 import { PipelineProgress, Toasts } from './components/layout/Feedback'
+import { PageBoundary } from './components/layout/PageBoundary'
 import { Sidebar } from './components/layout/Sidebar'
 import { Topbar } from './components/layout/Topbar'
 import { Dashboard } from './pages/Dashboard'
@@ -25,13 +26,13 @@ export function App() {
             <Topbar />
             <Suspense fallback={<div className="content muted">Chargement…</div>}>
             <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/carte" element={<MapPage />} />
-              <Route path="/signalements" element={<ReportsPage />} />
-              <Route path="/scenario" element={<ScenarioPage />} />
-              <Route path="/comparer" element={<ComparePage />} />
-              <Route path="/journal" element={<AuditPage />} />
-              <Route path="*" element={<Dashboard />} />
+              <Route path="/" element={<PageBoundary><Dashboard /></PageBoundary>} />
+              <Route path="/carte" element={<PageBoundary><MapPage /></PageBoundary>} />
+              <Route path="/signalements" element={<PageBoundary><ReportsPage /></PageBoundary>} />
+              <Route path="/scenario" element={<PageBoundary><ScenarioPage /></PageBoundary>} />
+              <Route path="/comparer" element={<PageBoundary><ComparePage /></PageBoundary>} />
+              <Route path="/journal" element={<PageBoundary><AuditPage /></PageBoundary>} />
+              <Route path="*" element={<PageBoundary><Dashboard /></PageBoundary>} />
             </Routes>
             </Suspense>
           </div>

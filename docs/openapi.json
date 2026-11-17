@@ -3,7 +3,7 @@
  "info": {
   "title": "Salubri API",
   "description": "Aide à la décision pour l'assainissement de Ouagadougou : signalements vérifiés, plan de collecte, simulation multi-agents. Licence AGPL-3.0.",
-  "version": "0.2.1"
+  "version": "0.3.0"
  },
  "paths": {
   "/api/health": {
@@ -11,7 +11,7 @@
     "tags": [
      "Santé"
     ],
-    "summary": "État du service, de la base et d'OSRM",
+    "summary": "État du service, de la base, d'OSRM, de la carte et de la file de recalculs",
     "operationId": "health_api_health_get",
     "responses": {
      "200": {
@@ -19,16 +19,7 @@
       "content": {
        "application/json": {
         "schema": {
-         "additionalProperties": {
-          "anyOf": [
-           {
-            "type": "string"
-           },
-           {
-            "type": "boolean"
-           }
-          ]
-         },
+         "additionalProperties": true,
          "type": "object",
          "title": "Response Health Api Health Get"
         }
@@ -795,6 +786,59 @@
          "additionalProperties": true,
          "type": "object",
          "title": "Response Stats Api Reports Stats Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/reports/suivi": {
+   "get": {
+    "tags": [
+     "Signalements"
+    ],
+    "summary": "Suivi de ses propres signalements (Salubri Go)",
+    "description": "Pour chaque client_id (UUID aléatoire créé par le téléphone, connu de lui seul) : statut et étapes reçu → vérifié → planifié → nettoyé, avec le détail des règles. Rien d'autre (ni position, ni photo).",
+    "operationId": "follow_up_api_reports_suivi_get",
+    "parameters": [
+     {
+      "name": "client_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "array",
+       "items": {
+        "type": "string"
+       },
+       "maxItems": 200,
+       "default": [],
+       "title": "Client Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "array",
+         "items": {
+          "type": "object",
+          "additionalProperties": true
+         },
+         "title": "Response Follow Up Api Reports Suivi Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
         }
        }
       }
@@ -3620,6 +3664,17 @@
        "minimum": 1,
        "default": 200,
        "title": "Limit"
+      }
+     },
+     {
+      "name": "offset",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "minimum": 0,
+       "default": 0,
+       "title": "Offset"
       }
      },
      {

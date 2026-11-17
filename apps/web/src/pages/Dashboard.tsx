@@ -1,11 +1,14 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import { ArrowDown, ArrowRight, ArrowUp, Bell, Map as MapIcon, MapPin, Recycle, Trash2, Truck, TrendingUp } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import type { DumpProps, Feature, PointGeom, WasteType } from '../api/types'
 import { FleetPanel } from '../components/dashboard/FleetPanel'
-import { MAP_KEY, MapView, type Layers } from '../components/map/MapView'
+import type { Layers } from '../components/map/MapView'
+import { MAP_KEY } from '../components/map/mapKey'
+// MapLibre (~800 Ko) n'est chargé qu'à l'affichage de la carte : premier écran plus léger (lot E)
+const MapView = lazy(() => import('../components/map/MapView').then((m) => ({ default: m.MapView })))
 import { LineChart, Sparkline } from '../components/ui/Charts'
 import { Drawer } from '../components/ui/Overlay'
 import { WasteIcon } from '../components/ui/WasteIcon'
@@ -173,8 +176,10 @@ export function Dashboard() {
             <button className="pill-btn" onClick={() => nav('/carte')}>Plein écran <ArrowRight size={14} /></button>
           </div>
           <div className="map-wrap">
-            <MapView commune={commune} quartiers={quartiers} dumps={dumps} reports={reports} points={points} routes={routes} layers={layers}
-              onDump={(id) => setDump(dumps?.features.find((f) => f.properties.id === id) ?? null)} />
+            <Suspense fallback={<div className="map-skeleton" aria-label="Chargement de la carte" />}>
+              <MapView commune={commune} quartiers={quartiers} dumps={dumps} reports={reports} points={points} routes={routes} layers={layers}
+                onDump={(id) => setDump(dumps?.features.find((f) => f.properties.id === id) ?? null)} />
+            </Suspense>
             <LayerToggles layers={layers} setLayers={setLayers} />
             {plan?.distance_mode === 'approx' && <div className="map-banner">Distances approximatives (OSRM indisponible) : les tournées sont tracées en ligne droite.</div>}
           </div>
