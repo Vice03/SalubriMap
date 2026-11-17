@@ -2,6 +2,7 @@
 
 ## 0.4.0 — en cours
 
+- **Carte vide corrigée** : la feuille de style de MapLibre, chargée après celle de l'application, remettait la carte en `position: relative`, donc à 0 px de haut : fond beige sans tuiles ni couches. Règle rendue plus précise.
 - **Livrables, étape 6 — liste de contrôle** : `docs/CHECKLIST_FINALE.md`, chaque exigence de la fiche, où elle est satisfaite (fichier, test, commande) et son statut ; ce que seule l'équipe peut faire est marqué « à faire par l'équipe ».
 - **Livrables, étape 5 — matrice de contribution** : `docs/MATRICE_CONTRIBUTION.md` (équipe et parts à remplir ; briques hors code ; tableau des bibliothèques et images généré par `scripts/matrice_contribution.py` depuis `pyproject.toml`, `pnpm-lock.yaml` et les Dockerfile, licences lues dans les paquets).
 - **Livrables, étapes 3 et 4 — rapport et vidéo** : `docs/RAPPORT_TECHNIQUE.md` et son PDF (contexte, démarche, architecture, données, paramètres, modèles, scénarios de l'arrondissement 9, validation, limites, réutilisation) ; figures tracées en SVG par `scripts/figures_rapport.py` depuis les résultats réels (`plan_arr9.json`, `sensibilite.json`, `masquage_controle.json`) ; `scripts/md_pdf.sh` (pandoc + Chrome, outils de rédaction). `docs/VIDEO_SCRIPT.md` (3 minutes, clics exacts) et `scripts/demo_video.py` qui prépare le scénario et la photo de test. Tournage à faire par l'équipe.

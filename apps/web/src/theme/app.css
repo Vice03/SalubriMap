@@ -99,7 +99,7 @@ h1, h2, h3 { margin: 0; }
 /* ---------- map ---------- */
 .map-wrap { position: relative; border-radius: 14px; overflow: hidden; height: 470px; background: #e9e4d6; }
 .map-wrap.tall { height: calc(100vh - 230px); min-height: 520px; }
-.map { position: absolute; inset: 0; }
+.map, .map.maplibregl-map { position: absolute; inset: 0; } /* plus précis que maplibre-gl.css (chargé après, position: relative → hauteur 0) */
 .layer-box { position: absolute; top: 14px; left: 14px; background: rgba(255,255,255,0.96); border-radius: 12px; box-shadow: var(--shadow); padding: 10px 14px; display: flex; flex-direction: column; gap: 7px; font-size: 13.5px; z-index: 2; }
 .layer-box label { display: flex; align-items: center; gap: 9px; cursor: pointer; }
 .layer-box input { width: 16px; height: 16px; margin: 0; flex: none; accent-color: var(--navy); }
