@@ -10,7 +10,7 @@ from salubri_api.models import Commune, DumpSite
 from salubri_api.routers.deps import get_commune
 from salubri_api.services.export.csv import dump_sites_csv
 from salubri_api.services.export.geojson import dump_sites_geojson
-from salubri_api.services.export.osm_xml import dump_sites_osm
+from salubri_api.services.export.osm_xml import dump_sites_osc, dump_sites_osm
 
 router = APIRouter(prefix="/export", tags=["Export"])
 Status = Annotated[list[str], Query(description="Statuts de dépotoir : active, recurring, cleaned")]
@@ -70,4 +70,19 @@ def export_osm(
         dump_sites_osm(_sites(s, commune, _status(status), since)),
         media_type="application/xml",
         headers={"Content-Disposition": 'attachment; filename="salubri-depotoirs.osm"'},
+    )
+
+
+@router.get(
+    "/osc", summary="Essai de versement OSM (osmChange) : nouveaux dépotoirs vérifiés (docs/OSM_CONTRIBUTION.md)"
+)
+def export_osc(
+    since: datetime | None = None,
+    s: Session = Depends(get_session),  # type: ignore[assignment]
+    commune: Commune = Depends(get_commune),
+) -> Response:
+    return Response(
+        dump_sites_osc(_sites(s, commune, _status(None), since)),
+        media_type="application/xml",
+        headers={"Content-Disposition": 'attachment; filename="salubri-essai.osc"'},
     )

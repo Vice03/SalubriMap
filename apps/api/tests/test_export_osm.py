@@ -29,3 +29,20 @@ def test_csv_and_geojson_exports(client, world, hours):
     assert csv.text.startswith("﻿id;lat;lon") and "secret-device" not in csv.text
     gj = client.get("/api/export/geojson").json()
     assert gj["type"] == "FeatureCollection" and len(gj["features"]) == 1 and gj["license"] == "CC0-1.0"
+
+
+def test_osc_essai_cree_seulement_les_nouveaux(client, world, hours):
+    _verified_site(client, world, hours)
+    r = client.get("/api/export/osc")
+    assert r.status_code == 200
+    root = ET.fromstring(r.content)
+    nodes = root.find("create").findall("node")
+    assert root.tag == "osmChange" and len(nodes) == 1 and int(nodes[0].get("id")) < 0
+    tags = {t.get("k"): t.get("v") for t in nodes[0].findall("tag")}
+    assert tags["amenity"] == "waste_dump_site" and b"secret-device" not in r.content
+    site = client.get("/api/dump-sites").json()
+    sid = (site["features"] if isinstance(site, dict) else site)[0]
+    sid = sid.get("id") or sid["properties"]["id"]
+    assert client.patch(f"/api/dump-sites/{sid}", json={"osm_id": 123456}).status_code == 200
+    again = ET.fromstring(client.get("/api/export/osc").content)
+    assert again.find("create").findall("node") == []  # déjà versé : rien à créer

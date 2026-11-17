@@ -1,0 +1,1760 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<osmChange version="0.6" generator="salubri">
+  <create>
+    <node id="-1" version="0" changeset="-1" lat="12.3104987" lon="-1.4662565">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-10-13"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="41311005-723b-49a0-97c8-21a1d27b3879"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-2" version="0" changeset="-1" lat="12.3634100" lon="-1.5154500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="fe879e56-1b52-4cd3-90e9-c94dc4fdf89e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-3" version="0" changeset="-1" lat="12.4235683" lon="-1.5609334">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 8 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-11-08"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="2598b341-d766-4766-afa8-319a125182fb"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-4" version="0" changeset="-1" lat="12.4066414" lon="-1.4508992">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-09-24"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="2caee84f-2baf-49a7-9f5c-d978d5ed90a8"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-5" version="0" changeset="-1" lat="12.4003589" lon="-1.4669195">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-10-03"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5be8a7c5-2c03-46ba-9ccb-5e54a21d8650"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-6" version="0" changeset="-1" lat="12.3427017" lon="-1.5550008">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-10-06"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="32e36053-c55b-4c37-adec-2d622dc9d108"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-7" version="0" changeset="-1" lat="12.3376700" lon="-1.4996100">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="2590c911-f575-47e7-9920-35e09b4dab33"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-8" version="0" changeset="-1" lat="12.4087200" lon="-1.5089500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e47de747-1ce3-4f1a-b73f-7a5539643859"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-9" version="0" changeset="-1" lat="12.3245600" lon="-1.5190700">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="84692b88-fafc-48fd-88de-0c91f645128d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-10" version="0" changeset="-1" lat="12.2977900" lon="-1.5255300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="d37168ff-c8ca-480f-8230-ab40b77d80ea"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-11" version="0" changeset="-1" lat="12.2761300" lon="-1.5255200">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="6f19fc6e-de34-44ec-bd04-c4f88cb13f87"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-12" version="0" changeset="-1" lat="12.3319400" lon="-1.5118200">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="2941a420-f8af-4f22-9c03-24ac085ee502"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-13" version="0" changeset="-1" lat="12.3967100" lon="-1.4722800">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="ee5cf104-e958-4625-bd39-b68140e39596"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-14" version="0" changeset="-1" lat="12.3157900" lon="-1.5141900">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="d173cee9-d39c-4d6c-83e7-6fb3263f0751"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-15" version="0" changeset="-1" lat="12.3328100" lon="-1.4907400">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="db54e75f-8e94-4113-b076-63f60bbe0b8e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-16" version="0" changeset="-1" lat="12.2787800" lon="-1.5447200">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="463437d5-a2d8-4ad3-aef6-6f44b3e3ba56"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-17" version="0" changeset="-1" lat="12.4018900" lon="-1.4439100">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="b06feb6b-3f38-4582-b568-5bc05b7ac7d0"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-18" version="0" changeset="-1" lat="12.2739500" lon="-1.5264300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5e4295d7-ba94-4b0d-9574-6d3bde0caf0e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-19" version="0" changeset="-1" lat="12.3489700" lon="-1.4592300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="c64350f9-9bcf-4b12-9381-47e15cd10990"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-20" version="0" changeset="-1" lat="12.3365500" lon="-1.5416500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="798f9f7f-b5ae-41b6-93ab-8fadd35880eb"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-21" version="0" changeset="-1" lat="12.3683000" lon="-1.5599500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="3964449c-5457-4e27-ac14-e9735c8f3cb8"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-22" version="0" changeset="-1" lat="12.3579100" lon="-1.5296400">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="61237864-d538-4bea-92c2-06331c2aa191"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-23" version="0" changeset="-1" lat="12.3149200" lon="-1.5179900">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="1ea97fd4-f6e1-4eb3-8faf-4e88c11af02a"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-24" version="0" changeset="-1" lat="12.3971900" lon="-1.5734400">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="91fd62e1-53a1-42e6-b020-b07d7664ce2c"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-25" version="0" changeset="-1" lat="12.3074900" lon="-1.6026100">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e94721b0-d1b9-4a65-8d46-3c9832790dfe"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-26" version="0" changeset="-1" lat="12.3865800" lon="-1.5297300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="bb8ff975-8716-4e78-aaaa-746301a19787"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-27" version="0" changeset="-1" lat="12.3018100" lon="-1.5146600">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="b777d1b6-53be-4650-8b45-8ca0fb25879b"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-28" version="0" changeset="-1" lat="12.3955300" lon="-1.5178500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="52e85e24-b7a1-4703-800b-b2fb7d626544"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-29" version="0" changeset="-1" lat="12.3857800" lon="-1.4663400">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="ae5738d0-9680-4f13-bbc6-c57257c242a9"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-30" version="0" changeset="-1" lat="12.3932600" lon="-1.4972000">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="c7b73dc5-b239-4b12-89a8-f4aaea045e3c"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-31" version="0" changeset="-1" lat="12.2975500" lon="-1.4870900">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="c33637bf-cb0b-4283-b942-04402c8e2e73"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-32" version="0" changeset="-1" lat="12.3673700" lon="-1.5673800">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="f6fd1928-9f7a-47b3-8664-f520f8273dbc"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-33" version="0" changeset="-1" lat="12.3552300" lon="-1.5107100">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="a4b25af3-b6fa-4c54-a4cc-9bf423319507"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-34" version="0" changeset="-1" lat="12.3640300" lon="-1.4964300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="89c9c06e-f1c6-4473-ac16-cad84015066c"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-35" version="0" changeset="-1" lat="12.3362200" lon="-1.4746800">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="8a56c611-6b6a-4f03-be9e-e04815fb5a95"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-36" version="0" changeset="-1" lat="12.2831300" lon="-1.5304600">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="7aad3727-db96-4fd1-add8-e93a5c0f6432"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-37" version="0" changeset="-1" lat="12.3099900" lon="-1.5477900">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="f2bb3720-2dcd-4cb0-b9a8-091d9404da9d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-38" version="0" changeset="-1" lat="12.3945600" lon="-1.4534300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="1f120397-8b7b-4328-8f68-6d39f6f9b7cf"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-39" version="0" changeset="-1" lat="12.4226900" lon="-1.5994300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="ffea234a-7949-4e2c-a8b6-042b2012b303"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-40" version="0" changeset="-1" lat="12.3669100" lon="-1.5583000">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="01a1803f-89a3-4d71-8d21-e40e0c45c6ed"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-41" version="0" changeset="-1" lat="12.3212800" lon="-1.4476700">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e91d3709-e856-479f-b3c8-ce305a2f5d9e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-42" version="0" changeset="-1" lat="12.3457200" lon="-1.5328500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5be2edc0-31fc-4040-a427-94d9e373c008"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-43" version="0" changeset="-1" lat="12.3479800" lon="-1.4680900">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="d1572349-5540-4e81-b04d-c34631b6912d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-44" version="0" changeset="-1" lat="12.3478100" lon="-1.5303000">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="eb4a8314-7227-4507-810a-9b4e8b1727ce"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-45" version="0" changeset="-1" lat="12.3460400" lon="-1.5310700">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="32a05e66-ee3a-4b20-bae7-2af01a636ad6"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-46" version="0" changeset="-1" lat="12.3288300" lon="-1.5524200">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="088e66d0-6107-4764-a9cd-7d2c1ce35ded"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-47" version="0" changeset="-1" lat="12.3723600" lon="-1.5313600">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="eb6a94f8-dc8d-4557-aa1a-1c5fb33d8761"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-48" version="0" changeset="-1" lat="12.3666200" lon="-1.4994800">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5effb5ab-d780-4497-8245-20387eec02a8"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-49" version="0" changeset="-1" lat="12.3120200" lon="-1.5956500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="dc6cd739-5833-4864-af75-3c6b4aaf36c6"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-50" version="0" changeset="-1" lat="12.3151300" lon="-1.5658300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="492af62a-61b1-43a1-836f-8af7e359dd37"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-51" version="0" changeset="-1" lat="12.3801900" lon="-1.5139400">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="d20656f7-f46d-4da0-a606-beeb85fa6260"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-52" version="0" changeset="-1" lat="12.3203800" lon="-1.5598700">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="bd60e4fe-9216-43f0-aefa-a480cdcc5de3"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-53" version="0" changeset="-1" lat="12.3780300" lon="-1.4596300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="65d9d591-c43b-44e6-bb9f-416e5df33f9f"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-54" version="0" changeset="-1" lat="12.3131900" lon="-1.5000600">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="07fedb23-53d2-4ee9-99e6-f7db2baa8bad"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-55" version="0" changeset="-1" lat="12.3660200" lon="-1.5342400">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="8a9bb409-38f9-4e97-8ef0-63b822d45617"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-56" version="0" changeset="-1" lat="12.3782800" lon="-1.5761600">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="f870839a-0689-4b29-a63c-b09f0e92fad4"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-57" version="0" changeset="-1" lat="12.3782900" lon="-1.4548300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="4e2989c5-1ca0-4964-8ccb-1c00a96fc6b6"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-58" version="0" changeset="-1" lat="12.3950100" lon="-1.5057700">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="c5f5860d-a09e-4239-b62a-58c2e20feb16"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-59" version="0" changeset="-1" lat="12.3258300" lon="-1.4553400">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="fd1b4bf0-d57c-4eb0-a117-f14df46ee9ee"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-60" version="0" changeset="-1" lat="12.3388100" lon="-1.5582400">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="32ec8e98-0393-4be4-8f48-e84f836d0f55"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-61" version="0" changeset="-1" lat="12.2998400" lon="-1.5171900">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="fcc416b2-d09b-4084-ad9b-f0b1579c3a48"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-62" version="0" changeset="-1" lat="12.3647400" lon="-1.4988800">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="1ecbc8ff-47be-4eb1-8601-2a01482ffeaf"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-63" version="0" changeset="-1" lat="12.2879400" lon="-1.5303700">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="846a36b0-3d04-4652-9a43-67a711eece96"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-64" version="0" changeset="-1" lat="12.3081600" lon="-1.5503500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="f6e9826a-45ba-455d-b53d-f3bdb039843b"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-65" version="0" changeset="-1" lat="12.3372200" lon="-1.5327500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="418656df-1c2c-452c-8309-aa225a8a6e7d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-66" version="0" changeset="-1" lat="12.3825200" lon="-1.5765800">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="fb62fa52-309c-4fed-999b-1939e7436b86"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-67" version="0" changeset="-1" lat="12.3955400" lon="-1.4437300">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="de682a26-6dfe-4516-a2fb-7b0ead6ff2b6"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-68" version="0" changeset="-1" lat="12.3366900" lon="-1.5573400">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="c5ab9d00-d187-4935-afb7-06122255235c"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-69" version="0" changeset="-1" lat="12.2916500" lon="-1.6113500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="911df1e5-c915-480a-81f9-ee38aecf1769"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-70" version="0" changeset="-1" lat="12.3844500" lon="-1.5770500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="da63b3c5-ee71-42be-9557-af085c6ac3c4"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-71" version="0" changeset="-1" lat="12.3650200" lon="-1.5009900">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="533f94bb-6e56-4695-aa27-ce2786e2297e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-72" version="0" changeset="-1" lat="12.3190500" lon="-1.5457800">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="d49c5a76-2799-4cf3-9070-0f5b7d2bd95a"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-73" version="0" changeset="-1" lat="12.3860100" lon="-1.5699700">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="9ed76c62-7899-4c37-9574-57c4c9f3971e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-74" version="0" changeset="-1" lat="12.3159700" lon="-1.5207500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="bf93a75f-fd3a-43ee-a789-0ee715e859d5"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-75" version="0" changeset="-1" lat="12.3515400" lon="-1.4952700">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="cdf39d89-7483-42c3-afc4-66eddbe9164c"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-76" version="0" changeset="-1" lat="12.3741800" lon="-1.4566500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="f560c499-a3d4-43ed-8e71-edf7faa41426"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-77" version="0" changeset="-1" lat="12.2997800" lon="-1.5150500">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 1 fois, volume estimé 12 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="23ea50f2-4261-4cea-8d17-83936b891a83"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-78" version="0" changeset="-1" lat="12.3835324" lon="-1.5548075">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-10-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="2368fe65-42b8-469d-817b-86be23052019"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-79" version="0" changeset="-1" lat="12.3080104" lon="-1.4741510">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-10-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="c8e0c89c-d834-4de5-ae91-a60d14eb0ad4"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-80" version="0" changeset="-1" lat="12.3100287" lon="-1.5040275">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-10-13"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="bd911790-9b12-4a07-a06d-cdf2c1c673ed"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-81" version="0" changeset="-1" lat="12.3492241" lon="-1.5413588">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-10-17"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="29d771fc-1dfb-496f-9555-52e6ecdc1aad"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-82" version="0" changeset="-1" lat="12.3628286" lon="-1.5312590">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-10-19"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="76a8c1fe-6ddd-4da1-8fe2-851cb7bf7f27"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-83" version="0" changeset="-1" lat="12.3803614" lon="-1.5854492">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-11-02"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5d81aa6d-a168-4aac-9e98-dd65ea20222d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-84" version="0" changeset="-1" lat="12.3815324" lon="-1.5802443">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-11-03"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="fbff37fc-38cc-469a-bdba-6e8a278d01a8"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-85" version="0" changeset="-1" lat="12.4152406" lon="-1.4622698">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-11-05"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="6975ff66-b2f5-40ab-8d57-696d9934c37d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-86" version="0" changeset="-1" lat="12.3630971" lon="-1.5272515">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-11-06"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="075f0cf0-9b44-40f0-9b8a-6c5d3b196873"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-87" version="0" changeset="-1" lat="12.4357557" lon="-1.5589305">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="4a340ffd-6019-4c0a-adef-412e0285eda9"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-88" version="0" changeset="-1" lat="12.3712101" lon="-1.5248980">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-11-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="80cbb975-7ef1-487e-9fa2-b1e2cd649094"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-89" version="0" changeset="-1" lat="12.3360329" lon="-1.4740440">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-11-15"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="f41e8d30-595b-427e-955d-1fbeafb96250"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-90" version="0" changeset="-1" lat="12.3949261" lon="-1.4424715">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 6 m³"/>
+      <tag k="survey:date" v="2026-11-18"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="578274fa-57e3-4c06-8491-8046fd8da918"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-91" version="0" changeset="-1" lat="12.3806167" lon="-1.4927508">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-09-21"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="201126f0-84f9-43d7-819a-30efacc63b24"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-92" version="0" changeset="-1" lat="12.3884614" lon="-1.4818838">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-09-20"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5f944427-9bca-444d-9cb7-1908d95a29b5"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-93" version="0" changeset="-1" lat="12.3251854" lon="-1.5695655">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-09-23"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5db16fb9-2d4e-4b7e-9e14-d723a8dbfeea"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-94" version="0" changeset="-1" lat="12.3907099" lon="-1.4893395">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-09-23"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="f8743415-4b55-4d7a-aacb-6648431dee0b"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-95" version="0" changeset="-1" lat="12.4217189" lon="-1.4842580">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-09-27"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="4b9ffddf-0108-43c6-809d-3655d44e2e26"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-96" version="0" changeset="-1" lat="12.3809624" lon="-1.5776562">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-09-29"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="be2da287-d528-4450-8ed3-d1f837bfa710"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-97" version="0" changeset="-1" lat="12.3371299" lon="-1.5225895">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-09-29"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="7d878f90-9639-4b7b-9263-ae7564ee72f4"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-98" version="0" changeset="-1" lat="12.3832561" lon="-1.4464475">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-09-28"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="db59b055-e901-45c1-af28-9b7b707fe1c0"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-99" version="0" changeset="-1" lat="12.4009757" lon="-1.5931025">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-03"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="b1facca3-8b4b-4c85-8886-fa5af63c5df9"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-100" version="0" changeset="-1" lat="12.3740374" lon="-1.5979880">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-27"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e748101c-904c-4a91-85c2-a86557cd7389"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-101" version="0" changeset="-1" lat="12.3690274" lon="-1.5216060">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-06"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="defe56fa-dc7b-461c-a395-f7dd42257bd5"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-102" version="0" changeset="-1" lat="12.4278854" lon="-1.5758025">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-10"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="05a78e55-4cb9-4314-a390-16e86a3cc999"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-103" version="0" changeset="-1" lat="12.3780939" lon="-1.5974255">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="a62dcdb0-693b-4530-b462-cd53fad7c4ad"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-104" version="0" changeset="-1" lat="12.3783509" lon="-1.5785710">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-15"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="c34b51bb-624e-4631-b763-52fe635e4c41"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-105" version="0" changeset="-1" lat="12.3405259" lon="-1.5290685">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-12"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="2337b8fc-610b-4b92-a19c-f719ba80e7d9"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-106" version="0" changeset="-1" lat="12.3769687" lon="-1.5003488">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-16"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="d1d5414e-3dc7-445c-9967-ea55fd43bb02"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-107" version="0" changeset="-1" lat="12.3511261" lon="-1.5058725">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-16"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="37bc6b5f-e87f-4f94-b8e5-75fad587e10c"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-108" version="0" changeset="-1" lat="12.3521411" lon="-1.5294068">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-21"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e07cf6a9-be69-49d5-8d01-631837566bf0"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-109" version="0" changeset="-1" lat="12.4384799" lon="-1.5199012">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-20"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e433ddc0-9513-464b-b7db-79067b3ca67d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-110" version="0" changeset="-1" lat="12.3001531" lon="-1.4903667">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-23"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="53d00819-c346-4ef7-867d-2a3a2a76f5d3"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-111" version="0" changeset="-1" lat="12.3778894" lon="-1.5816148">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-20"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="1fba372e-5870-429b-ad88-bd0724287120"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-112" version="0" changeset="-1" lat="12.3740411" lon="-1.5487618">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-20"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="03410165-9bd9-4ba6-a4b0-ce9b5f3b0bc3"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-113" version="0" changeset="-1" lat="12.3948384" lon="-1.4707315">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-20"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="b00f2602-1c9a-4380-9ad1-191423916626"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-114" version="0" changeset="-1" lat="12.3752109" lon="-1.4982020">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-23"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="bfc9d745-e260-4439-ad81-6599a38bee7e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-115" version="0" changeset="-1" lat="12.3180367" lon="-1.5023558">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-26"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="0bbc9cac-57e7-477b-9e1a-5ee28e32da29"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-116" version="0" changeset="-1" lat="12.4077514" lon="-1.4502555">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-28"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="01b2fd52-fe3f-4e32-a5cc-ef6a1c9e7798"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-117" version="0" changeset="-1" lat="12.4060159" lon="-1.4989912">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-30"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e38c8f17-2864-423d-8ee3-b7d02b493656"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-118" version="0" changeset="-1" lat="12.3860081" lon="-1.4854447">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-10-30"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="79483b9b-d848-4111-b0ad-9e6993ac0982"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-119" version="0" changeset="-1" lat="12.3722294" lon="-1.5568242">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-11-01"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="ece3e56b-b840-4d51-93d3-76388bd0217e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-120" version="0" changeset="-1" lat="12.3450729" lon="-1.5473960">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-11-04"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="7751ee3f-b05a-439b-b3f7-787a247495e6"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-121" version="0" changeset="-1" lat="12.3344259" lon="-1.5369920">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-11-12"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="1d8e9d59-9ee0-44d0-9bd6-0537b5d2079f"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-122" version="0" changeset="-1" lat="12.3343284" lon="-1.5298805">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-11-16"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="67b10aaa-6311-4896-b4a9-8491d3cdeb16"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-123" version="0" changeset="-1" lat="12.3751896" lon="-1.5580342">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-11-16"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="12f67b6e-118d-4437-ad89-1df87c7ebce3"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-124" version="0" changeset="-1" lat="12.4258054" lon="-1.5695740">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.6 m³"/>
+      <tag k="survey:date" v="2026-11-12"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="64b053c8-da11-4581-9747-734fbdd08b5e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-125" version="0" changeset="-1" lat="12.4356167" lon="-1.4699055">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-09-21"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="863f2a76-7d4a-4bbc-adf8-7df7b9c0e861"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-126" version="0" changeset="-1" lat="12.3208781" lon="-1.4510058">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-09-22"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="c87586d5-53b1-46d3-80ff-5dc1c06f4834"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-127" version="0" changeset="-1" lat="12.3747129" lon="-1.5447035">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-09-21"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="4bda03b1-b993-40bd-a220-3899ef2a2d79"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-128" version="0" changeset="-1" lat="12.4049874" lon="-1.5283585">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-09-22"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="245044eb-15f0-4112-8af2-164a1080967f"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-129" version="0" changeset="-1" lat="12.3228371" lon="-1.4631118">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-09-25"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="b367a6ce-9589-4527-a668-26e446970d91"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-130" version="0" changeset="-1" lat="12.3644509" lon="-1.5272985">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-09-26"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="04c9d7f2-30c4-4af9-a882-1c32ed757b6d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-131" version="0" changeset="-1" lat="12.3383216" lon="-1.5427987">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-04"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="8ecec235-b6da-45ca-bb5f-1dc37831d6da"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-132" version="0" changeset="-1" lat="12.3735209" lon="-1.5977495">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-02"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="07611122-53c0-474b-ab6b-3f25b64eda66"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-133" version="0" changeset="-1" lat="12.3261624" lon="-1.4965662">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-05"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="fab92b8a-8d8d-4480-be50-89b1770fdc84"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-134" version="0" changeset="-1" lat="12.3605137" lon="-1.5312155">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-09"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="56934e16-4942-464d-b62e-d4a5c6cd1e43"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-135" version="0" changeset="-1" lat="12.3527144" lon="-1.5188020">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-10"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="3f99a078-ca63-4fdf-9da4-02db0da6b21b"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-136" version="0" changeset="-1" lat="12.3959484" lon="-1.4731178">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-10"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="d8b020a4-3312-4263-9202-0264db73a368"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-137" version="0" changeset="-1" lat="12.3447444" lon="-1.5429840">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-11"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="05f6b5a5-3ab3-47d5-a918-b562e3d28428"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-138" version="0" changeset="-1" lat="12.3668134" lon="-1.5430580">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-12"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="be6e7305-47f6-423a-acc2-57267790dae9"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-139" version="0" changeset="-1" lat="12.3434424" lon="-1.5517702">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="medical"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-16"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="798c6c44-73a6-46c0-899d-fc13a0f6d830"/>
+      <tag k="salubri:confidence" v="90"/>
+    </node>
+    <node id="-140" version="0" changeset="-1" lat="12.3954879" lon="-1.4508665">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-17"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="ef2be3ea-4ac4-4bf6-b01f-1f885cd02d09"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-141" version="0" changeset="-1" lat="12.4328739" lon="-1.4832975">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-20"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="4ca27e44-5d55-4387-b3c4-e3f25d6e42a0"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-142" version="0" changeset="-1" lat="12.3921149" lon="-1.4820050">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-25"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="ab7625ef-bcd2-405a-9cc0-919cd7400540"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-143" version="0" changeset="-1" lat="12.3513697" lon="-1.5256108">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-27"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="dc37387e-62bc-47fa-acd9-5d87c52a38f4"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-144" version="0" changeset="-1" lat="12.3398939" lon="-1.5559235">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-25"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="ba68b8e0-736e-430d-97a8-c9a7eea6b81e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-145" version="0" changeset="-1" lat="12.4242059" lon="-1.5591905">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-28"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="baecdd7e-17a3-44d3-bdb6-b5db3429bb60"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-146" version="0" changeset="-1" lat="12.4136917" lon="-1.4442395">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-10-30"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="d5f4e12b-d26f-4c73-9e25-c0067ef3a4d1"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-147" version="0" changeset="-1" lat="12.3697187" lon="-1.5062305">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-02"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="8417dbba-da39-49ad-a39d-eb2af8698774"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-148" version="0" changeset="-1" lat="12.3214911" lon="-1.4634102">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-05"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="8b03922f-7e87-4805-85e2-7b82d8fef9de"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-149" version="0" changeset="-1" lat="12.3288442" lon="-1.4747167">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-08"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="a234f992-e591-4aee-89f5-7005b9d2b794"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-150" version="0" changeset="-1" lat="12.3459109" lon="-1.4713210">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-09-18"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e4565dce-2fee-48c8-b7ed-e6ff69922d12"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-151" version="0" changeset="-1" lat="12.4292591" lon="-1.5918523">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-06"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="7bc6cd8b-66ca-416d-babf-3ec6d81be77b"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-152" version="0" changeset="-1" lat="12.4058129" lon="-1.5052340">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-09-19"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="f26d5219-cc35-4706-99aa-57b74c9826fb"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-153" version="0" changeset="-1" lat="12.3973549" lon="-1.4718810">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-03"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="fe3a54e5-d452-43a7-bea8-fcd9b43a3723"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-154" version="0" changeset="-1" lat="12.3717464" lon="-1.5109492">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-08"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="89f825a9-8225-4dc5-96cc-e12956bb478a"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-155" version="0" changeset="-1" lat="12.3452441" lon="-1.5176870">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-07"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="b978b567-78b6-4251-beee-02486cac078c"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-156" version="0" changeset="-1" lat="12.3384397" lon="-1.5653182">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-08"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="eac3aa70-d13f-43f9-85d1-8967121ff65a"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-157" version="0" changeset="-1" lat="12.3734719" lon="-1.5993495">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-26"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="05cd1afb-a113-4418-b10f-f73062f2af3a"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-158" version="0" changeset="-1" lat="12.3672064" lon="-1.5247005">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-09-27"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="9335a2e1-aa59-4603-b80c-8bdfa6309dbd"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-159" version="0" changeset="-1" lat="12.3676621" lon="-1.5396018">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="medical"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-09-29"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="6faa6998-16fd-4f82-947e-4baf050b36d2"/>
+      <tag k="salubri:confidence" v="90"/>
+    </node>
+    <node id="-160" version="0" changeset="-1" lat="12.3804024" lon="-1.5874885">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-09-28"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="37d65f3c-0d5b-4aa9-b0e8-8321673e957c"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-161" version="0" changeset="-1" lat="12.3782749" lon="-1.4976100">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-01"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="b1c50b59-4186-47a1-81b6-f77be8eda1a8"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-162" version="0" changeset="-1" lat="12.4387084" lon="-1.4721242">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-02"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="a7c1bc7c-e55e-4ca4-ac2f-cac92d78dfaa"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-163" version="0" changeset="-1" lat="12.3651391" lon="-1.5392262">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-01"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="6d1a98db-ab88-43af-920f-b3f9cdde20f8"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-164" version="0" changeset="-1" lat="12.3822354" lon="-1.5482115">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-08"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="31a77dea-338b-4d5c-92c3-b6e0b7e5b317"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-165" version="0" changeset="-1" lat="12.4243401" lon="-1.5573108">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-11"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="9b000606-df53-433d-8462-521047910455"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-166" version="0" changeset="-1" lat="12.3913761" lon="-1.4571625">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-12"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="692f2c78-fbdb-4f86-9beb-1ee1fab74949"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-167" version="0" changeset="-1" lat="12.3730091" lon="-1.5012642">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-14"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="36271884-e8ed-48de-afcb-6c737bc44030"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-168" version="0" changeset="-1" lat="12.3458384" lon="-1.5333045">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-06"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="8d654510-9720-461f-9f4b-2cb02389b006"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-169" version="0" changeset="-1" lat="12.3394969" lon="-1.5316355">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-07"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="0ce2fffb-ad43-4fb7-be0a-c61ea0541851"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-170" version="0" changeset="-1" lat="12.3747301" lon="-1.5485098">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-14"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5cb824d5-d221-4845-ad5a-a498aa235efd"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-171" version="0" changeset="-1" lat="12.3773629" lon="-1.5644100">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-12"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="7d978a81-2ab0-4272-82ff-ad037a88e29d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-172" version="0" changeset="-1" lat="12.3532266" lon="-1.5289967">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-14"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="1a4f259e-27e6-4dac-a7a0-ac1a6e9d1622"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-173" version="0" changeset="-1" lat="12.3734244" lon="-1.5489370">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-14"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="df3f816a-1634-4fb0-b6a2-1c811f9a1efe"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-174" version="0" changeset="-1" lat="12.3598859" lon="-1.5320447">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="medical"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-19"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="a43a7d78-84b3-42e3-a762-ddbbd7bb6609"/>
+      <tag k="salubri:confidence" v="90"/>
+    </node>
+    <node id="-175" version="0" changeset="-1" lat="12.3795179" lon="-1.5703630">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.1 m³"/>
+      <tag k="survey:date" v="2026-11-14"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="637f642c-5600-4532-8fb1-1a09e3a320cb"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-176" version="0" changeset="-1" lat="12.3749837" lon="-1.5010962">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-12"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e26d4407-c180-4df4-90a1-f494d25f9ec8"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-177" version="0" changeset="-1" lat="12.3631742" lon="-1.5398102">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 4 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-13"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5e1465e5-78c7-4623-bfca-570c9317e1bb"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-178" version="0" changeset="-1" lat="12.3940517" lon="-1.4765888">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-19"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="5710fedb-32e6-43ef-9282-2adb6add556d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-179" version="0" changeset="-1" lat="12.3729027" lon="-1.4775292">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-17"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="1544c7e7-8bb6-4d3c-8cf0-e475f05f793f"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-180" version="0" changeset="-1" lat="12.3405964" lon="-1.5252580">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-20"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="9bcbcd6a-67cb-49cf-abee-afb2751ace4e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-181" version="0" changeset="-1" lat="12.3008354" lon="-1.4907328">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="plastic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-25"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="04695b50-cc91-44f5-822e-e3f314a215f7"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-182" version="0" changeset="-1" lat="12.3515404" lon="-1.5168230">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-24"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="e9972a24-e604-4d08-a43f-51b167d5477a"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-183" version="0" changeset="-1" lat="12.3525487" lon="-1.5155712">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="medical"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-30"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="94776fd2-5ce9-4ec4-8cef-9070a6f85f09"/>
+      <tag k="salubri:confidence" v="90"/>
+    </node>
+    <node id="-184" version="0" changeset="-1" lat="12.3826337" lon="-1.4761042">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-30"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="96260f40-c0f4-4304-b259-151d6d2c6cd0"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-185" version="0" changeset="-1" lat="12.3789947" lon="-1.4926948">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-10-31"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="8c6893a7-4f8a-4d2e-a95a-9580c0471f4e"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-186" version="0" changeset="-1" lat="12.3725181" lon="-1.4538735">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-01"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="87a2d54b-8d61-47ba-ac62-83724d760484"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-187" version="0" changeset="-1" lat="12.3406939" lon="-1.5539770">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-02"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="c5e97ad1-72cc-4159-81e9-570c5d4b0552"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-188" version="0" changeset="-1" lat="12.3636394" lon="-1.5228775">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-03"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="619b2747-93a0-400d-9c2a-324ff91052d1"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-189" version="0" changeset="-1" lat="12.3590201" lon="-1.5351562">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-06"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="307f04da-fe86-4d2c-a73a-aa811b30f06c"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-190" version="0" changeset="-1" lat="12.3612349" lon="-1.5233030">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="organic"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-07"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="02e705b4-09bc-4c11-8a55-8fb7cdb789c9"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-191" version="0" changeset="-1" lat="12.3354184" lon="-1.4759882">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-11"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="6f98694a-1a23-4c3e-b434-1f81df9924d5"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-192" version="0" changeset="-1" lat="12.3773574" lon="-1.4955818">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="rubble"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-08"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="1c408f0d-f4ea-49c8-b60b-69f94a46726d"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-193" version="0" changeset="-1" lat="12.3652244" lon="-1.5255935">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-11"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="82331e58-14c9-42fb-a1a2-9fc51a9952df"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-194" version="0" changeset="-1" lat="12.3517254" lon="-1.4610830">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="mixed"/>
+      <tag k="description" v="Dépotoir sauvage signalé 2 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-10"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="b362c0ef-326f-4c07-ac4b-c7d04a4d6aac"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+    <node id="-195" version="0" changeset="-1" lat="12.3859111" lon="-1.4599895">
+      <tag k="amenity" v="waste_dump_site"/>
+      <tag k="waste" v="trash"/>
+      <tag k="description" v="Dépotoir sauvage signalé 3 fois, volume estimé 0.05 m³"/>
+      <tag k="survey:date" v="2026-11-14"/>
+      <tag k="source" v="Salubri;survey"/>
+      <tag k="salubri:id" v="d40016e6-e665-4ce6-afc7-ba3482a7422b"/>
+      <tag k="salubri:confidence" v="100"/>
+    </node>
+  </create>
+</osmChange>
