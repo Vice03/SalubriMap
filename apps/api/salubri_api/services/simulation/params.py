@@ -37,6 +37,9 @@ class SimParams:
     sub_down: float = 0.03
     regularity_ok: float = 0.8
     recurring_days: int = 15
+    sub_wait_days: float = (
+        4.0  # un abonné attend son pré-collecteur tant que son stock reste sous 4 jours de production
+    )
     laabal_ilots_per_operation: int = 6  # îlots inspectés par opération (descente de quartier)
     laabal_watch_days: int = 21  # durée de l'effet dissuasif après un contrôle
     laabal_sub_boost: float = 0.05  # ménages contraints de s'abonner à la pré-collecte après contrôle

@@ -123,10 +123,10 @@ export const api = {
   points: (id: string) => get<FC<PointGeom, PointProps>>(`/plans/${id}/points`),
   routes: (id: string) => get<FC<LineGeom, RouteProps>>(`/plans/${id}/routes`),
   simulatePlanSafe: async (planId: string) => {
-    const r = await request<{ sim_run_id: string }>('POST', `/plans/${planId}/simulate`, { json: { replications: 5 } })
-    for (let i = 0; i < 100; i++) {
+    const r = await request<{ sim_run_id: string }>('POST', `/plans/${planId}/simulate`, { json: { replications: 30 } })
+    for (let i = 0; i < 600; i++) {
       await new Promise((ok) => setTimeout(ok, 300))
-      const run = await get<{ status: string; error: string | null; metrics_summary: Record<string, { median: number; p10: number; p90: number }> }>(`/sim-runs/${r.sim_run_id}`)
+      const run = await get<{ status: string; error: string | null; metrics_summary: Record<string, { median: number; p5: number; p95: number }> }>(`/sim-runs/${r.sim_run_id}`)
       if (run.status === 'ready') return run.metrics_summary
       if (run.status === 'failed') throw new ApiError(500, 'Simulation', run.error ?? 'Échec')
     }

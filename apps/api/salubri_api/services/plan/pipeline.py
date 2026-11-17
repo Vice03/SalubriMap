@@ -51,7 +51,8 @@ from salubri_api.services.planning.distance import Matrix, build_matrix, route_g
 from salubri_api.services.planning.vrp import VehicleSpec, VrpSolution, solve_vrp
 from salubri_api.services.reference import existing_cct
 from salubri_api.services.simulation.agents import PlanSnapshot, TruckRoute
-from salubri_api.services.simulation.engine import SimResult, simulate
+from salubri_api.services.simulation.engine import SimResult
+from salubri_api.services.simulation.engine import run as run_sim
 from salubri_api.services.simulation.params import SimParams
 
 log = logging.getLogger("salubri.pipeline")
@@ -507,7 +508,9 @@ def _execute(pv_id: str) -> None:
             sp = SimParams.from_scenario(params)
             snap = _snapshot(ilots, placement, vrp, params)
             e6_key = _h(e5_key, e2_key, e3_key, sp.__dict__)
-            sim: SimResult = _stage(pv_id, st, cache, "E6", e6_key, forced_all, lambda: simulate(snap, sp, params.seed))
+            sim: SimResult = _stage(
+                pv_id, st, cache, "E6", e6_key, forced_all, lambda: run_sim(snap, sp, params.seed, params.sim_mode)
+            )
 
             # Persist the version (immutable rows, copied even when stages were cached)
             cp_ids = _persist(s, pv, ilots, placement, points.time_windows, vrp)

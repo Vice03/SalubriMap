@@ -74,6 +74,8 @@ class ScenarioParams(BaseModel):
     use_existing_cct: bool = True  # CCT existants (SDGD 2020) gardés comme points de regroupement
     active_quartier_ids: list[str] | None = None
     horizon_days: int = Field(90, ge=7, le=365)
+    # Simulation : "agents" = un agent par ménage (docs/SIMULATION_ODD.md), "agrege" = flux moyens par îlot (rapide)
+    sim_mode: Literal["agents", "agrege"] = "agents"
     seed: int = 42
     vrp_time_limit_s: float = Field(1.0, gt=0, le=30)
     ilot_size_buildings: int = Field(30, ge=5, le=500)
@@ -105,6 +107,7 @@ PARAM_EVENT: dict[str, str] = {
     "precollector_cost_fcfa_month": "subscription_changed",
     "horizon_days": "subscription_changed",
     "seed": "subscription_changed",
+    "sim_mode": "subscription_changed",
     "vrp_time_limit_s": "fleet_changed",
 }
 

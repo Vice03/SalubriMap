@@ -13,12 +13,23 @@ import { useApi, useApp } from '../state/app'
 const MAIN = ['budget_fcfa_month', 'subscription_rate', 'pickup_frequency_per_week', 'precollector_frequency_per_week',
   'collection_point_capacity_t', 'cleanup_capacity_t_day', 'laabal_operations_per_week', 'laabal_deterrence', 'waste_kg_per_person_day', 'population_factor', 'walk_distance_max_m']
 const HIDDEN = ['season', 'active_quartier_ids']
+const ENUM_LABELS: Record<string, string> = { agents: 'Agents (un par ménage)', agrege: 'Agrégé (rapide)', dry: 'Saison sèche', rain: 'Saison des pluies' }
 const LAYERS: Layers = { quartiers: true, dumps: false, reports: false, points: true, routes: true, trucks: true }
 
 function Field({ name, prop, value, onChange }: { name: string; prop: ParamSchemaProp; value: unknown; onChange: (v: unknown) => void }) {
   const isInt = prop.type === 'integer'
   const isPct = name === 'subscription_rate' || name === 'truck_breakdown_rate_per_day'
   const shown = typeof value === 'number' ? (isPct ? Math.round(value * 1000) / 10 : value) : value
+  if (prop.enum) {
+    return (
+      <div className="field">
+        <label htmlFor={name}>{prop.label ?? name}</label>
+        <select id={name} value={String(value ?? '')} onChange={(e) => onChange(e.target.value)}>
+          {prop.enum.map((o) => <option key={o} value={o}>{ENUM_LABELS[o] ?? o}</option>)}
+        </select>
+      </div>
+    )
+  }
   return (
     <div className="field">
       <label htmlFor={name}>{prop.label ?? name}{isPct ? ' (%)' : ''}</label>
@@ -48,7 +59,7 @@ export function ScenarioPage() {
   const [poly, setPoly] = useState<[number, number][]>([])
   const [qName, setQName] = useState('Nouveau secteur')
   const [qPop, setQPop] = useState(45000)
-  const [reps, setReps] = useState<Record<string, { median: number; p10: number; p90: number }> | null>(null)
+  const [reps, setReps] = useState<Record<string, { median: number; p5: number; p95: number }> | null>(null)
 
   useEffect(() => { setDraft({}); setReps(null) }, [scenario?.id, planId])
   const params = useMemo(() => ({ ...(scenario?.params ?? {}), ...draft }), [scenario, draft])
@@ -158,7 +169,7 @@ export function ScenarioPage() {
       <div className="grid row-3">
         <div className="card" style={{ gridColumn: 'span 2' }}>
           <div className="card-head"><h2>Simulation sur {num(Number(params.horizon_days ?? 90))} jours</h2><span className="spacer" />
-            <RoleButton need="admin" className="pill-btn" onClick={() => void runReplications()}>5 réplications</RoleButton></div>
+            <RoleButton need="admin" className="pill-btn" onClick={() => void runReplications()}>30 réplications</RoleButton></div>
           <LineChart yLabel="tonnes par semaine" labels={weekly(daily.truck_collected_t).map((_, i) => `S${i + 1}`)} series={[
             { name: 'Collecté', color: '#2563eb', values: weekly(daily.truck_collected_t), unit: ' t' },
             { name: 'Parti en dépôt sauvage', color: '#dc2626', values: weekly(daily.wild_new_t), unit: ' t' },
@@ -178,11 +189,14 @@ export function ScenarioPage() {
             ['Taux d\'abonnement final', pct(sim.subscription_rate_final), 'subscription_rate_final'],
             ['Contrôles Laabal (îlots inspectés)', num(sim.laabal_controls), 'laabal_controls'],
             ['Délai moyen de nettoyage', `${num(sim.mean_cleanup_delay_days, 1)} j`, 'mean_cleanup_delay_days'],
+            ['Pré-collecteurs actifs (fin)', num(sim.precollectors_active_final), 'precollectors_active_final'],
+            ['Revenu moyen d\'un pré-collecteur', fcfa(sim.precollector_income_mean_fcfa), 'precollector_income_mean_fcfa'],
+            ['Budget restant (fin de mois)', fcfa(sim.budget_left_final_fcfa), 'budget_left_final_fcfa'],
           ].map(([l, v, k]) => (
             <div key={k} className="list-item"><span style={{ flex: 1 }}>{l}</span><b>{v}</b>
-              {reps?.[k] && <span className="muted" style={{ marginLeft: 8 }}>[{num(reps[k].p10, 1)} – {num(reps[k].p90, 1)}]</span>}</div>
+              {reps?.[k] && <span className="muted" style={{ marginLeft: 8 }}>[{num(reps[k].p5, 1)} – {num(reps[k].p95, 1)}]</span>}</div>
           ))}
-          {reps && <div className="muted">Entre crochets : intervalle p10–p90 sur 5 réplications.</div>}
+          {reps && <div className="muted">Entre crochets : intervalle à 90 % (5ᵉ–95ᵉ centiles) sur 30 réplications.</div>}
         </div>
       </div>
     </div>

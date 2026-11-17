@@ -77,8 +77,9 @@ remplissage de la charrette sur le mois).
   abonnements et les comptes des pré-collecteurs.
 - **Espace** : îlots de ~30 bâtiments (étape E1 du pipeline), regroupés autour des points du plan. Pas de
   coordonnées individuelles : un ménage hérite de l'îlot, avec une distance de marche propre.
-- **Étendue** : un arrondissement (~10 à 20 000 ménages) en mode `agents` ; la commune entière (~350 000
-  ménages) reste possible mais le mode `agrege` est proposé par défaut au-delà d'un arrondissement (§ 3).
+- **Étendue** : un arrondissement (~10 à 20 000 ménages) ou la commune entière (~350 000 ménages). Mesuré :
+  90 jours en 0,3 s pour 19 000 ménages et 5,2 s pour 357 000 (2 cœurs) ; le mode `agents` est donc le mode par
+  défaut partout, et `agrege` reste disponible pour les très longues séries de réplications.
 
 ## 3. Vue d'ensemble des processus et ordonnancement
 
@@ -198,7 +199,8 @@ que le modèle agrégé : +5 points).
 
 `laabal_operations_per_week` descentes par semaine, réparties au fil des jours (accumulateur, comme le modèle
 agrégé). Cible : les îlots non surveillés ayant le score `stock du dépotoir + 500 kg × récurrent` le plus haut,
-6 îlots par descente. Effets : dépotoir de l'îlot porté au point (dans la limite de la place), amende
+6 îlots par descente. Effets : dépotoir de l'îlot porté au point dans la limite de la place, en laissant celle d'un jour normal de dépôts
+(sinon le point déborde et les ménages jettent à côté ; le reste attend l'équipe de nettoyage), amende
 `amende_fcfa` à chaque ménage ayant jeté dans la semaine (compteur, sans effet sur le budget de la mairie),
 îlot surveillé 21 jours (terme `ln(1 − laabal_deterrence)` dans `V_jeter`), poussée à l'abonnement.
 
@@ -219,10 +221,15 @@ dépotoirs. Vérifié à chaque fin de simulation (erreur relative < 1e-9, test�
 ## 8. Contrôle de cohérence avec le modèle agrégé
 
 Avec `heterogeneite = False` : tous les ménages ont la taille moyenne, le revenu moyen, `facteur_prod = 1` et la
-distance de leur îlot ; `β_norme = β_habitude = 0` ; abonnements mensuels tirés pour reproduire exactement les
+distance de leur îlot ; `β_norme = β_habitude = β_dist_porter = 0`, `V_garder = 0`, pas d'extension des
+pré-collecteurs ; abonnements mensuels tirés pour reproduire exactement les
 variations moyennes du modèle agrégé (+`sub_up` si régularité ≥ 0,8, sinon −`sub_down`). Le choix quotidien se
 réduit alors à celui du modèle agrégé (porter si possible, sinon jeter avec la probabilité du modèle agrégé).
-Sur le scénario de référence, la **moyenne de 30 réplications** doit tomber à **±10 %** du modèle agrégé pour
+Le modèle agrégé a été corrigé pour suivre la même règle en espérance : chaque îlot y garde deux stocks
+(abonnés, non-abonnés), le pré-collecteur ne prend que celui de ses abonnés, et un abonné qui attend plus de
+`sub_wait_days` (4 jours) décide comme un non-abonné. Avant cette correction, le pré-collecteur emportait aussi une
+part des déchets gardés par les non-abonnés, ce qui sous-estimait les dépôts sauvages (de 12 % sur le scénario de
+test). Sur le scénario de référence, la **moyenne de 30 réplications** doit tomber à **±10 %** du modèle agrégé pour
 les tonnages produit, collecté par camion, pré-collecté et jeté, et à ±0,05 sur le taux d'abonnement final
 (test `test_abm_coherence`). Écarts attendus et acceptés : discrétisation (ménages entiers), effet de l'amende
 en log-cote plutôt qu'en multiplicateur de probabilité.
@@ -243,3 +250,13 @@ Pas de déplacement des ménages ni de nouvelles constructions pendant la simula
 valorisation ; norme sociale limitée à l'îlot ; un seul type de pré-collecteur ; budget de la mairie mensuel et
 sans report. Les paramètres comportementaux [H] ne sont pas calés sur une enquête : les résultats sont des
 **comparaisons entre scénarios**, pas des prévisions.
+
+## 11. Comportements observés en construisant le modèle
+
+- **Brigade Laabal** : la dissuasion réduit nettement les dépôts (sur le scénario de test, ×0,5 quand
+  `laabal_deterrence` passe de 0 à 0,99 avec 14 descentes par semaine, dans les deux modèles). Mais le dépotoir que
+  les riverains rapportent au point peut le faire déborder, et les ménages de ce point jettent alors à côté : avec
+  une dissuasion moyenne (0,5 à 0,8) et une équipe de nettoyage réduite, l'effet net des descentes est proche de
+  zéro. Les descentes doivent donc aller avec des rotations de camions sur les points concernés.
+- **Pré-collecteurs** : à la capacité par défaut (1,2 t pour 15 îlots), la charrette est le goulot ; de nouveaux
+  abonnés n'augmentent pas la pré-collecte tant que la capacité ne suit pas.

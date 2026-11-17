@@ -2,7 +2,9 @@
 """Daily multi-agent simulation of the collection chain.
 
 Flows use expected values (smooth, comparable between scenarios); randomness only drives truck breakdowns,
-so a given seed always gives the same result. Mass balance holds exactly:
+so a given seed always gives the same result. Each îlot keeps two stocks, subscribed and non-subscribed
+households, so the pre-collector only takes its clients' waste (the expected value of the agent model,
+services/simulation/abm, docs/SIMULATION_ODD.md § 8). Mass balance holds exactly:
 produced = trucks to landfill + municipal cleanup to landfill + wild stock + household stock + point levels.
 """
 
@@ -87,10 +89,25 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
                     wild.recurring[i] = True
             wild.kg[i] += a
 
+    # Laabal : les riverains portent le dépotoir au point sans prendre la place des dépôts d'un jour normal
+    inflow_day = np.bincount(il.point, gen_kg, minlength=n_pts)
+    stock_s = np.zeros(n)  # part des abonnés ; il.stock_kg = abonnés + non-abonnés
+
+    def resubscribe(new: np.ndarray) -> None:
+        """Les ménages qui changent d'abonnement gardent leurs déchets : on déplace la part correspondante."""
+        nonlocal stock_s
+        old = il.subscribed
+        stock_u = il.stock_kg - stock_s
+        up = np.divide(new - old, 1 - old, out=np.zeros(n), where=(new > old) & (old < 1))
+        down = np.divide(old - new, old, out=np.zeros(n), where=(new < old) & (old > 0))
+        stock_s = stock_s + up * stock_u - down * stock_s
+        il.subscribed = new
+
     for day in range(sp.horizon_days):
         dow = day % 7
         # 1. generation
         il.stock_kg += gen_kg
+        stock_s += gen_kg * il.subscribed
         produced_total += float(gen_kg.sum())
         wild_new = precollected = voluntary = 0.0
 
@@ -103,11 +120,12 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
                 continue
             room = pc.capacity_kg
             for i in pc.ilots:
-                take = min(il.stock_kg[i] * il.subscribed[i], room)
+                take = min(stock_s[i], room)
                 if take <= 0:
                     continue
                 room -= take
                 il.stock_kg[i] -= take
+                stock_s[i] -= take
                 il.passes_done[i] += 1
                 last_pass[i] = day
                 p = il.point[i]
@@ -120,8 +138,9 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
                 if room <= 0:
                     break
 
-        # 3. non-subscribed households
-        unsub = il.stock_kg * (1 - il.subscribed)
+        # 3. non-subscribed households (and subscribers who gave up waiting: stock above sub_wait_days)
+        stock_s = np.minimum(stock_s, sp.sub_wait_days * gen_kg * il.subscribed)
+        unsub = il.stock_kg - stock_s
         full = level[il.point] >= cap[il.point] - 1e-6
         can_bring = reachable & ~full
         for i in np.where(can_bring & (unsub > 0))[0]:
@@ -164,7 +183,7 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
 
         # 6a. Brigade Laabal (police civique): descentes ciblées sur les îlots les plus sales.
         #     Pas de ramassage : les riverains sont contraints de nettoyer (déchets portés au point de regroupement
-        #     du ménage), de s'abonner, et l'effet dissuasif dure laabal_watch_days.
+        #     du ménage, en laissant la place d'un jour de dépôts ; le reste attend l'équipe de nettoyage), de s'abonner, et l'effet dissuasif dure laabal_watch_days.
         active = wild.kg > 1e-6
         wild.age[active] += 1
         laabal_acc += sp.laabal_operations_per_week / 7
@@ -178,10 +197,12 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
             targets = [i for i in np.argsort(-score)[: ops * sp.laabal_ilots_per_operation] if score[i] >= 0]
             for i in targets:
                 watch_until[i] = day + sp.laabal_watch_days
-                il.subscribed[i] = min(1.0, il.subscribed[i] + sp.laabal_sub_boost)
+                new = il.subscribed.copy()
+                new[i] = min(1.0, new[i] + sp.laabal_sub_boost)
+                resubscribe(new)
                 if wild.kg[i] > 1e-6:  # riverains contraints d'évacuer vers leur point de regroupement
                     p = il.point[i]
-                    moved = min(wild.kg[i], max(cap[p] - level[p], 0.0))
+                    moved = min(wild.kg[i], max(cap[p] - level[p] - inflow_day[p], 0.0))
                     level[p] += moved
                     wild.kg[i] -= moved
                     returned += moved
@@ -222,8 +243,12 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
                     pc.active = False
                     rec.precollectors_dropped += 1
             regularity = np.divide(il.passes_done, il.passes_planned, out=np.zeros(n), where=il.passes_planned > 0)
-            il.subscribed = np.clip(
-                np.where(regularity >= sp.regularity_ok, il.subscribed + sp.sub_up, il.subscribed - sp.sub_down), 0, 1
+            resubscribe(
+                np.clip(
+                    np.where(regularity >= sp.regularity_ok, il.subscribed + sp.sub_up, il.subscribed - sp.sub_down),
+                    0,
+                    1,
+                )
             )
             il.passes_planned[:] = 0
             il.passes_done[:] = 0
@@ -256,24 +281,36 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
     return SimResult(dict(rec.daily), summary, int((time.perf_counter() - t0) * 1000))
 
 
-def replicate(plan: PlanSnapshot, sp: SimParams, seed: int, n: int) -> dict[str, object]:
-    """Run n seeds; return median / p10 / p90 per summary indicator and per daily series."""
-    runs = [simulate(plan, sp, seed + k) for k in range(n)]
-    keys = runs[0].summary.keys()
-    summ = {
-        k: {
-            "median": float(np.median([r.summary[k] for r in runs])),
-            "p10": float(np.percentile([r.summary[k] for r in runs], 10)),
-            "p90": float(np.percentile([r.summary[k] for r in runs], 90)),
-        }
-        for k in keys
-    }
+def run(plan: PlanSnapshot, sp: SimParams, seed: int, mode: str = "agrege") -> SimResult:
+    """Une simulation : modèle à agents (`agents`) ou agrégé (`agrege`)."""
+    if mode == "agents":
+        from salubri_api.services.simulation.abm.model import simulate_agents
+
+        return simulate_agents(plan, sp, seed)
+    return simulate(plan, sp, seed)
+
+
+QUANTILES = {"p5": 5, "p10": 10, "p90": 90, "p95": 95}  # p5–p95 = intervalle à 90 % ; p10–p90 gardés (compatibilité)
+
+
+def replicate(plan: PlanSnapshot, sp: SimParams, seed: int, n: int, mode: str = "agrege") -> dict[str, object]:
+    """Run n seeds; return median and quantiles (p5, p10, p90, p95) per summary indicator and daily series."""
+    runs = [run(plan, sp, seed + k, mode) for k in range(n)]
+    summ = {}
+    for k in runs[0].summary:
+        v = np.array([r.summary[k] for r in runs], dtype=float)
+        summ[k] = {"median": float(np.median(v)), **{q: float(np.percentile(v, x)) for q, x in QUANTILES.items()}}
     daily = {}
     for k in runs[0].daily:
         arr = np.array([r.daily[k] for r in runs])
         daily[k] = {
             "median": np.median(arr, axis=0).round(4).tolist(),
-            "p10": np.percentile(arr, 10, axis=0).round(4).tolist(),
-            "p90": np.percentile(arr, 90, axis=0).round(4).tolist(),
+            **{q: np.percentile(arr, x, axis=0).round(4).tolist() for q, x in QUANTILES.items()},
         }
-    return {"summary": summ, "daily": daily, "replications": n, "duration_ms": sum(r.duration_ms for r in runs)}
+    return {
+        "summary": summ,
+        "daily": daily,
+        "replications": n,
+        "mode": mode,
+        "duration_ms": sum(r.duration_ms for r in runs),
+    }

@@ -26,13 +26,14 @@ DAILY_KEYS = [
 
 
 class Recorder:
-    def __init__(self) -> None:
+    def __init__(self, keys: list[str] | None = None) -> None:
+        self.keys = keys or DAILY_KEYS
         self.daily: dict[str, list[float]] = defaultdict(list)
         self.cleanup_delays: list[int] = []
         self.precollectors_dropped = 0
 
     def push(self, **values: float) -> None:
-        for k in DAILY_KEYS:
+        for k in self.keys:
             self.daily[k].append(round(float(values.get(k, 0.0)), 4))
 
     def summary(self, mass_error: float, recurring: int) -> dict[str, float]:

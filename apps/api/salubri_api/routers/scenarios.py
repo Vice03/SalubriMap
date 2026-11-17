@@ -39,6 +39,7 @@ PARAM_LABELS = {
     "active_quartier_ids": "Quartiers actifs",
     "horizon_days": "Horizon de simulation (jours)",
     "seed": "Graine aléatoire",
+    "sim_mode": "Modèle de simulation (agents ou agrégé)",
     "vrp_time_limit_s": "Temps max. de calcul des tournées (s)",
     "ilot_size_buildings": "Bâtiments par îlot",
 }

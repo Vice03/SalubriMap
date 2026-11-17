@@ -64,6 +64,24 @@ def test_replications(client):
     assert out["status"] == "ready", out
     m = out["metrics_summary"]["collected_t"]
     assert m["p10"] <= m["median"] <= m["p90"]
+    assert m["p5"] <= m["p10"] and m["p90"] <= m["p95"]  # intervalle à 90 %
+    assert "households" in out["metrics_summary"]  # modèle à agents par défaut
+
+
+def test_replications_mode_agrege(client):
+    base = client.get("/api/scenarios").json()[0]
+    pv = wait(client, client.post(f"/api/scenarios/{base['id']}/recompute").json()["plan_version_id"])
+    assert pv["summary"]["sim"]["households"] > 0  # E6 tourne aussi en mode agents
+    run = client.post(f"/api/plans/{pv['id']}/simulate", json={"replications": 2, "mode": "agrege"}).json()
+    for _ in range(100):
+        out = client.get(f"/api/sim-runs/{run['sim_run_id']}").json()
+        if out["status"] in ("ready", "failed"):
+            break
+        time.sleep(0.1)
+    assert out["status"] == "ready", out
+    assert "households" not in out["metrics_summary"]
+    bad = client.post(f"/api/plans/{pv['id']}/simulate", json={"mode": "autre"})
+    assert bad.status_code == 422
 
 
 def test_add_and_remove_vehicle(client):
