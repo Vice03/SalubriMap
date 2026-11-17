@@ -83,3 +83,15 @@ perturbations:
     laabal_operations_per_week: [1.0, 6.0]
     truck_breakdown_rate_per_day: [0.01, 0.08]
     fuel_cost_fcfa_per_km: [350.0, 650.0]
+
+# Module « Saisons » (joué seulement s'il est allumé, /api/health → modules.seasons) : les routes d'accès des
+# premiers points deviennent impraticables en saison des pluies. Exigé : mêmes clés de points, aucun arrêt sur une
+# route coupée (point inaccessible = non desservi), déplacements ≤ 1,5 × distance de marche, seuls les points dont la
+# route d'accès est coupée bougent, ≥ 70 % des points inchangés (même borne que les perturbations), retour en
+# saison sèche = toutes les positions d'origine. (Première version : 90 %, posée sans tenir compte de la longueur
+# des routes synthétiques — 3 routes coupées touchent 10 points sur 80 ; remplacée par le contrôle exact
+# « seuls les points dont la route est coupée bougent ».)
+inondation:
+  nom: "Inondation secteur 12"
+  points: 3
+  bornes: {points_inchanges_min: 0.7}

@@ -422,6 +422,16 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
         "",
     ]
     rs = variants["Saison des pluies"]["plan"]["summary"]
+    sa = rs.get("saisons")  # module « Saisons » allumé : état des routes de la saison des pluies
+    if sa is not None:
+        L += [
+            f"- **Routes de la saison des pluies** (module « Saisons ») : {sa['routes_impraticables']} route(s) "
+            f"impraticable(s) ; {len(sa['points_deplaces'])} point(s) déplacé(s), "
+            f"{len(sa['points_inaccessibles'])} inaccessible(s)."
+        ]
+        L += [f"  - {m['point']} déplacé de {m['distance_m']} m : {m['raison']}." for m in sa["points_deplaces"]]
+        L += [f"  - {m['point']} : {m['raison']}, {m['menages']} ménages à reporter sur un autre point."
+              for m in sa["points_inaccessibles"]]  # fmt: skip
     L += [
         f"- Demande +15 % ({n(rs['demand_t_week'])} t/semaine) et vitesses réduites : {n(rs['km_day'])} km, "
         f"{n(rs['cost_day_fcfa'], 0)} FCFA par jour d'enlèvement, {rs['unserved_points']} point(s) non desservi(s), "

@@ -7,6 +7,8 @@ import type { DumpProps, Feature, PointGeom } from '../api/types'
 import { MapView, type Layers } from '../components/map/MapView'
 import { ReportDrawer } from '../components/reports/ReportDrawer'
 import { useApi, useApp } from '../state/app'
+import { SeasonsPanel } from '../modules/seasons/SeasonsPanel'
+import { useModules } from '../modules/useModules'
 import { DumpDrawer, LayerToggles } from './Dashboard'
 
 // Ligne visible sous la carte (lot 7.5) : ce qui est montré et sous quelle licence.
@@ -16,7 +18,8 @@ export const PUBLIC_SCOPE = 'Vue publique : signalements vérifiés uniquement, 
 
 export function MapPage() {
   const { scenario } = useApp()
-  const session = useSession() // connecté (mairie) : la carte montre aussi les signalements à vérifier
+  const session = useSession()
+  const modules = useModules() // modules optionnels : cachés tant qu'ils sont éteints // connecté (mairie) : la carte montre aussi les signalements à vérifier
   const [sp] = useSearchParams()
   const focus = sp.get('focus')?.split(',').map(Number) as [number, number] | undefined
   const planId = scenario?.latest_ready_plan_id ?? null
@@ -38,6 +41,7 @@ export function MapPage() {
             onDump={(id) => setDump(dumps?.features.find((f) => f.properties.id === id) ?? null)} />
           <LayerToggles layers={layers} setLayers={setLayers} />
         </div>
+        {modules.seasons && <SeasonsPanel planId={planId} />}
         <p className="muted map-licence" data-testid="map-licence">{session ? '' : PUBLIC_SCOPE}{MAP_LICENCE}</p>
       </div>
       {reportId && <ReportDrawer id={reportId} onClose={() => setReportId(null)} onOpen={setReportId} />}

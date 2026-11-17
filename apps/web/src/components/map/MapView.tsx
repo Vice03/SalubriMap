@@ -151,6 +151,9 @@ export function MapView(p: Props) {
       })
       m.on('mouseleave', 'q-fill', () => popup.remove())
       setReady(true)
+      // modules optionnels (docs/MODULES.md) : ils ajoutent leurs couches à cette carte
+      ;(window as unknown as { __salubriMap?: MLMap }).__salubriMap = m
+      window.dispatchEvent(new Event('salubri:map-ready'))
     }
     // 'style.load' fires even when the tile server is unreachable (offline room), unlike 'load'.
     m.once('style.load', () => { void init() })

@@ -360,6 +360,85 @@ def run_perturbations(c: httpx.Client, keep: bool) -> tuple[bool, list[str]]:
     return all_ok, lines
 
 
+def run_flood(c: httpx.Client, keep: bool) -> tuple[bool, list[str]]:
+    """Module « Saisons » allumé seulement : « Inondation secteur 12 ». Les routes d'accès de quelques points
+    deviennent impraticables en saison des pluies ; on passe en pluie puis on revient en saison sèche."""
+    spec = yaml.safe_load((DATA / "rehearsal" / "scenario_changes.yaml").read_text(encoding="utf-8"))["inondation"]
+    wait_idle(c)
+    base = next(s for s in c.get("/api/scenarios").json() if s["is_baseline"])
+    clone = c.post("/api/scenarios", json={"name": f"{spec['nom']} {datetime.now(UTC):%H:%M:%S}",
+                                           "parent_id": base["id"]}).json()  # fmt: skip
+    sid = clone["id"]
+    dry, _ = wait_plan(c, clone["plan_version_id"])
+    walk = clone["params"]["walk_distance_max_m"]
+    pts = c.get(f"/api/plans/{dry['id']}/points").json()["features"]
+    before = {f["properties"]["key"]: tuple(f["geometry"]["coordinates"]) for f in pts}
+    chosen = [f for f in pts if f["properties"]["key"].startswith("P")][: spec["points"]]
+    closed = []
+    for f in chosen:
+        lon, lat = f["geometry"]["coordinates"]
+        rd = c.get("/api/roads/near", params={"lon": lon, "lat": lat})
+        if rd.status_code == 200 and rd.json()["road_id"] not in closed:
+            closed.append(rd.json()["road_id"])
+            c.put(f"/api/roads/{rd.json()['road_id']}/conditions/rain", json={"passable": False, "note": spec["nom"]})
+    wait_idle(c)
+    rain, _ = wait_plan(
+        c, c.patch(f"/api/scenarios/{sid}", json={"params": {"season": "rain"}}).json()["plan_version_id"]
+    )
+    errs = invariants(c, rain, None, {}, None)
+    sa = (rain.get("summary") or {}).get("saisons") or {}
+    after = {f["properties"]["key"]: tuple(f["geometry"]["coordinates"])
+             for f in c.get(f"/api/plans/{rain['id']}/points").json()["features"]}  # fmt: skip
+    if set(after) != set(before):
+        errs.append("des clés de points ont changé")
+    touched = {x["point"] for x in sa.get("points_deplaces", [])}
+    stray = sorted(k for k in before if k in after and after[k] != before[k] and k not in touched)
+    if stray:  # seuls les points dont la route d'accès est coupée peuvent bouger
+        errs.append(f"points déplacés sans route coupée : {stray}")
+    for m in sa.get("points_deplaces", []):
+        if m["distance_m"] > 1.5 * walk:
+            errs.append(f"{m['point']} déplacé de {m['distance_m']} m")
+    unserved = {f["properties"]["key"] for f in c.get(f"/api/plans/{rain['id']}/points").json()["features"]
+                if f["properties"].get("unserved")}  # fmt: skip
+    stops_on_closed = [x["point"] for x in sa.get("points_inaccessibles", []) if x["point"] not in unserved]
+    if stops_on_closed:
+        errs.append(f"arrêts sur une route coupée : {stops_on_closed}")
+    coh = ((rain.get("summary") or {}).get("diff") or {}).get("coherence") or {}
+    b = spec["bornes"]
+    if (coh.get("points_inchanges_part") or 1) < b["points_inchanges_min"]:
+        errs.append(f"points inchangés {_pct(coh.get('points_inchanges_part'))}")
+    dry2, _ = wait_plan(
+        c, c.patch(f"/api/scenarios/{sid}", json={"params": {"season": "dry"}}).json()["plan_version_id"]
+    )
+    back = {f["properties"]["key"]: tuple(f["geometry"]["coordinates"])
+            for f in c.get(f"/api/plans/{dry2['id']}/points").json()["features"]}  # fmt: skip
+    if back != before:
+        errs.append("le retour en saison sèche ne rend pas toutes les positions d'origine")
+    for rid in closed:
+        c.delete(f"/api/roads/{rid}/conditions/rain")
+    if not keep:
+        c.delete(f"/api/scenarios/{sid}")
+    good = not errs
+    print(f"\n{spec['nom']:34} {len(closed)} route(s) coupée(s), {len(sa.get('points_deplaces', []))} déplacé(s), "
+          f"{len(sa.get('points_inaccessibles', []))} inaccessible(s)  {ok(good)} {'; '.join(errs)}")  # fmt: skip
+    lines = [
+        f"{len(closed)} route(s) d'accès rendue(s) impraticable(s) en saison des pluies, puis retour en saison sèche.",
+        "",
+        "| Point | Changement | Distance | Raison |",
+        "|---|---|---|---|",
+        *[f"| {m['point']} | déplacé | {m['distance_m']} m | {m['raison']} |" for m in sa.get("points_deplaces", [])],
+        *[
+            f"| {m['point']} | inaccessible, non desservi | — | {m['raison']} ({m['menages']} ménages) |"
+            for m in sa.get("points_inaccessibles", [])
+        ],  # fmt: skip
+        "",
+        f"Points inchangés : {_pct(coh.get('points_inchanges_part'))} ; retour en saison sèche : "
+        f"{'positions d’origine rendues' if back == before else 'positions différentes'} ; "
+        f"{'✅' if good else '❌ ' + '; '.join(errs)}",
+    ]
+    return good, lines
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--api", default="http://localhost")
@@ -373,6 +452,10 @@ def main() -> None:
         traps_ok, traps_lines = run_traps(c)
         changes_ok, change_lines = (True, []) if a.traps_only else run_changes(c, a.keep)
         pert_ok, pert_lines = (True, []) if a.traps_only else run_perturbations(c, a.keep)
+        flood_ok, flood_lines = True, []
+        if not a.traps_only and (h.get("modules") or {}).get("seasons"):  # module « Saisons » allumé
+            flood_ok, flood_lines = run_flood(c, a.keep)
+        pert_ok = pert_ok and flood_ok
     report = [
         "# Rapport de répétition de l'épreuve",
         "",
@@ -385,6 +468,8 @@ def main() -> None:
     if not a.traps_only:
         report += ["", "## Changements de paramètres", "", *change_lines]
         report += ["", "## Perturbations au hasard (comme un jury)", "", *pert_lines]
+        if flood_lines:
+            report += ["", "## Module « Saisons » : inondation", "", *flood_lines]
     report += [
         "",
         f"**Résultat : {'tout est vert' if traps_ok and changes_ok and pert_ok else 'des contrôles échouent'}.**",
