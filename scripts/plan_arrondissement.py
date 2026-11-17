@@ -25,6 +25,10 @@ ROOT = Path(__file__).resolve().parents[1]
 STAFF_PER_TRUCK = (1, 2)  # [H] un chauffeur, deux ripeurs par camion et par rotation (docs/PARAMETRES.md)
 
 
+# Population des arrondissements, RGPH 2019 (INSD, monographie de la commune de Ouagadougou, août 2022, tableau 2.2)
+POP_INSD_2019 = {9: 336_483}
+
+
 def wait(c: httpx.Client, plan_id: str, timeout: float = 300) -> dict[str, Any]:
     t0 = time.time()
     while time.time() - t0 < timeout:
@@ -179,6 +183,19 @@ def main() -> int:
                 f"/api/scenarios/{sid}", json={"params": {"subscription_rate": bparams["subscription_rate"]}}
             ).json()["plan_version_id"],
         )
+        p5 = wait(c, c.patch(f"/api/scenarios/{sid}", json={"params": {
+            "budget_fcfa_month": round(bparams["budget_fcfa_month"] * 0.7)}}).json()["plan_version_id"])  # fmt: skip
+        variants["Budget −30 %"] = {"plan": p5, "sim": simulate(c, p5["id"], a.replications)}
+        wait(c, c.patch(f"/api/scenarios/{sid}", json={"params": {
+            "budget_fcfa_month": bparams["budget_fcfa_month"]}}).json()["plan_version_id"])  # fmt: skip
+        # combinaison : saison des pluies et 2 camions en panne en même temps
+        wait(c, c.patch(f"/api/scenarios/{sid}", json={"params": {"season": "rain"}}).json()["plan_version_id"])
+        p6 = wait(c, c.patch(f"/api/scenarios/{sid}", json={
+            "vehicles": [{"id": v, "out_of_service": True} for v in vids]}).json()["plan_version_id"])  # fmt: skip
+        variants["Pluies + 2 camions en panne"] = {"plan": p6, "sim": simulate(c, p6["id"], a.replications)}
+        wait(c, c.patch(f"/api/scenarios/{sid}", json={
+            "vehicles": [{"id": v, "out_of_service": False} for v in vids]}).json()["plan_version_id"])  # fmt: skip
+        wait(c, c.patch(f"/api/scenarios/{sid}", json={"params": {"season": "dry"}}).json()["plan_version_id"])
         rain_routes = c.get(f"/api/plans/{p3['id']}/routes").json()["features"]
 
     figs = ROOT / "docs/figures"
@@ -188,14 +205,24 @@ def main() -> int:
            for k, v in variants.items()}  # fmt: skip
     (figs / f"plan_arr{arr}.json").write_text(json.dumps(raw, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
     (ROOT / f"docs/PLAN_ARRONDISSEMENT_{arr}.md").write_text(
-        render(arr, props, demo, plan, points, routes, variants, rain_routes, bparams, a.replications), encoding="utf-8"
+        render(arr, props, demo, plan, points, routes, variants, rain_routes, bparams, a.replications, qgeo),
+        encoding="utf-8",
     )
     print(f"docs/PLAN_ARRONDISSEMENT_{arr}.md écrit ({len(points)} points, {len(routes)} tournées)")
     return 0
 
 
-def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, reps) -> str:  # type: ignore[no-untyped-def]
+def quartier_of(lon: float, lat: float, qgeo: list[dict]) -> str:  # type: ignore[type-arg]
+    from shapely.geometry import Point, shape
+
+    pt = Point(lon, lat)
+    best = min(qgeo, key=lambda q: shape(q["geometry"]).distance(pt), default=None)
+    return (best or {}).get("properties", {}).get("name", "—") if best else "—"
+
+
+def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, reps, qgeo) -> str:  # type: ignore[no-untyped-def]
     s = plan["summary"]
+    ref = variants["Référence"]["sim"]["metrics_summary"]
     pop = sum(p["population"] for p in props)
     trucks = sorted({r["properties"]["vehicle_label"] for r in routes})
     pickups = bp["pickup_frequency_per_week"]
@@ -221,6 +248,17 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
             + ", ".join(f"{p['name']} ({n(p['population'], 0)} hab.)" for p in props)
             + ". Les bâtiments sont réels (Open Buildings) mais les populations sont des ordres de grandeur. Remplacer "
             "par les limites des secteurs et les populations du recensement (INSD) avant tout usage, puis relancer.",
+            "",
+        ]
+    if arr in POP_INSD_2019:
+        pop_demo = sum(p["population"] for p in props)
+        L += [
+            f"> **Population réelle** : {n(POP_INSD_2019[arr], 0)} habitants en 2019 (INSD, RGPH 2019, monographie de "
+            "la commune de Ouagadougou, tableau 2.2), soit "
+            f"{n(POP_INSD_2019[arr] / pop_demo, 1)} fois la population de démonstration ci-dessous. Les tonnages, "
+            "le nombre de points et de camions sont donc à multiplier d'autant ; les limites des secteurs 37 à 40 ne "
+            "sont pas publiées en données ouvertes (absentes de l'extrait OSM) : **à faire par l'équipe** "
+            "(demander la carte des secteurs à la mairie d'arrondissement, la charger dans `quartiers.geojson`).",
             "",
         ]
     L += [
@@ -255,16 +293,20 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
         "",
         "## Points de regroupement",
         "",
-        "| Point | Demande (t/sem.) | Remplissage par enlèvement | Îlots | Créneau | Camion | Passage |",
-        "|---|---|---|---|---|---|---|",
+        "| Point | Position (lat, lon) | Quartier servi | Capacité (t) | Demande (t/sem.) "
+        "| Remplissage par enlèvement | Îlots | Jours d'enlèvement | Créneau | Camion | Passage |",
+        "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for f in sorted(points, key=lambda f: f["properties"]["key"]):
         p = f["properties"]
         tw = p.get("time_window") or [0, 0]
         cam, arr_min = load_by_point.get(p["key"], ("non desservi", None))
+        lon, lat = f["geometry"]["coordinates"][:2]
         L.append(
-            f"| {p['key']} | {n(p['demand_t_week'], 2)} | {n(100 * p['fill_ratio_per_pickup'], 0)} % | {p['n_ilots']} "
-            f"| {hm(tw[0])}–{hm(tw[1])} | {cam} | {hm(arr_min) if arr_min is not None else '—'} |"
+            f"| {p['key']} | {lat:.5f}, {lon:.5f} | {quartier_of(lon, lat, qgeo)} | {n(bp['collection_point_capacity_t'])} "
+            f"| {n(p['demand_t_week'], 2)} | {n(100 * p['fill_ratio_per_pickup'], 0)} % | {p['n_ilots']} "
+            f"| {days if cam != 'non desservi' else '—'} | {hm(tw[0])}–{hm(tw[1])} | {cam} "
+            f"| {hm(arr_min) if arr_min is not None else '—'} |"
         )
     L += [
         "",
@@ -309,6 +351,10 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
         f"ne bouge (points inchangés : {n(100 * (coh.get('points_inchanges_part') or 0), 0)} %), mais les tournées "
         f"sont refaites (camions sur les mêmes points : {n(100 * (coh.get('tournees_jaccard') or 0), 0)} %). "
         "Prévoir un camion de réserve ou une rotation supplémentaire.",
+        f"- **Budget** : le plan coûte ~{n(s['cost_day_fcfa'] * pickups * 52 / 12, 0)} FCFA par mois en camions, sous le "
+        f"budget même réduit de 30 % ({n(bp['budget_fcfa_month'] * 0.7, 0)} FCFA) : la variante « Budget −30 % » "
+        "donne donc exactement la référence. Le budget ne limite les tournées que s'il descend sous ce coût "
+        "(ou si la valeur de départ de la mairie est bien plus basse que celle de démonstration).",
         "- **Pré-collecte** : la charrette est le goulot (`SIMULATION_ODD.md` § 11) ; plus d'abonnés sans plus de "
         "pré-collecteurs n'augmente pas la pré-collecte.",
         "- **Données** : la quantité de déchets par habitant explique ~90 % de l'incertitude sur les dépôts "
@@ -327,6 +373,27 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
         "- Pendant : ajouter une rotation les jours après une forte pluie, garder un camion en réserve, renforcer les "
         "descentes Laabal dans les îlots récurrents en même temps que des rotations de camions (sinon les points "
         "débordent).",
+        "",
+        "## Indicateurs de suivi pour la mairie",
+        "",
+        "Chaque mois, comparer à la valeur simulée de référence (colonne « Référence ») ; un écart qui sort de "
+        "l'intervalle à 90 % appelle une explication.",
+        "",
+        "| Indicateur | Comment le mesurer | Fréquence | Valeur simulée (référence) | Alerte si |",
+        "|---|---|---|---|---|",
+        f"| Tonnes collectées par camion | bons de pesée au CET | mensuelle | {iv(ref, 'collected_t')} t / 90 j "
+        "| sous le 5ᵉ centile |",
+        f"| Tonnes en dépôt sauvage | signalements vérifiés × volume (Salubri Map) | mensuelle "
+        f"| {iv(ref, 'wild_dump_t')} t / 90 j | au-dessus du 95ᵉ centile |",
+        "| Dépotoirs récurrents | Salubri Map, filtre « récurrent » | mensuelle "
+        f"| {iv(ref, 'recurring_dumps')} | en hausse 2 mois de suite |",
+        "| Points en débordement | photos des chefs de point / signalements « point plein » | hebdomadaire "
+        f"| {iv(ref, 'overflow_point_days', 0)} jours-points / 90 j | un même point 2 semaines de suite |",
+        "| Taux d'abonnement à la pré-collecte | registres des associations | trimestrielle "
+        f"| {iv(ref, 'subscription_rate_final', 0, 100.0)} % | baisse de plus de 5 points |",
+        f"| Coût par tonne | comptabilité (carburant, salaires, entretien) | mensuelle | {iv(ref, 'cost_per_t', 0)} FCFA/t "
+        "| au-dessus du 95ᵉ centile |",
+        "| Tournées faites / prévues | fiches de tournée signées | hebdomadaire | 100 % prévu | sous 90 % |",
         "",
     ]
     return "\n".join(L)
