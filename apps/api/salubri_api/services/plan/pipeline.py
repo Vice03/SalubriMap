@@ -408,14 +408,16 @@ def _execute(pv_id: str) -> None:
                     .order_by(CollectionPoint.idx)
                 ):
                     g = shape(cp.geom)
-                    frozen.append(PlacedPoint(cp.key, g.x, g.y, cp.capacity_t, frozen=True))
+                    if _serves_area(ilots.lonlat, g.x, g.y, params.walk_distance_max_m):
+                        frozen.append(PlacedPoint(cp.key, g.x, g.y, cp.capacity_t, frozen=True))
             previous: list[
                 PlacedPoint
             ] = []  # placement complet : points d'avant, déplacés seulement si ça vaut le coût
             if not incremental and prev is not None:
                 for cp in s.query(CollectionPoint).filter(CollectionPoint.plan_version_id == prev.id):
                     g = shape(cp.geom)
-                    previous.append(PlacedPoint(cp.key, g.x, g.y, cp.capacity_t))
+                    if _serves_area(ilots.lonlat, g.x, g.y, params.walk_distance_max_m):
+                        previous.append(PlacedPoint(cp.key, g.x, g.y, cp.capacity_t))
             if params.use_existing_cct:
                 # CCT existants (SDGD 2020) qui desservent la zone active : gardés tels quels
                 have = {f.key for f in frozen}
@@ -606,6 +608,15 @@ def _execute(pv_id: str) -> None:
                 pv.status, pv.error, pv.finished_at = "failed", str(exc)[:2000], utcnow()
                 s.commit()
             bus.publish(pv_id, "failed", {"error": str(exc)})
+
+
+def _serves_area(ilot_lonlat: np.ndarray, lon: float, lat: float, walk_m: float) -> bool:
+    """Un point d'une version précédente n'est gardé que s'il sert encore la zone active (zone réduite à un
+    arrondissement : les points des autres quartiers disparaissent au lieu de rester figés)."""
+    if not len(ilot_lonlat):
+        return False
+    d = np.hypot((ilot_lonlat[:, 0] - lon) * 108_700, (ilot_lonlat[:, 1] - lat) * 110_600).min()
+    return bool(d <= walk_m)
 
 
 def _vrp_quality(vrp: Vrp, dist_km: np.ndarray, demand: np.ndarray) -> dict[str, object]:

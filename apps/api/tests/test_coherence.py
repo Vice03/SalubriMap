@@ -42,3 +42,14 @@ def test_deplacement_et_remplacement() -> None:
 
 def test_premiere_version_sans_coherence() -> None:
     assert diff_plans(None, OLD)["coherence"] is None
+
+
+def test_zone_reduite_les_points_hors_zone_ne_restent_pas_figes() -> None:
+    import numpy as np
+
+    from salubri_api.services.plan.pipeline import _serves_area
+
+    ilots = np.array([[-1.50, 12.35], [-1.501, 12.351]])
+    assert _serves_area(ilots, -1.5005, 12.3502, 300)
+    assert not _serves_area(ilots, -1.55, 12.40, 300)  # point d'un autre arrondissement
+    assert not _serves_area(np.zeros((0, 2)), -1.5, 12.35, 300)

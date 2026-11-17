@@ -1,0 +1,1094 @@
+{
+ "Référence": {
+  "plan_id": "2a903c13-8890-468f-8aca-09debb67474a",
+  "summary": {
+   "sim": {
+    "truck_km": 10603.0,
+    "cleanup_t": 1023.84,
+    "cost_per_t": 2692.0,
+    "households": 15028,
+    "produced_t": 5672.21,
+    "collected_t": 3393.32,
+    "voluntary_t": 3454.63,
+    "wild_dump_t": 2051.63,
+    "laabal_fines": 17794,
+    "coverage_rate": 0.616,
+    "precollected_t": 311.47,
+    "cost_total_fcfa": 9136341.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 72,
+    "laabal_cleared_t": 13.86,
+    "mass_balance_error": 1.641904223063435e-15,
+    "overflow_point_days": 2665,
+    "precollectors_dropped": 0,
+    "budget_left_final_fcfa": 25000000.0,
+    "wild_dumps_active_mean": 119.9,
+    "mean_cleanup_delay_days": 4.3,
+    "subscription_rate_final": 0.2591,
+    "wild_dumps_active_final": 143,
+    "precollectors_active_final": 10,
+    "precollector_income_mean_fcfa": 706800.0
+   },
+   "vrp": {
+    "km": 425.5,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 1004,
+    "ecart_max": 0.294,
+    "borne_inf_km": 300.3
+   },
+   "diff": {
+    "text": "16 tournées refaites, 11 points ajoutés, 76 points déplacés, 2 points supprimés, +21 points non desservis, -20 % de km",
+    "km_delta": -107.4,
+    "coherence": {
+     "km_delta": -107.4,
+     "cout_delta": -5051,
+     "couverture_apres": 0.9471,
+     "couverture_avant": 1.0,
+     "tournees_jaccard": 0.075,
+     "deplacement_max_m": 12056.3,
+     "deplacement_moyen_m": 8337.8,
+     "points_inchanges_part": 0.0
+    },
+    "cost_delta": -5051,
+    "km_delta_pct": -20.2,
+    "points_added": 11,
+    "points_moved": 76,
+    "first_version": false,
+    "points_removed": 2,
+    "routes_changed": 16,
+    "unserved_delta": 21
+   },
+   "ilots": 140,
+   "notes": [],
+   "km_day": 425.5,
+   "points": 87,
+   "routes": 16,
+   "solver": "ortools",
+   "placement": {
+    "borne": 59070.5,
+    "ecart": 0.8526,
+    "depart": "k-means",
+    "statut": "faisable",
+    "methode": "CP-SAT",
+    "duree_ms": 2102,
+    "objectif": 400771.4,
+    "candidats": 1562,
+    "marche_t_m": 72881.4,
+    "objectif_depart": 450604.1,
+    "candidats_routes": 1475,
+    "points_conserves": 0,
+    "surcharge_t_semaine": 59.928,
+    "demande_hors_marche_t_semaine": 23.361
+   },
+   "dump_sites": 195,
+   "population": 105200,
+   "duration_ms": 3557,
+   "cost_day_fcfa": 378647,
+   "coverage_walk": 0.9471,
+   "demand_t_week": 441.84,
+   "distance_mode": "approx",
+   "trucks_needed": 11,
+   "unserved_points": 21,
+   "vehicles_available": 8,
+   "unserved_t_per_pickup": 46.98,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 10507.475,
+    "p10": 10529.49,
+    "p90": 10762.66,
+    "p95": 10853.255,
+    "median": 10647.099999999999
+   },
+   "cleanup_t": {
+    "p5": 1024.378,
+    "p10": 1024.555,
+    "p90": 1027.269,
+    "p95": 1029.108,
+    "median": 1025.855
+   },
+   "cost_per_t": {
+    "p5": 2679.8,
+    "p10": 2682.9,
+    "p90": 2704.4,
+    "p95": 2709.1,
+    "median": 2696.0
+   },
+   "households": {
+    "p5": 15028.0,
+    "p10": 15028.0,
+    "p90": 15028.0,
+    "p95": 15028.0,
+    "median": 15028.0
+   },
+   "produced_t": {
+    "p5": 5654.578,
+    "p10": 5657.923000000001,
+    "p90": 5694.738,
+    "p95": 5697.9415,
+    "median": 5679.955
+   },
+   "collected_t": {
+    "p5": 3361.7145,
+    "p10": 3365.639,
+    "p90": 3455.101,
+    "p95": 3463.3534999999997,
+    "median": 3408.7650000000003
+   },
+   "voluntary_t": {
+    "p5": 3405.639,
+    "p10": 3410.767,
+    "p90": 3489.4790000000003,
+    "p95": 3497.3844999999997,
+    "median": 3454.175
+   },
+   "wild_dump_t": {
+    "p5": 2002.6425000000002,
+    "p10": 2020.5240000000001,
+    "p90": 2106.884,
+    "p95": 2109.2115,
+    "median": 2062.2
+   },
+   "laabal_fines": {
+    "p5": 17696.6,
+    "p10": 17795.8,
+    "p90": 18176.0,
+    "p95": 18205.55,
+    "median": 18014.5
+   },
+   "coverage_rate": {
+    "p5": 0.6074499999999999,
+    "p10": 0.608,
+    "p90": 0.6202,
+    "p95": 0.622,
+    "median": 0.614
+   },
+   "precollected_t": {
+    "p5": 311.4135,
+    "p10": 311.43,
+    "p90": 311.522,
+    "p95": 311.551,
+    "median": 311.46
+   },
+   "cost_total_fcfa": {
+    "p5": 9050617.2,
+    "p10": 9067790.7,
+    "p90": 9272202.1,
+    "p95": 9348955.5,
+    "median": 9173707.5
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 66.0,
+    "p10": 66.9,
+    "p90": 75.1,
+    "p95": 78.19999999999999,
+    "median": 69.5
+   },
+   "laabal_cleared_t": {
+    "p5": 13.7485,
+    "p10": 14.0,
+    "p90": 18.593,
+    "p95": 20.086999999999993,
+    "median": 15.76
+   },
+   "mass_balance_error": {
+    "p5": 1.6359537654826622e-16,
+    "p10": 1.642052431411082e-16,
+    "p90": 1.8053546688871034e-15,
+    "p95": 2.1675335744176776e-15,
+    "median": 9.861129068808203e-16
+   },
+   "overflow_point_days": {
+    "p5": 2603.05,
+    "p10": 2626.0,
+    "p90": 2731.5,
+    "p95": 2740.95,
+    "median": 2678.5
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 0.0,
+    "p95": 0.0,
+    "median": 0.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 25000000.0,
+    "p10": 25000000.0,
+    "p90": 25000000.0,
+    "p95": 25000000.0,
+    "median": 25000000.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 113.92,
+    "p10": 114.8,
+    "p90": 124.33,
+    "p95": 124.82,
+    "median": 121.85
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 3.8449999999999998,
+    "p10": 3.99,
+    "p90": 4.82,
+    "p95": 5.109999999999999,
+    "median": 4.4
+   },
+   "subscription_rate_final": {
+    "p5": 0.25510499999999997,
+    "p10": 0.25596,
+    "p90": 0.26354,
+    "p95": 0.265495,
+    "median": 0.2607
+   },
+   "wild_dumps_active_final": {
+    "p5": 138.45,
+    "p10": 139.0,
+    "p90": 149.1,
+    "p95": 150.55,
+    "median": 144.5
+   },
+   "precollectors_active_final": {
+    "p5": 10.0,
+    "p10": 10.0,
+    "p90": 10.0,
+    "p95": 10.0,
+    "median": 10.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 694417.5,
+    "p10": 694770.0,
+    "p90": 716340.0,
+    "p95": 720427.5,
+    "median": 706125.0
+   }
+  }
+ },
+ "2 camions en panne": {
+  "plan_id": "b6f65150-651e-4135-ae78-76658ddecad6",
+  "summary": {
+   "sim": {
+    "truck_km": 8043.5,
+    "cleanup_t": 1031.52,
+    "cost_per_t": 2582.0,
+    "households": 15028,
+    "produced_t": 5672.21,
+    "collected_t": 2724.17,
+    "voluntary_t": 2795.37,
+    "wild_dump_t": 2724.82,
+    "laabal_fines": 20763,
+    "coverage_rate": 0.522,
+    "precollected_t": 311.47,
+    "cost_total_fcfa": 7034574.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 80,
+    "laabal_cleared_t": 13.3,
+    "mass_balance_error": 1.641904223063435e-15,
+    "overflow_point_days": 3488,
+    "precollectors_dropped": 0,
+    "budget_left_final_fcfa": 25000000.0,
+    "wild_dumps_active_mean": 127.0,
+    "mean_cleanup_delay_days": 3.0,
+    "subscription_rate_final": 0.2548,
+    "wild_dumps_active_final": 150,
+    "precollectors_active_final": 10,
+    "precollector_income_mean_fcfa": 692250.0
+   },
+   "vrp": {
+    "km": 317.7,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 1016,
+    "ecart_max": 0.268,
+    "borne_inf_km": 232.6
+   },
+   "diff": {
+    "text": "12 tournées refaites, +13 points non desservis, -25 % de km",
+    "km_delta": -107.7,
+    "coherence": {
+     "km_delta": -107.7,
+     "cout_delta": -89055,
+     "couverture_apres": 0.9471,
+     "couverture_avant": 0.9471,
+     "tournees_jaccard": 0.008,
+     "deplacement_max_m": 0.0,
+     "deplacement_moyen_m": 0.0,
+     "points_inchanges_part": 1.0
+    },
+    "cost_delta": -89055,
+    "km_delta_pct": -25.3,
+    "points_added": 0,
+    "points_moved": 0,
+    "first_version": false,
+    "points_removed": 0,
+    "routes_changed": 12,
+    "unserved_delta": 13
+   },
+   "ilots": 140,
+   "notes": [],
+   "km_day": 317.7,
+   "points": 87,
+   "routes": 12,
+   "solver": "ortools",
+   "placement": {
+    "borne": 59070.5,
+    "ecart": 0.8526,
+    "depart": "k-means",
+    "statut": "faisable",
+    "methode": "CP-SAT",
+    "duree_ms": 2102,
+    "objectif": 400771.4,
+    "candidats": 1562,
+    "marche_t_m": 72881.4,
+    "objectif_depart": 450604.1,
+    "candidats_routes": 1475,
+    "points_conserves": 0,
+    "surcharge_t_semaine": 59.928,
+    "demande_hors_marche_t_semaine": 23.361
+   },
+   "dump_sites": 195,
+   "population": 105200,
+   "duration_ms": 1239,
+   "cost_day_fcfa": 289592,
+   "coverage_walk": 0.9471,
+   "demand_t_week": 441.84,
+   "distance_mode": "approx",
+   "trucks_needed": 10,
+   "unserved_points": 34,
+   "vehicles_available": 6,
+   "unserved_t_per_pickup": 75.89,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 7725.375,
+    "p10": 7730.7,
+    "p90": 8066.910000000001,
+    "p95": 8102.245,
+    "median": 7884.6
+   },
+   "cleanup_t": {
+    "p5": 1031.5245,
+    "p10": 1031.6490000000001,
+    "p90": 1033.199,
+    "p95": 1033.403,
+    "median": 1032.225
+   },
+   "cost_per_t": {
+    "p5": 2538.5,
+    "p10": 2546.7,
+    "p90": 2587.5,
+    "p95": 2593.1,
+    "median": 2566.0
+   },
+   "households": {
+    "p5": 15028.0,
+    "p10": 15028.0,
+    "p90": 15028.0,
+    "p95": 15028.0,
+    "median": 15028.0
+   },
+   "produced_t": {
+    "p5": 5654.578,
+    "p10": 5657.923000000001,
+    "p90": 5694.738,
+    "p95": 5697.9415,
+    "median": 5679.955
+   },
+   "collected_t": {
+    "p5": 2628.1275,
+    "p10": 2647.291,
+    "p90": 2744.6960000000004,
+    "p95": 2751.6635,
+    "median": 2685.98
+   },
+   "voluntary_t": {
+    "p5": 2695.2135,
+    "p10": 2726.849,
+    "p90": 2806.079,
+    "p95": 2812.9755,
+    "median": 2759.23
+   },
+   "wild_dump_t": {
+    "p5": 2692.1655,
+    "p10": 2711.1960000000004,
+    "p90": 2813.259,
+    "p95": 2833.7655,
+    "median": 2757.045
+   },
+   "laabal_fines": {
+    "p5": 20768.3,
+    "p10": 20814.9,
+    "p90": 21113.1,
+    "p95": 21183.7,
+    "median": 20970.0
+   },
+   "coverage_rate": {
+    "p5": 0.5079,
+    "p10": 0.5099,
+    "p90": 0.528,
+    "p95": 0.5285500000000001,
+    "median": 0.5165
+   },
+   "precollected_t": {
+    "p5": 311.4135,
+    "p10": 311.43,
+    "p90": 311.522,
+    "p95": 311.551,
+    "median": 311.46
+   },
+   "cost_total_fcfa": {
+    "p5": 6755969.35,
+    "p10": 6768238.5,
+    "p90": 7061093.6,
+    "p95": 7086020.4,
+    "median": 6898068.0
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 74.9,
+    "p10": 76.0,
+    "p90": 80.2,
+    "p95": 82.55,
+    "median": 78.0
+   },
+   "laabal_cleared_t": {
+    "p5": 6.81,
+    "p10": 7.275,
+    "p90": 10.684000000000001,
+    "p95": 11.3935,
+    "median": 9.21
+   },
+   "mass_balance_error": {
+    "p5": 7.36621863148917e-17,
+    "p10": 1.642718746528281e-16,
+    "p90": 1.6443214059942174e-15,
+    "p95": 1.9130953114841463e-15,
+    "median": 9.863576292866802e-16
+   },
+   "overflow_point_days": {
+    "p5": 3426.8,
+    "p10": 3432.6,
+    "p90": 3609.4,
+    "p95": 3624.0,
+    "median": 3536.0
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 0.0,
+    "p95": 0.0,
+    "median": 0.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 25000000.0,
+    "p10": 25000000.0,
+    "p90": 25000000.0,
+    "p95": 25000000.0,
+    "median": 25000000.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 118.125,
+    "p10": 118.49,
+    "p90": 133.02,
+    "p95": 134.24499999999998,
+    "median": 125.9
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 2.745,
+    "p10": 2.8,
+    "p90": 3.1,
+    "p95": 3.1,
+    "median": 3.0
+   },
+   "subscription_rate_final": {
+    "p5": 0.25478,
+    "p10": 0.25627999999999995,
+    "p90": 0.26346,
+    "p95": 0.26422,
+    "median": 0.26025
+   },
+   "wild_dumps_active_final": {
+    "p5": 135.9,
+    "p10": 137.9,
+    "p90": 155.1,
+    "p95": 156.55,
+    "median": 148.0
+   },
+   "precollectors_active_final": {
+    "p5": 10.0,
+    "p10": 10.0,
+    "p90": 10.0,
+    "p95": 10.0,
+    "median": 10.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 689685.0,
+    "p10": 693120.0,
+    "p90": 717450.0,
+    "p95": 718852.5,
+    "median": 706500.0
+   }
+  }
+ },
+ "Saison des pluies": {
+  "plan_id": "1ed45129-b05d-4368-978b-f4d11eaa9556",
+  "summary": {
+   "sim": {
+    "truck_km": 11546.4,
+    "cleanup_t": 1038.98,
+    "cost_per_t": 2841.0,
+    "households": 15028,
+    "produced_t": 6523.04,
+    "collected_t": 3379.93,
+    "voluntary_t": 3486.51,
+    "wild_dump_t": 2902.54,
+    "laabal_fines": 20916,
+    "coverage_rate": 0.551,
+    "precollected_t": 311.57,
+    "cost_total_fcfa": 9600894.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 75,
+    "laabal_cleared_t": 5.83,
+    "mass_balance_error": 8.566456815983135e-16,
+    "overflow_point_days": 3181,
+    "precollectors_dropped": 0,
+    "budget_left_final_fcfa": 25000000.0,
+    "wild_dumps_active_mean": 123.4,
+    "mean_cleanup_delay_days": 2.8,
+    "subscription_rate_final": 0.2544,
+    "wild_dumps_active_final": 139,
+    "precollectors_active_final": 10,
+    "precollector_income_mean_fcfa": 694650.0
+   },
+   "vrp": {
+    "km": 458.8,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 1003,
+    "ecart_max": 0.298,
+    "borne_inf_km": 322.0
+   },
+   "diff": {
+    "text": "13 tournées refaites, +5 points non desservis, +8 % de km",
+    "km_delta": 33.4,
+    "coherence": {
+     "km_delta": 33.4,
+     "cout_delta": 16170,
+     "couverture_apres": 0.9471,
+     "couverture_avant": 0.9471,
+     "tournees_jaccard": 0.27,
+     "deplacement_max_m": 0.0,
+     "deplacement_moyen_m": 0.0,
+     "points_inchanges_part": 1.0
+    },
+    "cost_delta": 16170,
+    "km_delta_pct": 7.8,
+    "points_added": 0,
+    "points_moved": 0,
+    "first_version": false,
+    "points_removed": 0,
+    "routes_changed": 13,
+    "unserved_delta": 5
+   },
+   "ilots": 140,
+   "notes": [],
+   "km_day": 458.8,
+   "points": 87,
+   "routes": 16,
+   "solver": "ortools",
+   "placement": {
+    "borne": 59070.5,
+    "ecart": 0.8526,
+    "depart": "k-means",
+    "statut": "faisable",
+    "methode": "CP-SAT",
+    "duree_ms": 2102,
+    "objectif": 400771.4,
+    "candidats": 1562,
+    "marche_t_m": 72881.4,
+    "objectif_depart": 450604.1,
+    "candidats_routes": 1475,
+    "points_conserves": 0,
+    "surcharge_t_semaine": 59.928,
+    "demande_hors_marche_t_semaine": 23.361
+   },
+   "dump_sites": 195,
+   "population": 105200,
+   "duration_ms": 1197,
+   "cost_day_fcfa": 394817,
+   "coverage_walk": 0.9471,
+   "demand_t_week": 508.12,
+   "distance_mode": "approx",
+   "trucks_needed": 12,
+   "unserved_points": 26,
+   "vehicles_available": 8,
+   "unserved_t_per_pickup": 60.65,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 11169.61,
+    "p10": 11241.72,
+    "p90": 11592.35,
+    "p95": 11623.545,
+    "median": 11440.55
+   },
+   "cleanup_t": {
+    "p5": 1038.0775,
+    "p10": 1038.432,
+    "p90": 1040.291,
+    "p95": 1040.862,
+    "median": 1039.37
+   },
+   "cost_per_t": {
+    "p5": 2815.7,
+    "p10": 2819.0,
+    "p90": 2845.0,
+    "p95": 2846.65,
+    "median": 2830.0
+   },
+   "households": {
+    "p5": 15028.0,
+    "p10": 15028.0,
+    "p90": 15028.0,
+    "p95": 15028.0,
+    "median": 15028.0
+   },
+   "produced_t": {
+    "p5": 6502.759,
+    "p10": 6506.612,
+    "p90": 6548.951,
+    "p95": 6552.637,
+    "median": 6531.945
+   },
+   "collected_t": {
+    "p5": 3286.625,
+    "p10": 3303.14,
+    "p90": 3402.577,
+    "p95": 3411.6365,
+    "median": 3354.0699999999997
+   },
+   "voluntary_t": {
+    "p5": 3381.21,
+    "p10": 3402.327,
+    "p90": 3497.574,
+    "p95": 3507.5015,
+    "median": 3451.16
+   },
+   "wild_dump_t": {
+    "p5": 2892.952,
+    "p10": 2896.746,
+    "p90": 2986.8689999999997,
+    "p95": 3009.421,
+    "median": 2943.42
+   },
+   "laabal_fines": {
+    "p5": 20859.35,
+    "p10": 20936.6,
+    "p90": 21446.1,
+    "p95": 21525.05,
+    "median": 21249.5
+   },
+   "coverage_rate": {
+    "p5": 0.53635,
+    "p10": 0.538,
+    "p90": 0.553,
+    "p95": 0.553,
+    "median": 0.5455000000000001
+   },
+   "precollected_t": {
+    "p5": 311.5035,
+    "p10": 311.529,
+    "p90": 311.632,
+    "p95": 311.661,
+    "median": 311.56
+   },
+   "cost_total_fcfa": {
+    "p5": 9285823.25,
+    "p10": 9346263.9,
+    "p90": 9637062.7,
+    "p95": 9663850.95,
+    "median": 9510747.0
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 70.9,
+    "p10": 72.0,
+    "p90": 78.0,
+    "p95": 78.55,
+    "median": 75.0
+   },
+   "laabal_cleared_t": {
+    "p5": 4.6395,
+    "p10": 4.9,
+    "p90": 9.207,
+    "p95": 9.691999999999998,
+    "median": 6.5649999999999995
+   },
+   "mass_balance_error": {
+    "p5": 2.064684868538567e-16,
+    "p10": 2.8527567863877235e-16,
+    "p90": 1.9963154753533624e-15,
+    "p95": 2.0807791966676054e-15,
+    "median": 1.0680775438292328e-15
+   },
+   "overflow_point_days": {
+    "p5": 3150.15,
+    "p10": 3155.8,
+    "p90": 3298.2,
+    "p95": 3324.6,
+    "median": 3238.5
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 0.0,
+    "p95": 0.0,
+    "median": 0.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 25000000.0,
+    "p10": 25000000.0,
+    "p90": 25000000.0,
+    "p95": 25000000.0,
+    "median": 25000000.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 122.88,
+    "p10": 124.27000000000001,
+    "p90": 133.57,
+    "p95": 135.07999999999998,
+    "median": 129.75
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 2.6,
+    "p10": 2.6,
+    "p90": 2.91,
+    "p95": 3.0,
+    "median": 2.8
+   },
+   "subscription_rate_final": {
+    "p5": 0.25084500000000004,
+    "p10": 0.25099,
+    "p90": 0.26106,
+    "p95": 0.262425,
+    "median": 0.2553
+   },
+   "wild_dumps_active_final": {
+    "p5": 137.8,
+    "p10": 140.0,
+    "p90": 154.0,
+    "p95": 154.55,
+    "median": 148.0
+   },
+   "precollectors_active_final": {
+    "p5": 10.0,
+    "p10": 10.0,
+    "p90": 10.0,
+    "p95": 10.0,
+    "median": 10.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 689625.0,
+    "p10": 690585.0,
+    "p90": 708240.0,
+    "p95": 710700.0,
+    "median": 697875.0
+   }
+  }
+ },
+ "Abonnements +20 %": {
+  "plan_id": "53c0ac73-f16c-4a42-9e5c-1d2e85fae5c5",
+  "summary": {
+   "sim": {
+    "truck_km": 10853.3,
+    "cleanup_t": 1024.11,
+    "cost_per_t": 2708.0,
+    "households": 15028,
+    "produced_t": 5672.21,
+    "collected_t": 3452.62,
+    "voluntary_t": 3495.25,
+    "wild_dump_t": 2013.17,
+    "laabal_fines": 17579,
+    "coverage_rate": 0.619,
+    "precollected_t": 311.6,
+    "cost_total_fcfa": 9348978.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 70,
+    "laabal_cleared_t": 19.16,
+    "mass_balance_error": 1.4777138007570915e-15,
+    "overflow_point_days": 2639,
+    "precollectors_dropped": 0,
+    "budget_left_final_fcfa": 25000000.0,
+    "wild_dumps_active_mean": 118.1,
+    "mean_cleanup_delay_days": 4.5,
+    "subscription_rate_final": 0.2868,
+    "wild_dumps_active_final": 141,
+    "precollectors_active_final": 10,
+    "precollector_income_mean_fcfa": 782400.0
+   },
+   "vrp": {
+    "km": 425.5,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 1002,
+    "ecart_max": 0.294,
+    "borne_inf_km": 300.3
+   },
+   "diff": {
+    "text": "Aucun changement",
+    "km_delta": 0.0,
+    "coherence": {
+     "km_delta": 0.0,
+     "cout_delta": 0,
+     "couverture_apres": 0.9471,
+     "couverture_avant": 0.9471,
+     "tournees_jaccard": 1.0,
+     "deplacement_max_m": 0.0,
+     "deplacement_moyen_m": 0.0,
+     "points_inchanges_part": 1.0
+    },
+    "cost_delta": 0,
+    "km_delta_pct": 0.0,
+    "points_added": 0,
+    "points_moved": 0,
+    "first_version": false,
+    "points_removed": 0,
+    "routes_changed": 0,
+    "unserved_delta": 0
+   },
+   "ilots": 140,
+   "notes": [],
+   "km_day": 425.5,
+   "points": 87,
+   "routes": 16,
+   "solver": "ortools",
+   "placement": {
+    "borne": 59070.5,
+    "ecart": 0.8526,
+    "depart": "k-means",
+    "statut": "faisable",
+    "methode": "CP-SAT",
+    "duree_ms": 2102,
+    "objectif": 400771.4,
+    "candidats": 1562,
+    "marche_t_m": 72881.4,
+    "objectif_depart": 450604.1,
+    "candidats_routes": 1475,
+    "points_conserves": 0,
+    "surcharge_t_semaine": 59.928,
+    "demande_hors_marche_t_semaine": 23.361
+   },
+   "dump_sites": 195,
+   "population": 105200,
+   "duration_ms": 173,
+   "cost_day_fcfa": 378647,
+   "coverage_walk": 0.9471,
+   "demand_t_week": 441.84,
+   "distance_mode": "approx",
+   "trucks_needed": 11,
+   "unserved_points": 21,
+   "vehicles_available": 8,
+   "unserved_t_per_pickup": 46.98,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 10362.48,
+    "p10": 10431.33,
+    "p90": 10779.11,
+    "p95": 10798.385,
+    "median": 10595.1
+   },
+   "cleanup_t": {
+    "p5": 1024.0145,
+    "p10": 1024.0739999999998,
+    "p90": 1026.928,
+    "p95": 1027.2755,
+    "median": 1024.92
+   },
+   "cost_per_t": {
+    "p5": 2685.8,
+    "p10": 2688.9,
+    "p90": 2718.0,
+    "p95": 2720.2,
+    "median": 2703.0
+   },
+   "households": {
+    "p5": 15028.0,
+    "p10": 15028.0,
+    "p90": 15028.0,
+    "p95": 15028.0,
+    "median": 15028.0
+   },
+   "produced_t": {
+    "p5": 5654.578,
+    "p10": 5657.923000000001,
+    "p90": 5694.738,
+    "p95": 5697.9415,
+    "median": 5679.955
+   },
+   "collected_t": {
+    "p5": 3294.4155,
+    "p10": 3330.437,
+    "p90": 3430.839,
+    "p95": 3436.7015,
+    "median": 3378.09
+   },
+   "voluntary_t": {
+    "p5": 3343.988,
+    "p10": 3379.313,
+    "p90": 3475.789,
+    "p95": 3477.7019999999998,
+    "median": 3424.61
+   },
+   "wild_dump_t": {
+    "p5": 2027.1575,
+    "p10": 2033.067,
+    "p90": 2135.1349999999998,
+    "p95": 2151.1994999999997,
+    "median": 2098.75
+   },
+   "laabal_fines": {
+    "p5": 17474.55,
+    "p10": 17596.1,
+    "p90": 18139.7,
+    "p95": 18266.7,
+    "median": 17909.0
+   },
+   "coverage_rate": {
+    "p5": 0.59625,
+    "p10": 0.599,
+    "p90": 0.6182,
+    "p95": 0.62,
+    "median": 0.6065
+   },
+   "precollected_t": {
+    "p5": 311.55,
+    "p10": 311.559,
+    "p90": 311.691,
+    "p95": 311.7,
+    "median": 311.615
+   },
+   "cost_total_fcfa": {
+    "p5": 8926105.25,
+    "p10": 8987999.9,
+    "p90": 9281600.2,
+    "p95": 9302039.25,
+    "median": 9122802.0
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 69.9,
+    "p10": 71.0,
+    "p90": 77.2,
+    "p95": 79.55,
+    "median": 72.0
+   },
+   "laabal_cleared_t": {
+    "p5": 11.665,
+    "p10": 12.044,
+    "p90": 18.846,
+    "p95": 20.0525,
+    "median": 15.875
+   },
+   "mass_balance_error": {
+    "p5": 1.6362002012970363e-16,
+    "p10": 1.637691585764105e-16,
+    "p90": 1.8053546688871034e-15,
+    "p95": 1.9887265729515295e-15,
+    "median": 9.861532035319875e-16
+   },
+   "overflow_point_days": {
+    "p5": 2633.4,
+    "p10": 2644.5,
+    "p90": 2837.3,
+    "p95": 2840.55,
+    "median": 2745.5
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 0.0,
+    "p95": 0.0,
+    "median": 0.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 25000000.0,
+    "p10": 25000000.0,
+    "p90": 25000000.0,
+    "p95": 25000000.0,
+    "median": 25000000.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 114.07000000000001,
+    "p10": 114.67,
+    "p90": 127.14999999999999,
+    "p95": 127.875,
+    "median": 121.65
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 3.9,
+    "p10": 3.99,
+    "p90": 4.71,
+    "p95": 4.8549999999999995,
+    "median": 4.3
+   },
+   "subscription_rate_final": {
+    "p5": 0.286035,
+    "p10": 0.28674,
+    "p90": 0.29418,
+    "p95": 0.29736,
+    "median": 0.28995
+   },
+   "wild_dumps_active_final": {
+    "p5": 132.45,
+    "p10": 134.8,
+    "p90": 150.0,
+    "p95": 150.0,
+    "median": 145.5
+   },
+   "precollectors_active_final": {
+    "p5": 10.0,
+    "p10": 10.0,
+    "p90": 10.0,
+    "p95": 10.0,
+    "median": 10.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 782452.5,
+    "p10": 783105.0,
+    "p90": 807270.0,
+    "p95": 809865.0,
+    "median": 794100.0
+   }
+  }
+ }
+}
