@@ -4,7 +4,7 @@ COMPOSE ?= docker compose
 API_RUN = $(COMPOSE) run --rm --no-deps api
 TEST_DB = postgresql+psycopg://salubri:salubri@db:5432/salubri_test
 
-.PHONY: up down reset logs seed reseed test test-api lint format traps rehearse bench gen-data gen-traps osm
+.PHONY: up down reset logs seed reseed test test-api lint format traps rehearse bench gen-data gen-traps osm ci-api ci-front ci-audit ci-stack
 
 up:            ## build and start everything (http://localhost)
 	$(COMPOSE) up --build -d
@@ -55,3 +55,16 @@ bench:         ## recompute timings per event type
 
 osm:           ## download + clip the OSM extract (needs Internet and osmium-tool)
 	./scripts/prepare_osm_extract.sh
+
+# --- Reproduire la CI en local (sans Docker sauf ci-stack ; outils épinglés de apps/api [dev], pnpm 9.12.0) ---
+ci-api:        ## job « api » : ruff check + format, pytest avec couverture ≥ 91 % (PostGIS : SALUBRI_TEST_DATABASE_URL)
+	bash scripts/ci/api.sh
+
+ci-front:      ## job « front » : pnpm install, typecheck, lint, tests, builds
+	bash scripts/ci/front.sh
+
+ci-audit:      ## job « audit » : pip-audit et pnpm audit --prod
+	bash scripts/ci/audit.sh
+
+ci-stack:      ## job « stack » : docker compose up --build, répétition, e2e, puis down -v (efface la base de la pile)
+	bash scripts/ci/stack.sh
