@@ -27,6 +27,15 @@ peut le faire : terrain, tournage, envoi OSM, valeurs de la mairie).
 | 14c | Matrice de contribution avec briques réutilisées et licences | `docs/MATRICE_CONTRIBUTION.md` (généré pour les bibliothèques) | `python scripts/matrice_contribution.py` | **à faire par l'équipe** : noms et pourcentages |
 | 15 | Dépôt public, licence libre, déploiement en une commande | AGPL-3.0 (`LICENSE`), `docker compose up` / `run/start`, CI (`.github/workflows/ci.yml`) | CI locale verte (tests, ruff, builds) | **à faire par l'équipe** : pousser et vérifier que la CI passe sur GitHub |
 
+## Modules optionnels (hors fiche, éteints par défaut)
+
+Ils ne font partie d'aucun livrable exigé ; la démonstration se fait modules éteints. Détails : `docs/MODULES.md`.
+
+| Module | Où | Vérification | Statut |
+|---|---|---|---|
+| Saisons : points et tournées selon l'état des routes | `apps/api/salubri_api/modules/seasons/`, panneau « Routes », onglet Go « Route » | 9 tests d'API, `tests/e2e/test_module_seasons.py`, répétition « Inondation secteur 12 » (module allumé) ; éteint : `scripts/baseline.py` → identique | fait, optionnel ; **à faire par l'équipe** : routes réellement coupées à l'hivernage |
+| Assistant local en lecture seule | `apps/api/salubri_api/modules/assistant/`, `run/llm_detect.py`, bouton « Assistant » | 25 tests (modèle simulé), `tests/e2e/test_module_assistant.py` | fait, optionnel ; **à faire par l'équipe** : `scripts/eval_assistant.py` avec un vrai modèle local (30 questions) |
+
 ## Commandes de vérification avant la finale
 
 ```bash

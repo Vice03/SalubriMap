@@ -186,7 +186,24 @@ hypothèses de comportement pèsent peu dans leurs bornes.
 - Tournées refaites entièrement après une panne ; pas de démarrage depuis les tournées précédentes.
 - Flotte de démonstration insuffisante pour la ville entière.
 
-## 10. Réutilisation dans une autre commune
+## 10. Modules optionnels (hors des livrables exigés)
+
+Deux modules, éteints par défaut, s'ajoutent sans rien changer quand ils sont éteints (vérifié : plans recalculés
+identiques, modules éteints, sur une copie de la même base avec des solveurs reproductibles). Détails :
+[`MODULES.md`](MODULES.md).
+
+- **Saisons** : état des routes par période (import, signalement « Route impraticable » vérifié par un modérateur,
+  saisie sur la carte). Un point dont la route d'accès est coupée en saison des pluies est déplacé en gardant ses
+  ménages à portée, ou signalé inaccessible et non desservi ; le retour en saison sèche rend les positions
+  d'origine ; les tournées évitent les routes coupées. Approximations simples (couloir infranchissable de 10 m,
+  pénalité de 50 km) décrites dans `HYPOTHESES.md`. Vérifié sur la carte synthétique, pas sur de vraies routes
+  coupées.
+- **Assistant** : un modèle de langue local (Ollama, LM Studio, llama.cpp…, API compatible OpenAI) explique plans,
+  simulations et signalements aux agents de la mairie, à partir d'outils en lecture seule et des documents du dépôt
+  (BM25), en citant ses sources ; il ne modifie rien et ne juge pas un signalement. Testé avec un modèle simulé ;
+  la qualité des réponses d'un vrai modèle n'est pas encore mesurée (30 questions prêtes).
+
+## 11. Réutilisation dans une autre commune
 
 Un dossier `data/communes/<commune>/` (quartiers, paramètres, CCT), un extrait OSM et les bâtiments Open
 Buildings de l'emprise suffisent ; `scripts/new_commune.py` prépare le dossier et la procédure est dans
