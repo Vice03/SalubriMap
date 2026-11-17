@@ -58,7 +58,7 @@ def test_masked_preview_then_masked_photo_queued_offline(browser, base):  # type
     page.locator(".sticky-send button").click()
     page.wait_for_selector("text=Merci")
     items = page.evaluate(OUTBOX_JS)
-    assert len(items) == 1 and items[0]["state"] == "pending" and items[0]["masking"] == {"faces": 1, "plates": 1, "manual": 0}
+    assert len(items) == 1 and items[0]["state"] == "pending" and items[0]["masking"] == {"faces": 1, "plates": 1, "manual": 0, "mode": "auto"}
     # la photo en file d'attente est la photo masquée : le visage et la plaque ne sont plus que des aplats
     face = page.evaluate(f"async () => {{ const it = (await ({OUTBOX_JS})())[0]; return ({DETAIL_JS})([it.photo, {', '.join(map(str, FACE))}]) }}")
     plate = page.evaluate(f"async () => {{ const it = (await ({OUTBOX_JS})())[0]; return ({DETAIL_JS})([it.photo, {', '.join(map(str, PLATE))}]) }}")
@@ -101,4 +101,31 @@ def test_false_positive_undo_and_manual_zone(browser, base):  # type: ignore[no-
     page.wait_for_selector(".mask-box[aria-label^='manuel']")
     page.wait_for_selector("text=Retirer la dernière zone")
     assert page.locator(".mask-box").count() == 3
+    ctx.close()
+
+
+def test_manual_only_mode_requires_explicit_confirmation(browser, base):  # type: ignore[no-untyped-def]
+    """Lot 2.2 : modèles impossibles à charger → rien ne part sans zone tracée ou « Aucune personne ni plaque »."""
+    ctx, page = _ctx(browser)
+    ctx.route("**/go/models/**", lambda route: route.abort())  # détecteurs indisponibles sur ce « téléphone »
+    page.goto(f"{base}/go/")
+    page.wait_for_selector("text=Prendre une photo")
+    page.set_input_files("input[type=file]", files=[{"name": "rue.jpg", "mimeType": "image/jpeg", "buffer": PHOTO}])
+    page.wait_for_selector("text=Détection automatique indisponible", timeout=60000)
+    page.locator("button.tile").first.click()
+    send = page.locator(".sticky-send button")
+    page.wait_for_timeout(500)
+    assert send.is_disabled()
+    assert "Aucune personne ni plaque visible" in page.inner_text("body")
+    page.locator(".mask-confirm input").check()
+    for _ in range(50):
+        if send.is_enabled():
+            break
+        page.wait_for_timeout(100)
+    assert send.is_enabled()
+    ctx.set_offline(True)
+    send.click()
+    page.wait_for_selector("text=Merci")
+    items = page.evaluate(OUTBOX_JS)
+    assert items[-1]["masking"]["mode"] == "manuel"
     ctx.close()

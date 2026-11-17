@@ -27,9 +27,17 @@ avant d'être enregistrée ; ce qu'il trouve encore est pixellisé de la même f
 `masking: {"client": {"faces", "plates", "manual"} | null, "server": n}` : `client` est ce que le téléphone
 annonce, `server` le nombre de zones que le serveur a dû masquer lui-même (0 si le téléphone avait tout fait).
 
-- **Sans modèles, aucune photo n'est enregistrée** : l'envoi répond 503 « Masquage des visages indisponible »
-  (Salubri Go garde le signalement et réessaie), l'import refuse la ligne. `GET /api/health` affiche
+- **Si la détection du serveur échoue** (modèles absents, erreur d'onnxruntime) : la photo est enregistrée dans
+  le dossier privé `prive/` seulement, **jamais servie au public** (même si le signalement est vérifié),
+  `masking.server = null` avec la cause dans `masking.erreur_serveur`, et le signalement passe « à vérifier »
+  (règle M0). Le rattrapage (`python -m salubri_api.services.masking.backfill`) la masque et la sort du dossier
+  privé dès que les modèles sont là. Même chose pour une photo d'import ZIP. `GET /api/health` affiche
   `"masking": "ok"` ou `"indisponible"`.
+- **Mode manuel sur le téléphone** (modèles impossibles à charger) : rien ne part tant que le citoyen n'a pas
+  tracé au moins une zone ou coché « Aucune personne ni plaque visible sur cette photo » ; le signalement porte
+  `masking.mode = "manuel"` et passe « à vérifier » (règle M0). Le serveur masque quand même.
+- **Premier chargement** : Salubri Go annonce « Préparation du détecteur… (première fois sur ce téléphone :
+  ~8 Mo) » tant que les modèles n'ont jamais été chargés.
 - Les modèles ne sont pas copiés deux fois : l'API lit `apps/go/public/models/` (monté en lecture seule dans
   le conteneur, `SALUBRI_MASKING_MODELS_DIR`).
 - **Rattrapage** des photos enregistrées avant le masquage ou par une ancienne version :

@@ -80,8 +80,15 @@ def stage_report(
         {"c": commune.id, "lon": data.lon, "lat": data.lat},
     ).scalar()
     if info is not None and photo_bytes is not None:
-        path, server_masked = store(photo_bytes, info, get_settings().photos_dir)
-        rep.masking = {"client": data.masking_client, "server": server_masked}
+        path, server_masked, err = store(photo_bytes, info, get_settings().photos_dir)
+        client = data.masking_client or {}
+        rep.masking = {
+            "client": data.masking_client,
+            "server": server_masked,  # None : le serveur n'a pas pu vérifier la photo (gardée en privé)
+            "mode": client.get("mode", "auto") if data.masking_client else "inconnu",
+        }
+        if err:
+            rep.masking["erreur_serveur"] = err
         b = info.bands
         s.add(
             Photo(
@@ -115,8 +122,25 @@ def validate_staged(s: Session, commune: Commune, staged: list[Staged]) -> dict[
         s.flush()
     for st in staged:
         corroborate(s, st.report, th)
+        _masking_review(st.report)
     s.flush()
     return out
+
+
+def _masking_review(rep: Report) -> None:
+    """Masquage manuel sur le téléphone, ou photo non vérifiée par le serveur : un humain regarde la photo avant
+    toute publication (statut « à vérifier », sauf rejet)."""
+    m = rep.masking or {}
+    reasons = []
+    if m.get("mode") == "manuel":
+        reasons.append("masquage fait à la main sur le téléphone (détecteurs indisponibles)")
+    if "server" in m and m["server"] is None:
+        reasons.append("photo non vérifiée par le masquage du serveur, gardée en privé")
+    if not reasons or rep.status == "rejected" or rep.forced_status:
+        return
+    rep.rule_hits = [*(rep.rule_hits or []), {"rule": "M0", "delta": 0, "detail": "Masquage à vérifier : " + " ; ".join(reasons)}]  # fmt: skip
+    if rep.status in ("verified", "probable"):
+        rep.status = "to_review"
 
 
 def find_by_client_id(s: Session, client_id: str | None) -> Report | None:

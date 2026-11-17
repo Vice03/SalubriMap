@@ -13,7 +13,6 @@ from salubri_api.schemas.imports import ImportResult, ImportRow
 from salubri_api.services.importers.common import ParsedRow
 from salubri_api.services.importers.csv import parse_csv
 from salubri_api.services.importers.geojson import parse_geojson
-from salubri_api.services.masking import MaskingUnavailable
 from salubri_api.services.reports import Staged, stage_report, validate_staged
 
 PHOTO_EXT = (".jpg", ".jpeg", ".png", ".webp")
@@ -171,9 +170,6 @@ def run_import(
             staged.append((pr, stage_report(s, commune, pr.data, pr.photo_bytes, batch.id), []))
         except ValueError as exc:
             staged.append((pr, None, [str(exc)]))
-        except MaskingUnavailable:
-            # aucune photo d'import enregistrée sans masquage des visages et des plaques
-            staged.append((pr, None, ["Masquage des visages indisponible sur le serveur : photo non importée"]))
     evals = validate_staged(s, commune, [st for _, st, _ in staged if st is not None])
     rows: list[ImportRow] = []
     for pr, st, errs in staged:

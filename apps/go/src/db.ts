@@ -20,7 +20,7 @@ export interface OutboxItem {
   /** EXIF lu avant le masquage (le JPEG masqué n'en a plus) : position et date de prise de vue */
   exif?: { lat: number | null; lon: number | null; takenAt: string | null }
   /** Zones floutées sur le téléphone */
-  masking?: { faces: number; plates: number; manual: number }
+  masking?: { faces: number; plates: number; manual: number; mode?: 'auto' | 'manuel' }
   state: 'pending' | 'sent' | 'error'
   attempts: number
   lastError?: string

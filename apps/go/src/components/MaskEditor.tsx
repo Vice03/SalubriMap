@@ -4,7 +4,12 @@ import { useEffect, useRef, useState, type PointerEvent } from 'react'
 import type { Box } from '../masking/geometry'
 import { renderMasked } from '../masking/render'
 
-export interface Masked { blob: Blob; faces: number; plates: number; manual: number; ms: number | null }
+export interface Masked { blob: Blob; faces: number; plates: number; manual: number; ms: number | null; mode: 'auto' | 'manuel' }
+
+const LOADED_KEY = 'salubri-detecteur-charge' // le détecteur (~8 Mo) a déjà été chargé une fois sur ce téléphone
+function firstLoad(): boolean {
+  try { return localStorage.getItem(LOADED_KEY) !== '1' } catch { return true }
+}
 
 const COLOR: Record<Box['kind'], string> = { visage: '#f28c28', plaque: '#2563eb', manuel: '#7c3aed' }
 
@@ -13,7 +18,7 @@ const COLOR: Record<Box['kind'], string> = { visage: '#f28c28', plaque: '#2563eb
  * Toucher un cadre l'annule (faux positif) ; « Flouter une zone » permet d'en tracer un à la main.
  * Seule l'image masquée est remontée (onChange) ; l'original reste en mémoire et n'est jamais enregistré.
  */
-export function MaskEditor({ source, onChange }: { source: Blob; onChange: (m: Masked | null) => void }) {
+export function MaskEditor({ source, onChange, onPending }: { source: Blob; onChange: (m: Masked | null) => void; onPending?: (why: string | null) => void }) {
   const [bmp, setBmp] = useState<ImageBitmap | null>(null)
   const [boxes, setBoxes] = useState<Box[]>([])
   const [state, setState] = useState<'detecting' | 'ready' | 'manual-only'>('detecting')
@@ -21,13 +26,15 @@ export function MaskEditor({ source, onChange }: { source: Blob; onChange: (m: M
   const [preview, setPreview] = useState<string | null>(null)
   const [drawing, setDrawing] = useState(false)
   const [draft, setDraft] = useState<Box | null>(null)
+  const [noOne, setNoOne] = useState(false) // mode manuel : « Aucune personne ni plaque visible » confirmé
+  const [first] = useState(firstLoad)
   const area = useRef<HTMLDivElement>(null)
 
   // 1. décodage + détection
   useEffect(() => {
     let alive = true
     onChange(null)
-    setState('detecting'); setBoxes([]); setPreview(null)
+    setState('detecting'); setBoxes([]); setPreview(null); setNoOne(false); onPending?.(null)
     void (async () => {
       const b = await createImageBitmap(source, { imageOrientation: 'from-image' })
       if (!alive) return
@@ -38,6 +45,7 @@ export function MaskEditor({ source, onChange }: { source: Blob; onChange: (m: M
         const d = await detect(b, b.width, b.height)
         if (!alive) return
         setBoxes(d.boxes); setMs(d.ms); setState('ready')
+        try { localStorage.setItem(LOADED_KEY, '1') } catch { /* navigation privée */ }
       } catch {
         if (alive) setState('manual-only') // modèles indisponibles : masquage manuel seulement, signalé à l'écran
       }
@@ -56,11 +64,20 @@ export function MaskEditor({ source, onChange }: { source: Blob; onChange: (m: M
       url = URL.createObjectURL(blob)
       setPreview(url)
       const on = boxes.filter((b) => b.on)
-      onChange({ blob, faces: on.filter((b) => b.kind === 'visage').length, plates: on.filter((b) => b.kind === 'plaque').length, manual: on.filter((b) => b.kind === 'manuel').length, ms })
+      const manual = on.filter((b) => b.kind === 'manuel').length
+      // lot 2.2 : sans détecteur, rien ne part tant que le citoyen n'a pas tracé une zone ou confirmé qu'il n'y a
+      // personne ni plaque ; le serveur met ensuite le signalement en modération (mode « manuel »)
+      if (state === 'manual-only' && manual === 0 && !noOne) {
+        onChange(null)
+        onPending?.('Floutez les visages et les plaques à la main, ou cochez « Aucune personne ni plaque visible ».')
+        return
+      }
+      onPending?.(null)
+      onChange({ blob, faces: on.filter((b) => b.kind === 'visage').length, plates: on.filter((b) => b.kind === 'plaque').length, manual, ms, mode: state === 'manual-only' ? 'manuel' : 'auto' })
     })
     return () => { alive = false; if (url) URL.revokeObjectURL(url) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bmp, boxes, state])
+  }, [bmp, boxes, state, noOne])
 
   const toImage = (e: PointerEvent) => {
     const r = area.current!.getBoundingClientRect()
@@ -102,12 +119,20 @@ export function MaskEditor({ source, onChange }: { source: Blob; onChange: (m: M
         {draft && <div className="mask-box draft" style={{ ...pct({ ...draft, x: Math.min(draft.x, draft.x + draft.w), y: Math.min(draft.y, draft.y + draft.h), w: Math.abs(draft.w), h: Math.abs(draft.h) }) }} />}
       </div>
       <p className="mask-status" role="status" data-ms={ms ?? undefined}>
-        {state === 'detecting' && 'Recherche des visages et des plaques sur le téléphone…'}
+        {state === 'detecting' && (first
+          ? 'Préparation du détecteur de visages et de plaques (première fois sur ce téléphone : ~8 Mo, quelques secondes)…'
+          : 'Recherche des visages et des plaques sur le téléphone…')}
         {state === 'ready' && (faces + plates > 0
           ? <><EyeOff size={15} /> {faces} visage(s) et {plates} plaque(s) floutés automatiquement. Touchez un cadre pour l'annuler.</>
           : <><EyeOff size={15} /> Aucun visage ni plaque détecté. Si vous en voyez un, floutez-le à la main.</>)}
         {state === 'manual-only' && 'Détection automatique indisponible sur ce téléphone : floutez à la main les visages et les plaques.'}
       </p>
+      {state === 'manual-only' && (
+        <label className="mask-confirm">
+          <input type="checkbox" checked={noOne} onChange={(e) => setNoOne(e.target.checked)} />
+          Aucune personne ni plaque visible sur cette photo
+        </label>
+      )}
       <div className="mask-actions">
         <button type="button" className={`btn ${drawing ? 'primary' : 'ghost'} small`} disabled={!preview} onClick={() => setDrawing((d) => !d)}>
           <Square size={16} />{drawing ? 'Tracez la zone sur la photo' : 'Flouter une zone'}

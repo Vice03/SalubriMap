@@ -16,6 +16,7 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
   // lot masquage : `source` (photo d'origine) reste en mémoire ; seule `masked` (floutée) entre dans la file
   const [source, setSource] = useState<Blob | null>(null)
   const [masked, setMasked] = useState<Masked | null>(null)
+  const [maskPending, setMaskPending] = useState<string | null>(null) // mode manuel : confirmation attendue
   const [exif, setExif] = useState<ExifFields | null>(null)
   const [takenAt, setTakenAt] = useState<string | null>(null)
   const photo = masked?.blob ?? null
@@ -42,7 +43,7 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
       clientId: uuid(), createdAt: takenAt ?? new Date().toISOString(), lat: pos.lat, lon: pos.lon,
       accuracy: pos.accuracy, wasteType: waste!, volumeClass: volume, photo,
       exif: photo ? exif ?? undefined : undefined,
-      masking: masked ? { faces: masked.faces, plates: masked.plates, manual: masked.manual } : undefined,
+      masking: masked ? { faces: masked.faces, plates: masked.plates, manual: masked.manual, mode: masked.mode } : undefined,
       comment: (manual ? `[Position saisie à la main] ${comment.trim()}` : comment.trim()).trim(),
       state: 'pending', attempts: 0,
     })
@@ -66,7 +67,7 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
 
   const acc = accuracyLevel(pos?.accuracy ?? null)
   const stepDone = [photo != null, posOk, waste != null, true]
-  const why = masking ? 'Masquage des visages et des plaques en cours…' : !posOk ? 'Il manque la position (étape 2).' : waste == null ? 'Choisissez le type de déchets (étape 3).' : ''
+  const why = masking ? (maskPending ?? 'Masquage des visages et des plaques en cours…') : !posOk ? 'Il manque la position (étape 2).' : waste == null ? 'Choisissez le type de déchets (étape 3).' : ''
   return (
     <div className="page with-sticky">
       <ol className="steps" aria-label="Étapes du signalement">
@@ -86,7 +87,7 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
           e.target.value = ''
         }} />
         {source
-          ? <MaskEditor source={source} onChange={setMasked} />
+          ? <MaskEditor source={source} onChange={setMasked} onPending={setMaskPending} />
           : <button className="photo" onClick={() => input.current?.click()}><Camera size={44} /><span>Prendre une photo</span></button>}
         {source && <button className="link" onClick={() => input.current?.click()}>Reprendre la photo</button>}
       </section>

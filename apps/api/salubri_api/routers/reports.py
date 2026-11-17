@@ -20,11 +20,10 @@ from salubri_api.schemas.reports import MergeIn, ReportCreated, ReportIn, Report
 from salubri_api.services.auth import Principal
 from salubri_api.services.consolidation import consolidate
 from salubri_api.services.geo import feature_collection, shape
-from salubri_api.services.masking import MaskingUnavailable
 from salubri_api.services.plan.trigger import reports_changed
 from salubri_api.services.reports import find_by_client_id, stage_report, thresholds_for, validate_staged
 from salubri_api.services.validation.engine import corroborate, photo_info_from_row, validate_report
-from salubri_api.services.validation.photo import public_jpeg
+from salubri_api.services.validation.photo import PRIVATE_DIR, public_jpeg
 
 router = APIRouter(prefix="/reports", tags=["Signalements"])
 MAX_PHOTO = 12 * 1024 * 1024
@@ -41,13 +40,16 @@ def _created(r: Report, already: bool = False) -> ReportCreated:
     )
 
 
-def _masking_client(raw: str | None) -> dict[str, int] | None:
-    """Compte annoncé par le téléphone ; un JSON invalide est ignoré (le serveur masque de toute façon)."""
+def _masking_client(raw: str | None) -> dict[str, int | str] | None:
+    """Compte annoncé par le téléphone ; un JSON invalide est ignoré (le serveur masque de toute façon).
+    `mode` : « auto » (détecteurs du téléphone) ou « manuel » (modèles indisponibles, zones tracées à la main)."""
     if not raw:
         return None
     try:
         d = json.loads(raw)
-        return {k: max(0, min(int(d.get(k, 0)), 999)) for k in ("faces", "plates", "manual")}
+        out: dict[str, int | str] = {k: max(0, min(int(d.get(k, 0)), 999)) for k in ("faces", "plates", "manual")}
+        out["mode"] = "manuel" if d.get("mode") == "manuel" else "auto"
+        return out
     except (ValueError, TypeError, AttributeError):
         return None
 
@@ -134,9 +136,6 @@ def create_report(
         st = stage_report(s, commune, data, raw or None)
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
-    except MaskingUnavailable as exc:
-        # jamais de photo enregistrée sans masquage : le téléphone garde le signalement et réessaiera
-        raise HTTPException(503, "Masquage des visages indisponible sur le serveur : nouvel essai plus tard") from exc
     validate_staged(s, commune, [st])
     if st.report.status == "verified":
         consolidate(s, commune.id)
@@ -336,8 +335,10 @@ def get_photo(
     photo = s.query(Photo).filter(Photo.report_id == r.id).first()
     if photo is None or (not staff and not is_public(r)):
         raise HTTPException(404, "Photo introuvable")
+    root = get_settings().photos_dir.resolve()
     path = (get_settings().photos_dir / photo.path).resolve()
-    if path.parent != get_settings().photos_dir.resolve() or not path.is_file():
+    private = path.parent == (root / PRIVATE_DIR)  # pas vérifiée par le masquage du serveur : jamais publique
+    if (path.parent != root and not private) or not path.is_file() or (private and not staff):
         raise HTTPException(404, "Photo introuvable")
     if staff:
         return FileResponse(path, media_type="image/jpeg", headers={"Cache-Control": "private, no-store"})

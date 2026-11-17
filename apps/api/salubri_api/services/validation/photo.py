@@ -147,20 +147,35 @@ def reencode(data: bytes, mask: bool = True) -> tuple[bytes, int]:
         return buf.getvalue(), found
 
 
-def store(data: bytes, info: PhotoInfo, photos_dir: Path) -> tuple[str, int]:
+PRIVATE_DIR = "prive"  # photos que le serveur n'a pas pu passer au détecteur : jamais servies au public
+
+
+def store(data: bytes, info: PhotoInfo, photos_dir: Path) -> tuple[str, int | None, str | None]:
     """Masque, réencode puis enregistre sous un nom aléatoire (jamais choisi par l'appelant).
 
-    Renvoie (nom de fichier, zones masquées par le serveur). info vient d'analyze(data).
+    Renvoie (chemin relatif, zones masquées par le serveur, erreur). Si la détection du serveur échoue (modèles
+    absents, erreur d'onnxruntime), la photo est enregistrée dans `prive/` seulement, zones = None, et l'erreur
+    est rendue : le signalement passe en modération et la photo n'est jamais publique tant que le rattrapage
+    (`python -m salubri_api.services.masking.backfill`) ne l'a pas masquée. info vient d'analyze(data).
     """
-    photos_dir.mkdir(parents=True, exist_ok=True)
-    clean, found = reencode(data)
+    from salubri_api.services.masking import MaskingUnavailable
+
+    sub, err = "", None
+    try:
+        clean, found = reencode(data)
+    except MaskingUnavailable as exc:
+        clean, found, sub, err = reencode(data, mask=False)[0], None, PRIVATE_DIR, f"modèles indisponibles : {exc}"
+    except Exception as exc:  # noqa: BLE001 — toute panne du détecteur : on garde la photo, en privé
+        clean, found, sub, err = reencode(data, mask=False)[0], None, PRIVATE_DIR, f"détection en échec : {exc!r}"[:300]
+    folder = photos_dir / sub if sub else photos_dir
+    folder.mkdir(parents=True, exist_ok=True)
     while True:
         name = f"{secrets.token_hex(16)}.jpg"
-        target = photos_dir / name
+        target = folder / name
         try:
             with target.open("xb") as fh:  # x : n'écrase jamais un fichier existant
                 fh.write(clean)
-            return name, found
+            return (f"{sub}/{name}" if sub else name), found, err
         except FileExistsError:
             continue
 

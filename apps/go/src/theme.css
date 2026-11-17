@@ -88,4 +88,5 @@ nav i { position: absolute; top: 4px; left: calc(50% + 6px); background: #dc2626
 .mask-box.off span { text-decoration: line-through; }
 .mask-box.draft { border-color: #7c3aed; background: #7c3aed33; pointer-events: none; }
 .mask-status { display: flex; gap: 6px; align-items: flex-start; font-size: 13.5px; color: #1e3a8a; background: #e0e7ff; border-radius: 10px; padding: 8px 10px; margin: 0; }
+.mask-confirm { display: flex; gap: 8px; align-items: center; font-size: 14px; font-weight: 600; margin: 8px 0 0; padding: 8px 10px; border: 1px solid #c7d2fe; border-radius: 10px; }
 .mask-actions { display: flex; gap: 8px; flex-wrap: wrap; }

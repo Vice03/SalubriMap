@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Masquage côté serveur : seconde passe sur chaque photo (envoi, import), refus sans modèles, rattrapage."""
+"""Masquage côté serveur : seconde passe sur chaque photo (envoi, import), photo privée si la détection échoue,
+mode manuel en modération, rattrapage."""
 
 import io
 import json
@@ -62,7 +63,7 @@ def test_unmasked_upload_is_masked_before_storage(db, client, world):  # type: i
     )
     assert r.status_code == 201, r.text
     rep = db.get(Report, r.json()["id"])
-    assert rep.masking == {"client": None, "server": 2}
+    assert rep.masking == {"client": None, "server": 2, "mode": "inconnu"}  # ancien client : mode non annoncé
     img = _stored(db, rep.id)
     assert img.size == (1309, 512)
     orig = Image.open(io.BytesIO(PHOTO))
@@ -87,7 +88,11 @@ def test_photo_already_masked_on_the_phone_counts_zero_on_server(db, client, wor
         files={"photo": ("p.jpg", buf.getvalue(), "image/jpeg")},
     )
     rep = db.get(Report, r.json()["id"])
-    assert rep.masking == {"client": {"faces": 1, "plates": 1, "manual": 0}, "server": 0}
+    assert rep.masking == {
+        "client": {"faces": 1, "plates": 1, "manual": 0, "mode": "auto"},
+        "server": 0,
+        "mode": "auto",
+    }
 
 
 def test_zip_import_photos_are_masked(db, client):  # type: ignore[no-untyped-def]
@@ -112,7 +117,9 @@ def test_zip_import_photos_are_masked(db, client):  # type: ignore[no-untyped-de
     assert _textured(_stored(db, rep.id), FACE) < 0.25
 
 
-def test_without_models_no_photo_is_stored(db, client, world, monkeypatch, tmp_path):  # type: ignore[no-untyped-def]
+def test_without_models_photo_kept_private_and_report_flagged(db, client, world, monkeypatch, tmp_path):  # type: ignore[no-untyped-def]
+    """Lot 2.3 : détection du serveur impossible → photo dans le dossier privé, jamais publique, signalement à
+    vérifier ; le rattrapage la masque et la sort du dossier privé quand les modèles reviennent."""
     monkeypatch.setattr(get_settings(), "masking_models_dir", tmp_path)  # dossier vide
     detector._sessions.cache_clear()
     try:
@@ -122,13 +129,63 @@ def test_without_models_no_photo_is_stored(db, client, world, monkeypatch, tmp_p
             data={"lon": str(lon), "lat": str(lat), "device_id": "m-3", "client_id": "m-3"},
             files={"photo": ("p.jpg", PHOTO, "image/jpeg")},
         )
-        assert r.status_code == 503 and "Masquage" in r.json()["detail"]
-        assert db.query(Report).filter(Report.client_id == "m-3").count() == 0
+        assert r.status_code == 201, r.text
+        rep = db.query(Report).filter(Report.client_id == "m-3").one()
+        assert rep.masking["server"] is None and "modèles indisponibles" in rep.masking["erreur_serveur"]
+        assert rep.status == "to_review" and any(h["rule"] == "M0" for h in rep.rule_hits)
+        ph = db.query(Photo).filter(Photo.report_id == rep.id).one()
+        assert ph.path.startswith("prive/")
         assert client.get("/api/health").json()["masking"] == "indisponible"
     finally:
         monkeypatch.undo()
         detector._sessions.cache_clear()
-    assert client.get("/api/health").json()["masking"] == "ok"
+    # même vérifié par un modérateur, la photo privée n'est jamais servie au public
+    assert client.patch(f"/api/reports/{rep.id}", json={"status": "verified"}).status_code == 200
+    assert client.get(f"/api/reports/{rep.id}/photo", headers={"X-Salubri-Token": ""}).status_code == 404
+    assert client.get(f"/api/reports/{rep.id}/photo").status_code == 200  # modérateur : oui
+    out = backfill(db)
+    db.expire_all()
+    ph = db.query(Photo).filter(Photo.report_id == rep.id).one()
+    assert not ph.path.startswith("prive/") and out["masquees"] >= 1
+    assert _textured(_stored(db, rep.id), FACE) < 0.25
+    assert client.get(f"/api/reports/{rep.id}/photo", headers={"X-Salubri-Token": ""}).status_code == 200
+
+
+def test_detector_crash_keeps_photo_private(db, client, world, monkeypatch):  # type: ignore[no-untyped-def]
+    from salubri_api.services import masking
+
+    def boom(_img):  # type: ignore[no-untyped-def]
+        raise RuntimeError("onnxruntime: erreur simulée")
+
+    monkeypatch.setattr(masking, "detect", boom)
+    lon, lat = free_point(world, n=74)
+    rid = client.post(
+        "/api/reports",
+        data={"lon": str(lon), "lat": str(lat), "device_id": "m-5"},
+        files={"photo": ("p.jpg", PHOTO, "image/jpeg")},
+    ).json()["id"]
+    rep = db.get(Report, rid)
+    assert rep.masking["server"] is None and "détection en échec" in rep.masking["erreur_serveur"]
+    assert rep.status == "to_review"
+    assert db.query(Photo).filter(Photo.report_id == rep.id).one().path.startswith("prive/")
+
+
+def test_manual_only_mode_goes_to_moderation(db, client, world):  # type: ignore[no-untyped-def]
+    lon, lat = free_point(world, n=75)
+    rid = client.post(
+        "/api/reports",
+        data={
+            "lon": str(lon),
+            "lat": str(lat),
+            "device_id": "m-6",
+            "masking_client": json.dumps({"faces": 0, "plates": 0, "manual": 0, "mode": "manuel"}),
+        },
+        files={"photo": ("p.jpg", PHOTO, "image/jpeg")},
+    ).json()["id"]
+    rep = db.get(Report, rid)
+    assert rep.masking["mode"] == "manuel" and rep.masking["server"] == 2  # le serveur masque quand même
+    assert rep.status == "to_review"
+    assert any(h["rule"] == "M0" and "à la main" in h["detail"] for h in rep.rule_hits)
 
 
 def test_backfill_masks_photos_stored_before(db, client, world, monkeypatch):  # type: ignore[no-untyped-def]
