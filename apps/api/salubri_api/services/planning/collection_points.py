@@ -257,7 +257,7 @@ def _optimise(
         list(range(len(frozen), off)) if stab_pts else list(range(off, off + len(warm_new)))
     )  # départ : les points de la version précédente s'il y en a (stabilité), sinon le k-means
 
-    def run(cap_w: float, hard: bool):  # type: ignore[no-untyped-def]
+    def run(cap_w: float, hard: bool, keep_previous: bool = False):  # type: ignore[no-untyped-def]
         return optimise(
             xy,
             w_week,
@@ -265,7 +265,7 @@ def _optimise(
             cap_w,
             p.walk_distance_max_m,
             max_points,
-            fixed=list(range(len(frozen))),
+            fixed=list(range(off if keep_previous else len(frozen))),
             stability=stability,
             warm_open=warm_open,
             time_limit_s=p.placement_time_limit_s,
@@ -279,8 +279,18 @@ def _optimise(
     r = None
     freq = p.pickup_frequency_per_week
     for f in frequencies(p.pickup_frequency_per_week, p.pickup_frequency_max_per_week):
-        rr = run(p.collection_point_capacity_t * f, True)
-        essais.append({"enlevements_semaine": f, "statut": rr.status})
+        rr = None
+        if stab_pts and len(stab_pts) + len(frozen) <= max_points:
+            # d'abord en gardant tous les points de la version précédente (on n'ajoute que ce qui manque) : sans
+            # cela, quand l'ancien placement ne tient plus dans la capacité, CP-SAT perd son point de départ et
+            # peut rendre en 2 s un placement très différent (répétition, perturbations au hasard)
+            rr = run(p.collection_point_capacity_t * f, True, keep_previous=True)
+            essais.append({"enlevements_semaine": f, "statut": rr.status, "points_precedents_gardes": True})
+            if rr.status not in ("optimal", "faisable"):
+                rr = None
+        if rr is None:
+            rr = run(p.collection_point_capacity_t * f, True)
+            essais.append({"enlevements_semaine": f, "statut": rr.status})
         if rr.status in ("optimal", "faisable"):
             r, freq = rr, f
             break
@@ -288,7 +298,7 @@ def _optimise(
     if r is None:
         r = run(cap_week, False)
         capacite["contrainte"] = "non respectée"
-        prouve = all(e["statut"] == "infaisable" for e in essais)
+        prouve = all(e["statut"] == "infaisable" for e in essais if not e.get("points_precedents_gardes"))
         capacite["raison"] = (
             f"Aucun placement de {max_points} points au plus ne tient dans la capacité des bacs, même à "
             f"{p.pickup_frequency_max_per_week:g} enlèvements par semaine : ajouter des points (maximum), des bacs "
