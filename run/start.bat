@@ -11,6 +11,9 @@ if errorlevel 1 (
   echo Docker est installe mais ne tourne pas : demarrez Docker Desktop puis relancez.
   pause & exit /b 1
 )
+rem Diagnostic (ports, disque, carte) : affiche un ECHEC lisible ; Docker est deja verifie ci-dessus
+call "%~dp0doctor.bat"
+if errorlevel 1 echo Attention : un point du diagnostic est en ECHEC ci-dessus, le demarrage peut echouer.
 rem Les interfaces (apps/web, apps/go) sont construites dans l'image Docker "web" : pas besoin de Node ici.
 rem Hors demonstration (SALUBRI_DEMO_MODE=false dans .env) : secrets generes une fois dans .env
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0secrets.ps1"
@@ -24,6 +27,8 @@ if exist "data\osm\ouaga.osm.pbf" if not exist "data\osm\.seeded_osm" (
   echo Premier chargement des vraies rues OpenStreetMap ^(1 a 2 minutes^)...
   docker compose run --rm seed python -m salubri_api.seed.run --force
   if not errorlevel 1 echo charge> "data\osm\.seeded_osm"
+  rem jeu de pieges de la repetition propre a cette carte
+  docker compose run --rm -v "%CD%\scripts:/app/scripts:ro" -v "%CD%\data\rehearsal:/app/data/rehearsal" seed python scripts/gen_traps.py
 )
 echo Attente de l'API...
 set /a n=0

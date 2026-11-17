@@ -10,22 +10,21 @@ Salubri est un outil libre d'aide à la décision, du signalement des dépotoirs
 | **Salubri Map** | Carte des signalements, 12 règles anti-pièges et score de confiance, modération, import du jeu du jury, export OpenStreetMap |
 | **Salubri Sim** | Points de regroupement, tournées optimisées des camions, simulation multi-agents sur 90 jours, comparaison de scénarios, recalcul en direct |
 
-## Lancer en une commande
+## Démarrage
 
-Seul [Docker](https://docs.docker.com/get-docker/) est nécessaire.
+1. Installer [Docker](https://docs.docker.com/get-docker/) et le démarrer.
+2. Windows : double-cliquer `run\start.bat`. Linux/macOS : `./run/start.sh` (ou `docker compose up --build`).
+3. Ouvrir **http://localhost** (Salubri Map) et **http://localhost/go/** (Salubri Go, téléphone).
+4. Se connecter en haut à droite : `demo` / `ouaga2026` (mode démonstration).
+5. En cas de souci : `run/doctor` dit ce qui manque (Docker, ports, disque) et quelle carte sera utilisée.
 
-```bash
-docker compose up --build
-```
-
-Sous Windows : double-cliquer `run\start.bat`. Sous Linux/macOS : `./run/start.sh`.
-
-Puis ouvrir **http://localhost** (interface) et **http://localhost/api/docs** (API interactive). Le premier démarrage charge la ville de démonstration et calcule les premiers plans (environ une minute). Aucun accès Internet n'est nécessaire à l'exécution.
+Premier démarrage : construction des images puis chargement de la ville (le job CI « stack » chronomètre un clone neuf et l'affiche dans son résumé). Ensuite, aucun accès Internet n'est nécessaire.
 
 | Commande | Effet |
 |---|---|
 | `run/stop` | arrêter (données conservées) |
 | `run/reset` | effacer la base et repartir de zéro |
+| `run/doctor` | diagnostic : Docker, ports 80/8443, disque, carte (vraies rues ou ville synthétique) |
 | `run/test` | lancer les tests |
 | `run/rehearse` | rejouer l'épreuve du jury (pièges + changements de paramètres) |
 | `make bench` | mesurer les temps de recalcul |

@@ -1,0 +1,452 @@
+{
+ "trap-001-control": {
+  "family": "control",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-002-control": {
+  "family": "control",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-003-control": {
+  "family": "control",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-004-control": {
+  "family": "control",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-005-control": {
+  "family": "control",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-006-r1-first": {
+  "family": "r1-first",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-007-r1-dup": {
+  "family": "r1-dup",
+  "status": [
+   "to_review"
+  ],
+  "rules": [
+   "R1"
+  ]
+ },
+ "trap-008-r1-first": {
+  "family": "r1-first",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-009-r1-dup": {
+  "family": "r1-dup",
+  "status": [
+   "to_review"
+  ],
+  "rules": [
+   "R1"
+  ]
+ },
+ "trap-010-r1-first": {
+  "family": "r1-first",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-011-r1-dup": {
+  "family": "r1-dup",
+  "status": [
+   "to_review"
+  ],
+  "rules": [
+   "R1"
+  ]
+ },
+ "trap-012-r2-source": {
+  "family": "r2-source",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-013-r2-identical": {
+  "family": "r2-identical",
+  "status": [
+   "rejected"
+  ],
+  "rules": [
+   "R2"
+  ]
+ },
+ "trap-014-r2-source": {
+  "family": "r2-source",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-015-r2-recompressed": {
+  "family": "r2-recompressed",
+  "status": [
+   "to_review",
+   "rejected"
+  ],
+  "rules": [
+   "R2"
+  ]
+ },
+ "trap-016-r3-exif-gps": {
+  "family": "r3-exif-gps",
+  "status": [
+   "probable",
+   "to_review"
+  ],
+  "rules": [
+   "R3"
+  ]
+ },
+ "trap-017-r4-exif-old": {
+  "family": "r4-exif-old",
+  "status": [
+   "probable"
+  ],
+  "rules": [
+   "R4"
+  ]
+ },
+ "trap-018-r5-bobo": {
+  "family": "r5-bobo",
+  "status": [
+   "rejected"
+  ],
+  "rules": [
+   "R5"
+  ]
+ },
+ "trap-019-r5-koudougou": {
+  "family": "r5-koudougou",
+  "status": [
+   "rejected"
+  ],
+  "rules": [
+   "R5"
+  ]
+ },
+ "trap-020-r5-golfe": {
+  "family": "r5-golfe",
+  "status": [
+   "rejected"
+  ],
+  "rules": [
+   "R5"
+  ]
+ },
+ "trap-021-r6-building": {
+  "family": "r6-building",
+  "status": [
+   "to_review",
+   "rejected"
+  ],
+  "rules": [
+   "R6"
+  ]
+ },
+ "trap-022-r6-building": {
+  "family": "r6-building",
+  "status": [
+   "to_review",
+   "rejected"
+  ],
+  "rules": [
+   "R6"
+  ]
+ },
+ "trap-023-r6-building": {
+  "family": "r6-building",
+  "status": [
+   "to_review",
+   "rejected"
+  ],
+  "rules": [
+   "R6"
+  ]
+ },
+ "trap-024-r7-reservoir": {
+  "family": "r7-reservoir",
+  "status": [
+   "rejected"
+  ],
+  "rules": [
+   "R7"
+  ]
+ },
+ "trap-025-r7-reservoir": {
+  "family": "r7-reservoir",
+  "status": [
+   "rejected"
+  ],
+  "rules": [
+   "R7"
+  ]
+ },
+ "trap-026-r7-river": {
+  "family": "r7-river",
+  "status": [
+   "to_review",
+   "rejected"
+  ],
+  "rules": [
+   "R7"
+  ]
+ },
+ "trap-027-r8-zero": {
+  "family": "r8-zero",
+  "status": [
+   "rejected"
+  ],
+  "rules": [
+   "R8"
+  ]
+ },
+ "trap-028-r8-rounded": {
+  "family": "r8-rounded",
+  "status": [
+   "probable",
+   "to_review"
+  ],
+  "rules": [
+   "R8"
+  ]
+ },
+ "trap-029-r8-accuracy": {
+  "family": "r8-accuracy",
+  "status": [
+   "probable"
+  ],
+  "rules": [
+   "R8"
+  ]
+ },
+ "trap-030-r8-copied-point": {
+  "family": "r8-copied-point",
+  "status": [
+   "to_review",
+   "rejected"
+  ],
+  "rules": [
+   "R8"
+  ]
+ },
+ "trap-031-r9-first": {
+  "family": "r9-first",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-032-r9-jump": {
+  "family": "r9-jump",
+  "status": [
+   "to_review",
+   "probable",
+   "rejected"
+  ],
+  "rules": [
+   "R9"
+  ]
+ },
+ "trap-033-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-034-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-035-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-036-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-037-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-038-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-039-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-040-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-041-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-042-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-043-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable",
+   "to_review"
+  ],
+  "rules": [
+   "R10"
+  ]
+ },
+ "trap-044-r10-burst": {
+  "family": "r10-burst",
+  "status": [
+   "probable",
+   "to_review"
+  ],
+  "rules": [
+   "R10"
+  ]
+ },
+ "trap-045-r10-comment": {
+  "family": "r10-comment",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-046-r10-comment": {
+  "family": "r10-comment",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-047-r10-comment": {
+  "family": "r10-comment",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-048-r10-comment": {
+  "family": "r10-comment",
+  "status": [
+   "probable"
+  ],
+  "rules": []
+ },
+ "trap-049-r10-comment": {
+  "family": "r10-comment",
+  "status": [
+   "probable",
+   "to_review"
+  ],
+  "rules": [
+   "R10"
+  ]
+ },
+ "trap-050-r11-dark": {
+  "family": "r11-dark",
+  "status": [
+   "probable"
+  ],
+  "rules": [
+   "R11"
+  ]
+ },
+ "trap-051-r11-small": {
+  "family": "r11-small",
+  "status": [
+   "probable"
+  ],
+  "rules": [
+   "R11"
+  ]
+ },
+ "trap-052-r12-truck-light": {
+  "family": "r12-truck-light",
+  "status": [
+   "probable"
+  ],
+  "rules": [
+   "R12"
+  ]
+ },
+ "trap-053-r12-medical": {
+  "family": "r12-medical",
+  "status": [
+   "probable"
+  ],
+  "rules": [
+   "R12"
+  ]
+ },
+ "trap-054-combined": {
+  "family": "combined",
+  "status": [
+   "rejected"
+  ],
+  "rules": [
+   "R2",
+   "R6"
+  ]
+ }
+}
