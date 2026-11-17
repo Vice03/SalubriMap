@@ -8,6 +8,8 @@ import { Sidebar } from './components/layout/Sidebar'
 import { Topbar } from './components/layout/Topbar'
 import { Dashboard } from './pages/Dashboard'
 import { AppProvider } from './state/app'
+import { AssistantPanel } from './modules/assistant/AssistantPanel'
+import { useModules } from './modules/useModules'
 
 // Pages chargées à la demande : le premier écran ne télécharge que le tableau de bord (réseau 3G).
 const MapPage = lazy(() => import('./pages/MapPage').then((m) => ({ default: m.MapPage })))
@@ -17,6 +19,7 @@ const ComparePage = lazy(() => import('./pages/ComparePage').then((m) => ({ defa
 const AuditPage = lazy(() => import('./pages/AuditPage').then((m) => ({ default: m.AuditPage })))
 
 export function App() {
+  const modules = useModules() // modules optionnels : cachés tant qu'ils sont éteints
   return (
     <BrowserRouter>
       <AppProvider>
@@ -40,6 +43,7 @@ export function App() {
         <PipelineProgress />
         <Toasts />
         <LoginHost />
+        {modules.assistant && <AssistantPanel />}
       </AppProvider>
     </BrowserRouter>
   )
