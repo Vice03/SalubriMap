@@ -155,9 +155,24 @@ def invariants(
     return errors
 
 
+def wait_idle(c: httpx.Client, timeout: float = 300) -> None:
+    """Attend que la file de recalculs du serveur soit vide (/api/health → queue), au plus `timeout` s."""
+    time.sleep(0.5)
+    end = time.monotonic() + timeout
+    while time.monotonic() < end:
+        q = c.get("/api/health").json().get("queue")
+        if q is None:  # serveur antérieur à 0.3 : ancienne attente fixe
+            time.sleep(3)
+            return
+        if not any(q.values()):
+            return
+        time.sleep(0.5)
+    print("Attention : la file de recalculs n'est pas vide après", timeout, "s")
+
+
 def run_changes(c: httpx.Client, keep: bool) -> tuple[bool, list[str]]:
     spec = yaml.safe_load((DATA / "rehearsal" / "scenario_changes.yaml").read_text(encoding="utf-8"))
-    time.sleep(3)  # let the debounced 'reports_changed' recompute triggered by the trap import go first
+    wait_idle(c)  # le recalcul différé déclenché par l'import doit être fini (sinon « 2 camions en panne » recalcule E1–E4)
     base = next(s for s in c.get("/api/scenarios").json() if s["is_baseline"])
     clone = c.post(
         "/api/scenarios", json={"name": f"Répétition {datetime.now(UTC):%H:%M:%S}", "parent_id": base["id"]}

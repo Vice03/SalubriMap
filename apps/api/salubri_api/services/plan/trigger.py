@@ -27,6 +27,12 @@ def _fire(commune_id: str) -> None:
                 log.exception("recompute request failed")
 
 
+def pending(commune_id: uuid.UUID | None = None) -> int:
+    """Nombre de recalculs différés « signalements modifiés » en attente (pour une commune, ou en tout)."""
+    with _guard:
+        return sum(1 for k, tm in _timers.items() if tm.is_alive() and (commune_id is None or k == str(commune_id)))
+
+
 def cancel_all() -> None:
     """Annule les recalculs différés en attente (tests, arrêt)."""
     with _guard:

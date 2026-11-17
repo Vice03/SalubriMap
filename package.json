@@ -8,6 +8,16 @@
     "dev:web": "pnpm --filter web dev",
     "dev:go": "pnpm --filter go dev",
     "build": "pnpm -r build",
-    "test": "pnpm -r test"
-  }
+    "test": "pnpm -r test",
+    "lint": "eslint apps/web/src apps/go/src",
+    "typecheck": "tsc --noEmit -p apps/web && tsc -b apps/go"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9",
+    "eslint": "^9",
+    "eslint-plugin-react-hooks": "^5",
+    "globals": "^15",
+    "typescript-eslint": "^8"
+  },
+  "type": "module"
 }

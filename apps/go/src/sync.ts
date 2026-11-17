@@ -5,6 +5,7 @@ let running: Promise<number> | null = null
 
 async function thumbnail(photo: Blob): Promise<Blob | null> {
   try {
+    if (typeof createImageBitmap === 'undefined' || typeof document === 'undefined') return null
     const bmp = await createImageBitmap(photo)
     const k = 160 / Math.max(bmp.width, bmp.height)
     const c = document.createElement('canvas')
@@ -18,7 +19,8 @@ const listeners = new Set<() => void>()
 export const onOutboxChange = (fn: () => void) => { listeners.add(fn); return () => { listeners.delete(fn) } }
 export const notify = () => listeners.forEach((fn) => fn())
 
-async function send(item: OutboxItem, device: string): Promise<void> {
+/** true si le serveur a accepté (créé ou déjà reçu), false s'il a refusé le contenu ; lève une erreur pour réessayer. */
+async function send(item: OutboxItem, device: string): Promise<boolean> {
   const f = new FormData()
   f.append('lat', item.lat.toFixed(7))
   f.append('lon', item.lon.toFixed(7))
@@ -41,6 +43,7 @@ async function send(item: OutboxItem, device: string): Promise<void> {
     const verdict = (await res.json()) as Verdict
     // la photo est sur le serveur : on ne garde qu'une vignette pour ne pas remplir le téléphone
     await outbox.put({ ...item, state: 'sent', verdict, lastError: undefined, photo: item.photo ? await thumbnail(item.photo) : null })
+    return true
   } else if (res.status === 429) {
     // trop d'envois : le signalement reste « En attente » et repart au prochain essai automatique
     let msg = 'Trop d\'envois pour le moment : nouvel essai automatique'
@@ -54,7 +57,9 @@ async function send(item: OutboxItem, device: string): Promise<void> {
     let msg = `Refusé (${res.status})`
     try { const b = await res.json(); msg = b.detail ? (typeof b.detail === 'string' ? b.detail : JSON.stringify(b.detail)) : msg } catch { /* corps non JSON */ }
     await outbox.put({ ...item, state: 'error', lastError: msg })
+    return false
   }
+  return false
 }
 
 /** Envoie tout ce qui attend ; renvoie le nombre de signalements envoyés. */
@@ -64,7 +69,7 @@ export function syncOutbox(): Promise<number> {
     try {
       const device = await deviceId()
       for (const item of (await outbox.all()).filter((i) => i.state === 'pending').reverse()) {
-        try { await send(item, device); sent++ } catch { break } // hors ligne : on arrête et on réessaiera
+        try { if (await send(item, device)) sent++ } catch { break } // hors ligne, 429, 5xx : on arrête et on réessaiera
         notify()
       }
     } finally { running = null; notify() }
