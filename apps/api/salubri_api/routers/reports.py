@@ -223,6 +223,41 @@ def _get(s: Session, report_id: str) -> Report:
     return r
 
 
+@router.get(
+    "/suivi",
+    summary="Suivi de ses propres signalements (Salubri Go)",
+    description=(
+        "Pour chaque client_id (UUID aléatoire créé par le téléphone, connu de lui seul) : statut et étapes "
+        "reçu → vérifié → planifié → nettoyé, avec le détail des règles. Rien d'autre (ni position, ni photo)."
+    ),
+)
+def follow_up(
+    client_id: list[str] = Query(default=[], max_length=200), s: Session = Depends(get_session)
+) -> list[dict[str, Any]]:
+    ids = [c for c in client_id if 8 <= len(c) <= 64]
+    if not ids:
+        return []
+    rows = s.query(Report).filter(Report.client_id.in_(ids)).all()
+    out = []
+    for r in rows:
+        verified = r.status in ("verified", "cleaned")
+        out.append(
+            {
+                "client_id": r.client_id,
+                "status": r.status,
+                "steps": {
+                    "recu": True,
+                    "verifie": verified,
+                    # planifié : rattaché à un dépotoir connu de la mairie, donc dans le plan de collecte
+                    "planifie": verified and r.dump_site_id is not None,
+                    "nettoye": r.status == "cleaned",
+                },
+                "rule_hits": r.rule_hits or [],
+            }
+        )
+    return out
+
+
 @router.get("/{report_id}", summary="Fiche complète d'un signalement")
 def get_report(
     report_id: str, s: Session = Depends(get_session), who: Principal | None = Depends(optional_principal)

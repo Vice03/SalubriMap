@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { AlertTriangle, CloudOff, CloudUpload, RefreshCw, Trash2 } from 'lucide-react'
+import { AlertTriangle, Check, CloudOff, CloudUpload, RefreshCw, Trash2 } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { outbox, type OutboxItem } from '../db'
-import { STATUS, VOLUME, WASTE } from '../labels'
-import { notify, onOutboxChange, syncOutbox } from '../sync'
+import { STEPS, VOLUME, WASTE, citizenVerdict } from '../labels'
+import { notify, onOutboxChange, refreshFollowUp, syncOutbox } from '../sync'
 
 function Thumb({ blob }: { blob: Blob | null }) {
   const [url, setUrl] = useState<string | null>(null)
@@ -22,6 +22,7 @@ export function OutboxPage() {
   useEffect(() => {
     const load = () => void outbox.all().then(setItems)
     load()
+    void refreshFollowUp()
     return onOutboxChange(load)
   }, [])
   const pending = items.filter((i) => i.state === 'pending').length
@@ -37,7 +38,8 @@ export function OutboxPage() {
       {!items.length && <p className="hint center">Aucun signalement pour l'instant.</p>}
       {items.map((i) => {
         const w = WASTE.find((x) => x.k === i.wasteType)
-        const st = i.verdict ? STATUS[i.verdict.status] ?? STATUS.pending : null
+        const cv = i.verdict ? citizenVerdict(i.verdict.status) : null
+        const steps = i.verdict?.steps ?? { recu: !!i.verdict, verifie: i.verdict?.status === 'verified' || i.verdict?.status === 'cleaned', planifie: false, nettoye: i.verdict?.status === 'cleaned' }
         return (
           <div key={i.clientId} className="card item">
             <Thumb blob={i.photo} />
@@ -47,10 +49,24 @@ export function OutboxPage() {
               {i.state === 'pending' && <span className="pill" style={{ background: '#fef3c7', color: '#92400e' }}>En attente{i.attempts ? ` · ${i.attempts} essai(s)` : ''}</span>}
               {i.state === 'pending' && i.lastError && <div className="hint">{i.lastError}</div>}
               {i.state === 'error' && <span className="pill" style={{ background: '#fee2e2', color: '#991b1b' }}><AlertTriangle size={12} /> {i.lastError}</span>}
-              {st && i.verdict && (
+              {cv && i.verdict && (
                 <>
-                  <span className="pill" style={{ background: `${st.color}1a`, color: st.color }}>{st.label} · {i.verdict.score}/100</span>
-                  {i.verdict.rule_hits.length > 0 && <ul className="hits">{i.verdict.rule_hits.map((h) => <li key={h.rule}>{h.detail}</li>)}</ul>}
+                  <span className="pill" style={{ background: cv.bg, color: cv.color }}>{cv.text}</span>
+                  {i.verdict.status !== 'rejected' && (
+                    <ol className="timeline" aria-label="Suivi du signalement">
+                      {STEPS.map((s) => (
+                        <li key={s.k} className={steps[s.k] ? 'done' : ''} aria-current={steps[s.k] ? undefined : 'step'}>
+                          <span className="dot">{steps[s.k] && <Check size={11} />}</span>{s.label}
+                        </li>
+                      ))}
+                    </ol>
+                  )}
+                  {i.verdict.rule_hits.length > 0 && (
+                    <details className="why">
+                      <summary>Pourquoi ?</summary>
+                      <ul className="hits">{i.verdict.rule_hits.map((h) => <li key={h.rule}>{h.detail}</li>)}</ul>
+                    </details>
+                  )}
                 </>
               )}
             </div>

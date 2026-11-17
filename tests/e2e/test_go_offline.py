@@ -42,7 +42,9 @@ def test_offline_from_first_visit_then_sync(browser, base):  # type: ignore[no-u
     page.evaluate("window.dispatchEvent(new Event('online'))")
     page.wait_for_selector("text=Tout est envoyé", timeout=20000)
     assert page.locator("nav i").count() == 0
-    assert "/100" in page.inner_text("main")  # le verdict des règles est affiché
+    main = page.inner_text("main")  # verdict en mots pour le citoyen (lot D), jamais « 0/100 »
+    assert "/100" not in main
+    assert any(s in main for s in ("Merci ! La mairie va vérifier", "Signalement confirmé", "Nous n'avons pas pu confirmer"))
     ctx.close()
 
 

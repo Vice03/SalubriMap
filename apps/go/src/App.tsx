@@ -2,6 +2,7 @@
 import { Camera, Inbox, MapPin, Wifi, WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { outbox } from './db'
+import { PwaBars } from './components/PwaBars'
 import { NearbyPage } from './pages/NearbyPage'
 import { OutboxPage } from './pages/OutboxPage'
 import { ReportPage } from './pages/ReportPage'
@@ -34,7 +35,8 @@ export function App() {
         {tab === 'outbox' && <OutboxPage />}
         {tab === 'nearby' && <NearbyPage />}
       </main>
-      <nav>
+      <PwaBars />
+      <nav aria-label="Navigation principale">
         <button className={tab === 'report' ? 'on' : ''} onClick={() => setTab('report')}><Camera size={22} />Signaler</button>
         <button className={tab === 'outbox' ? 'on' : ''} onClick={() => setTab('outbox')}><Inbox size={22} />Mes envois{pending > 0 && <i>{pending}</i>}</button>
         <button className={tab === 'nearby' ? 'on' : ''} onClick={() => setTab('nearby')}><MapPin size={22} />Autour de moi</button>

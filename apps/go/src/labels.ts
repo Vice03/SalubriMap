@@ -9,12 +9,13 @@ export const WASTE: { k: WasteType; label: string; emoji: string; color: string 
   { k: 'medical', label: 'Biomédical', emoji: '💉', color: '#dc2626' },
   { k: 'mixed', label: 'Mélangé', emoji: '♻️', color: '#7c3aed' },
 ]
-export const VOLUME: { k: VolumeClass; label: string; hint: string }[] = [
-  { k: 'bag', label: 'Sac', hint: '< 0,1 m³' },
-  { k: 'wheelbarrow', label: 'Brouette', hint: '≈ 0,1 m³' },
-  { k: 'cart', label: 'Charrette', hint: '≈ 0,5 m³' },
-  { k: 'truck', label: 'Camion', hint: '≈ 5 m³' },
-  { k: 'more', label: 'Plus', hint: '> 5 m³' },
+/** Quantités en images (lot D) : on montre ce que le citoyen voit, pas des m³ (gardés en info-bulle). */
+export const VOLUME: { k: VolumeClass; label: string; hint: string; emoji: string }[] = [
+  { k: 'bag', label: 'Un sac', hint: 'moins de 0,1 m³', emoji: '🛍️' },
+  { k: 'wheelbarrow', label: 'Une brouette', hint: 'environ 0,1 m³', emoji: '🧺' },
+  { k: 'cart', label: 'Une charrette', hint: 'environ 0,5 m³', emoji: '🛒' },
+  { k: 'truck', label: 'Un camion', hint: 'environ 5 m³', emoji: '🚚' },
+  { k: 'more', label: 'Plus encore', hint: 'plus de 5 m³', emoji: '⛰️' },
 ]
 export const STATUS: Record<string, { label: string; color: string }> = {
   verified: { label: 'Vérifié', color: '#0f766e' },
@@ -24,3 +25,17 @@ export const STATUS: Record<string, { label: string; color: string }> = {
   pending: { label: 'En attente', color: '#64748b' },
   cleaned: { label: 'Nettoyé', color: '#0f766e' },
 }
+
+/** Ce que voit le citoyen (lot D) : jamais « Rejeté · 0/100 », une phrase et une couleur. */
+export function citizenVerdict(status: string): { text: string; color: string; bg: string } {
+  if (status === 'verified' || status === 'cleaned') return { text: 'Signalement confirmé', color: '#166534', bg: '#dcfce7' }
+  if (status === 'rejected') return { text: "Nous n'avons pas pu confirmer ce signalement", color: '#7c2d12', bg: '#ffedd5' }
+  return { text: 'Merci ! La mairie va vérifier', color: '#1e3a8a', bg: '#e0e7ff' }
+}
+
+export const STEPS: { k: 'recu' | 'verifie' | 'planifie' | 'nettoye'; label: string }[] = [
+  { k: 'recu', label: 'Reçu' },
+  { k: 'verifie', label: 'Vérifié' },
+  { k: 'planifie', label: 'Planifié' },
+  { k: 'nettoye', label: 'Nettoyé' },
+]

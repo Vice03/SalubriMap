@@ -11,5 +11,15 @@ createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictM
 
 // Hors ligne : la coquille est mise en cache (pas sur localhost en dev, pour éviter un cache gênant).
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
-  window.addEventListener('load', () => { void navigator.serviceWorker.register('/go/sw.js', { scope: '/go/' }) })
+  window.addEventListener('load', () => {
+    void navigator.serviceWorker.register('/go/sw.js', { scope: '/go/' }).then((reg) => {
+      // lot D : une nouvelle version installée pendant qu'une ancienne contrôle la page → avis « Mettre à jour »
+      const announce = (sw: ServiceWorker | null) => { if (sw && navigator.serviceWorker.controller) window.dispatchEvent(new CustomEvent('salubri-sw-update', { detail: sw })) }
+      announce(reg.waiting)
+      reg.addEventListener('updatefound', () => {
+        const sw = reg.installing
+        sw?.addEventListener('statechange', () => { if (sw.state === 'installed') announce(sw) })
+      })
+    })
+  })
 }

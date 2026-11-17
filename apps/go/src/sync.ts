@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { deviceId, outbox, type OutboxItem, type Verdict } from './db'
+import { deviceId, outbox, type OutboxItem, type Steps, type Verdict } from './db'
 
 let running: Promise<number> | null = null
 
@@ -84,4 +84,21 @@ export function startAutoSync(): () => void {
   const t = window.setInterval(tick, 30_000)
   tick()
   return () => { window.removeEventListener('online', tick); window.clearInterval(t) }
+}
+
+/** Suivi (lot D) : relit statut et étapes des signalements envoyés, par leur client_id. */
+export async function refreshFollowUp(): Promise<void> {
+  const sent = (await outbox.all()).filter((i) => i.state === 'sent' && i.verdict)
+  if (!sent.length || !navigator.onLine) return
+  const q = sent.map((i) => `client_id=${encodeURIComponent(i.clientId)}`).join('&')
+  try {
+    const res = await fetch(`/api/reports/suivi?${q}`)
+    if (!res.ok) return
+    const rows = (await res.json()) as { client_id: string; status: string; steps: Steps; rule_hits: Verdict['rule_hits'] }[]
+    for (const r of rows) {
+      const it = sent.find((i) => i.clientId === r.client_id)
+      if (it?.verdict) await outbox.put({ ...it, verdict: { ...it.verdict, status: r.status, steps: r.steps, rule_hits: r.rule_hits } })
+    }
+    notify()
+  } catch { /* hors ligne : on garde le dernier état connu */ }
 }

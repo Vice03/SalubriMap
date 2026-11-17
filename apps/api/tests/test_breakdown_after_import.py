@@ -13,7 +13,6 @@ import time
 import zipfile
 
 from conftest import free_point
-
 from salubri_api.config import get_settings
 from salubri_api.models import PlanVersion, Scenario, Vehicle
 from salubri_api.services import background

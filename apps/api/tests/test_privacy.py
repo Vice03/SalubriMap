@@ -84,3 +84,18 @@ def test_photo_with_gps_exif_is_stripped_for_public(db, anon, world):  # type: i
     # depuis le lot A5, l'EXIF est retiré dès l'enregistrement : ni le public ni la mairie ne le reçoivent
     assert b"Fabricant-Secret" not in anon.get(f"/api/reports/{rid}/photo", headers=mod).content
     assert b"Fabricant-Secret" not in anon.get(f"/api/reports/{rid}/photo").content
+
+
+def test_follow_up_by_client_id_shows_only_own_steps(db, anon, world):  # type: ignore[no-untyped-def]
+    """Lot D : Salubri Go suit ses envois par client_id (aléatoire, connu du seul téléphone)."""
+    make_user(db, "awa", "moderateur")
+    mod = bearer(anon, "awa")
+    a = post_report(anon, free_point(world, n=60), jpeg(60), device_id="tel-60", client_id="cid-aaaaaaaa-1")
+    post_report(anon, free_point(world, n=61), jpeg(61), device_id="tel-61", client_id="cid-bbbbbbbb-2")
+    rows = anon.get("/api/reports/suivi", params={"client_id": ["cid-aaaaaaaa-1", "inconnu-123456"]}).json()
+    assert [r["client_id"] for r in rows] == ["cid-aaaaaaaa-1"]
+    assert rows[0]["steps"]["recu"] is True and set(rows[0]) == {"client_id", "status", "steps", "rule_hits"}
+    anon.patch(f"/api/reports/{a['id']}", json={"status": "verified"}, headers=mod)
+    rows = anon.get("/api/reports/suivi", params={"client_id": "cid-aaaaaaaa-1"}).json()
+    assert rows[0]["steps"]["verifie"] is True and rows[0]["steps"]["nettoye"] is False
+    assert anon.get("/api/reports/suivi").json() == []

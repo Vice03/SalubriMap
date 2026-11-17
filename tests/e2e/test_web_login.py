@@ -68,7 +68,8 @@ def test_write_refused_opens_login_panel_instead_of_prompt(browser, base):  # ty
         else r.continue_(),
     )
     seasons = page.locator("button:has-text('Saison des pluies'), button:has-text('Saison sèche')")
-    seasons.locator("visible=true").last.click()
+    target = seasons.nth(1) if "on" in (seasons.nth(0).get_attribute("class") or "") else seasons.nth(0)
+    target.click()
     page.wait_for_selector("text=Connexion mairie")
     assert not dialogs
     ctx.close()

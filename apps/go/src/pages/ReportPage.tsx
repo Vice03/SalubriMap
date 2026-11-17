@@ -59,8 +59,15 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
   }
 
   const acc = accuracyLevel(pos?.accuracy ?? null)
+  const stepDone = [photo != null, posOk, waste != null, true]
+  const why = !posOk ? 'Il manque la position (étape 2).' : waste == null ? 'Choisissez le type de déchets (étape 3).' : ''
   return (
-    <div className="page">
+    <div className="page with-sticky">
+      <ol className="steps" aria-label="Étapes du signalement">
+        {['Photo', 'Position', 'Type', 'Quantité'].map((s, n) => (
+          <li key={s} className={stepDone[n] ? 'done' : ''}><span>{stepDone[n] ? '✓' : n + 1}</span>{s}</li>
+        ))}
+      </ol>
       <section className="card">
         <h3><span className="num">1</span>Photo du dépotoir</h3>
         <input ref={input} type="file" accept="image/*" capture="environment" hidden onChange={async (e) => {
@@ -97,7 +104,7 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
         <h3><span className="num">3</span>Quel type de déchets ?</h3>
         <div className="grid3">
           {WASTE.map((w) => (
-            <button key={w.k} className={`tile ${waste === w.k ? 'on' : ''}`} style={{ ['--c' as string]: w.color }} onClick={() => setWaste(w.k)}>
+            <button key={w.k} className={`tile ${waste === w.k ? 'on' : ''}`} style={{ ['--c' as string]: w.color }} aria-pressed={waste === w.k} onClick={() => setWaste(w.k)}>
               <span className="emoji">{w.emoji}</span>{w.label}
             </button>
           ))}
@@ -108,16 +115,20 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
         <h3><span className="num">4</span>Quelle quantité ?</h3>
         <div className="seg">
           {VOLUME.map((v) => (
-            <button key={v.k} className={volume === v.k ? 'on' : ''} onClick={() => setVolume(v.k)}>{v.label}<small>{v.hint}</small></button>
+            <button key={v.k} className={volume === v.k ? 'on' : ''} title={v.hint} aria-pressed={volume === v.k} onClick={() => setVolume(v.k)}>
+              <span className="emoji" aria-hidden>{v.emoji}</span>{v.label}
+            </button>
           ))}
         </div>
         <textarea placeholder="Un détail utile ? (près du marché, bloque le caniveau…)" maxLength={1000} value={comment} onChange={(e) => setComment(e.target.value)} />
       </section>
 
-      <button className="btn primary big" disabled={!ready} onClick={() => void submit()}>
-        <Send size={20} />{busy ? 'Enregistrement…' : 'Envoyer le signalement'}
-      </button>
-      {!ready && <p className="hint center">{!posOk ? 'Il manque la position.' : waste == null ? 'Choisissez le type de déchets.' : ''}{!photo && ' Une photo rend le signalement plus fiable.'}</p>}
+      <div className="sticky-send">
+        {(!ready || !photo) && <p className="hint center" role="status">{why}{!photo && ' Une photo rend le signalement plus fiable.'}</p>}
+        <button className="btn primary big" disabled={!ready} onClick={() => void submit()}>
+          <Send size={20} />{busy ? 'Enregistrement…' : 'Envoyer le signalement'}
+        </button>
+      </div>
     </div>
   )
 }

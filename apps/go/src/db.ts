@@ -4,7 +4,8 @@
 export type WasteType = 'household' | 'plastic' | 'rubble' | 'organic' | 'medical' | 'mixed' | 'other'
 export type VolumeClass = 'bag' | 'wheelbarrow' | 'cart' | 'truck' | 'more'
 export interface RuleHit { rule: string; delta: number; detail: string; reject?: boolean }
-export interface Verdict { id: string; status: string; score: number; rule_hits: RuleHit[]; already_received?: boolean }
+export interface Steps { recu: boolean; verifie: boolean; planifie: boolean; nettoye: boolean }
+export interface Verdict { id: string; status: string; score: number; rule_hits: RuleHit[]; already_received?: boolean; steps?: Steps }
 
 export interface OutboxItem {
   clientId: string
