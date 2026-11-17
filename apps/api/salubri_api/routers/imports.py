@@ -13,6 +13,8 @@ from salubri_api.services.consolidation import consolidate
 from salubri_api.services.importers.run import run_import
 from salubri_api.services.plan.trigger import reports_changed
 
+MAX_IMPORT = 60 * 1024 * 1024  # comme client_max_body_size de nginx (lot A5)
+
 router = APIRouter(prefix="/imports", tags=["Import"], dependencies=[Depends(require_admin)])
 
 
@@ -31,7 +33,9 @@ def create_import(
     s: Session = Depends(get_session),
     commune: Commune = Depends(get_commune),
 ) -> ImportResult:
-    content = file.file.read()
+    content = file.file.read(MAX_IMPORT + 1)
+    if len(content) > MAX_IMPORT:
+        raise HTTPException(413, f"Fichier trop volumineux (max {MAX_IMPORT // (1024 * 1024)} Mo)")
     if not content:
         raise HTTPException(422, "Fichier vide")
     try:

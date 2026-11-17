@@ -69,3 +69,11 @@ Choix faits là où la consigne laissait le choix (option la plus simple et sûr
 - Le journal contient des identifiants d'appareil, des notes et des noms de comptes : sa lecture exige un compte modérateur ou admin. Les compteurs agrégés (`/api/reports/stats`) restent publics.
 - Démonstration : le navigateur qui a déjà saisi `ouaga2026` voit tout ; sur un navigateur neuf, cliquer « Se connecter » dans Signalements avant la scène « Filtre Rejetés » (ajouté à docs/DEMO.md).
 
+## Téléversements (0.3, lot A5)
+
+- Le plafond de 40 Mpx couvre les téléphones actuels (48 Mpx sont rares et redimensionnés par l'appareil photo par défaut). Au-delà, refus avec un message en français ; Salubri Go compresse déjà avant l'envoi.
+- La copie enregistrée est un JPEG qualité 85, 2560 px au plus de côté. Les règles gardent ce qu'elles mesuraient sur l'original : empreinte SHA-256 (doublon exact), pHash, dimensions, poids, GPS et date EXIF, variance de luminance. Ces valeurs sont en base, pas dans le fichier.
+- Les photos déjà enregistrées avant 0.3 gardent leur nom et leur EXIF sur le disque ; elles ne sont plus servies qu'à travers l'API, et la copie publique est sans EXIF (lot A4). Pas de migration des fichiers : plus simple et sans risque de perte.
+- Le nom aléatoire empêche de deviner une photo et de savoir si deux signalements portent la même. Deux envois de la même image produisent deux fichiers : la règle de doublon s'appuie sur la base, pas sur le nom.
+- Archive d'import : rien n'est extrait sur le disque ; le nom d'un fichier de l'archive ne sert que de clé pour retrouver la photo citée par la ligne.
+

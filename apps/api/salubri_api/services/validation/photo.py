@@ -1,8 +1,15 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Photo analysis: hashes, EXIF and a cheap "is this informative" measure."""
+"""Photo analysis: hashes, EXIF and a cheap "is this informative" measure.
+
+Lot A5 : le contenu est vérifié par Pillow (JPEG, PNG ou WebP réels, pas l'extension), le nombre de pixels
+est plafonné, et la photo est réencodée en JPEG sans EXIF avant d'être écrite sous un nom aléatoire.
+Les valeurs EXIF utiles aux règles (GPS, date de prise de vue) restent en base, dans la table photos.
+"""
 
 import hashlib
 import io
+import secrets
+import warnings
 from dataclasses import dataclass
 from datetime import UTC, datetime
 from functools import lru_cache
@@ -15,6 +22,12 @@ from PIL import ExifTags, Image, ImageOps
 GPS_TAG = 34853
 EXIF_IFD = 34665
 DATETIME_ORIGINAL = 36867
+
+ALLOWED_FORMATS = ("JPEG", "PNG", "WEBP")
+MAX_PIXELS = 40_000_000  # 40 Mpx : au-delà d'un téléphone récent, refusé (bombe de décompression)
+MAX_BYTES = 12 * 1024 * 1024
+STORED_MAX_SIDE = 2560  # la copie enregistrée ; assez pour juger un dépotoir, pas de 50 Mo par photo
+Image.MAX_IMAGE_PIXELS = MAX_PIXELS  # Pillow refuse aussi tout seul au-delà de 2 × cette valeur
 
 
 @dataclass(frozen=True)
@@ -73,11 +86,23 @@ def _exif(img: Image.Image) -> tuple[float | None, float | None, datetime | None
 
 
 def analyze(data: bytes) -> PhotoInfo:
-    """Raise ValueError if the bytes are not a readable image."""
+    """Raise ValueError if the bytes are not a readable JPEG, PNG or WebP image of reasonable size."""
+    if len(data) > MAX_BYTES:
+        raise ValueError(f"Photo trop lourde (max {MAX_BYTES // (1024 * 1024)} Mo)")
     try:
-        img = Image.open(io.BytesIO(data))
-        img.load()
-    except Exception as exc:
+        with warnings.catch_warnings():
+            warnings.simplefilter("error", Image.DecompressionBombWarning)
+            img = Image.open(io.BytesIO(data))
+            if img.format not in ALLOWED_FORMATS:
+                raise ValueError("Format de photo refusé (JPEG, PNG ou WebP seulement)")
+            if img.width * img.height > MAX_PIXELS:
+                raise ValueError("Photo trop grande (plus de 40 millions de pixels)")
+            img.load()
+    except ValueError:
+        raise
+    except (Image.DecompressionBombWarning, Image.DecompressionBombError) as exc:
+        raise ValueError("Photo trop grande (plus de 40 millions de pixels)") from exc
+    except Exception as exc:  # fichier tronqué, faux en-tête, bombe de décompression…
         raise ValueError("Fichier image illisible") from exc
     lat, lon, taken = _exif(img)
     upright = ImageOps.exif_transpose(img).convert("RGB")
@@ -99,14 +124,32 @@ def hamming(a: str, b: str) -> int:
     return bin(int(a, 16) ^ int(b, 16)).count("1")
 
 
+def reencode(data: bytes) -> bytes:
+    """JPEG neuf, redressé, sans aucune métadonnée, côté le plus long ≤ STORED_MAX_SIDE."""
+    with Image.open(io.BytesIO(data)) as im:
+        up = ImageOps.exif_transpose(im).convert("RGB")
+        up.thumbnail((STORED_MAX_SIDE, STORED_MAX_SIDE))
+        buf = io.BytesIO()
+        up.save(buf, "JPEG", quality=85, optimize=True)
+        return buf.getvalue()
+
+
 def store(data: bytes, info: PhotoInfo, photos_dir: Path) -> str:
-    """Save once per content hash; return the relative path served under /photos/."""
+    """Réencode puis enregistre sous un nom aléatoire ; renvoie le nom de fichier (jamais choisi par l'appelant).
+
+    info vient d'analyze(data) : le fichier a déjà été reconnu comme image valide.
+    """
     photos_dir.mkdir(parents=True, exist_ok=True)
-    name = f"{info.sha256[:32]}.jpg"
-    target = photos_dir / name
-    if not target.exists():
-        target.write_bytes(data)
-    return name
+    clean = reencode(data)
+    while True:
+        name = f"{secrets.token_hex(16)}.jpg"
+        target = photos_dir / name
+        try:
+            with target.open("xb") as fh:  # x : n'écrase jamais un fichier existant
+                fh.write(clean)
+            return name
+        except FileExistsError:
+            continue
 
 
 @lru_cache(maxsize=256)

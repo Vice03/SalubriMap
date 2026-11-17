@@ -81,5 +81,6 @@ def test_photo_with_gps_exif_is_stripped_for_public(db, anon, world):  # type: i
     im.save(buf, "JPEG", exif=ex)
     rid = post_report(anon, free_point(world, n=43), buf.getvalue(), device_id="tel-55")["id"]
     anon.patch(f"/api/reports/{rid}", json={"status": "verified"}, headers=mod)
-    assert b"Fabricant-Secret" in anon.get(f"/api/reports/{rid}/photo", headers=mod).content
+    # depuis le lot A5, l'EXIF est retiré dès l'enregistrement : ni le public ni la mairie ne le reçoivent
+    assert b"Fabricant-Secret" not in anon.get(f"/api/reports/{rid}/photo", headers=mod).content
     assert b"Fabricant-Secret" not in anon.get(f"/api/reports/{rid}/photo").content
