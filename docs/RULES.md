@@ -22,3 +22,16 @@ Chaque signalement démarre à **100 points**. Les règles retirent des points ;
 **Ordre et stabilité** : seuls les signalements *antérieurs* comptent comme preuves (doublon, photo, coordonnées copiées), donc revalider un signalement donne le même verdict qu'à son arrivée. Un import est validé dans l'ordre chronologique des `reported_at`.
 
 **Ce qui n'est pas détecté automatiquement** (à dire honnêtement au jury) : photo générée par IA, photo d'un autre dépotoir réel de la ville prise le même jour, faux GPS cohérent et lent. Le modérateur voit le score, la photo et l'historique de l'appareil.
+
+## Règles et photos masquées (lot 2.4)
+
+Les règles qui lisent les pixels voient la photo **masquée par le téléphone** (c'est elle qui est envoyée) ; le
+serveur masque ensuite une seconde fois avant d'enregistrer. Vérifié sur des photos masquées, aucun seuil changé
+(`apps/api/tests/test_masking_rules.py`) :
+
+| Règle | Ce qu'elle lit | Effet du masquage mesuré |
+|---|---|---|
+| R2 photo réutilisée | pHash | écart original / masqué 4 bits sur 64 (seuil 8) : la même photo masquée sur deux téléphones, ou masquée puis non masquée, reste détectée |
+| R11 photo inexploitable | variance de luminance, côtés | variance 4 874 → 2 903 même à 60 % masqués (seuil 25) ; dimensions inchangées |
+| R12 description incohérente | poids du fichier | 136 Ko → 117 / 90 / 62 Ko pour 10 / 30 / 60 % masqués (seuil 50 Ko) : une photo déjà proche de 50 Ko et masquée aux deux tiers peut passer dessous (−10, indicatif) |
+| M0 masquage à vérifier | `reports.masking` | nouveau : mode manuel sur le téléphone ou photo non vérifiée par le serveur → « à vérifier », sans pénalité |

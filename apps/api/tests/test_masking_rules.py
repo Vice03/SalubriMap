@@ -10,6 +10,7 @@ import io
 from pathlib import Path
 
 import numpy as np
+import pytest
 from PIL import Image
 
 from conftest import free_point
@@ -71,3 +72,22 @@ def test_masked_copy_of_an_unmasked_photo_is_caught(db, client, world):  # type:
 def test_masked_photo_is_not_uninformative(db, client, world):  # type: ignore[no-untyped-def]
     out = _send(client, world, 84, masked(), "tel-c")
     assert "R11" not in _rules(db, out["id"])
+
+
+@pytest.mark.parametrize("frac", [0.1, 0.3, 0.6])
+def test_heavy_masking_keeps_r11_and_r12_quiet(frac: float) -> None:
+    """Lot 2.4 : même si le masquage couvre 60 % de la photo (foule), R11 (variance de luminance) et R12 (photo
+    trop légère pour un volume « camion ») ne se déclenchent pas sur une photo normale. Mesures sur la fixture
+    (136 Ko) : 117 Ko / 90 Ko / 62 Ko pour 10 / 30 / 60 % masqués, seuil R12 50 Ko ; variance ≥ 2 900, seuil 25.
+    Aucun seuil changé ; une photo déjà proche de 50 Ko et masquée aux deux tiers peut passer dessous (R12 n'enlève
+    alors que 10 points, indicatif)."""
+    im = Image.open(io.BytesIO(PHOTO)).convert("RGB")
+    arr = np.array(im)
+    w, h = im.size
+    pixelate(arr, [Box(0, 0, w * frac**0.5, h * frac**0.5, "visage", 1)], margin=0)
+    buf = io.BytesIO()
+    Image.fromarray(arr).save(buf, "JPEG", quality=88)
+    info, th = analyze(buf.getvalue()), ValidationThresholds()
+    assert info.luminance_var >= th.luminance_var_min
+    assert info.bytes >= th.truck_photo_min_bytes
+    assert info.bytes >= (1 - frac) * len(PHOTO) * 0.75  # la taille baisse à peu près comme la part masquée
