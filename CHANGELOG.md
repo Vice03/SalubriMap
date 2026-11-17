@@ -2,6 +2,7 @@
 
 ## 0.4.0 — en cours
 
+- **Simulation à agents, étape 1 — conception** : `docs/SIMULATION_ODD.md` (protocole ODD) décrit ménages, pré-collecteurs, brigade Laabal, mairie, points et dépotoirs, l'ordonnancement quotidien, le choix logit des ménages, les règles d'abonnement et de rentabilité, et le contrôle de cohérence avec le modèle agrégé.
 - **Masquage, étape 6 — tests et outillage** : tests demandés en place (pixellisation sans pixel d'origine, découpe en tuiles identique téléphone/serveur, photo envoyée en clair masquée avant l'enregistrement, parcours Go hors ligne avec aperçu masqué). ruff épinglé en 0.17.5 (`ruff.toml`, `pyproject.toml`, CI) ; un tri d'imports corrigé dans `tests/test_ratelimit.py`.
 - **Masquage, étape 5 — mesure** : `scripts/eval_masquage.py` mesure rappel et précision par type sur un dossier annoté (format et protocole : `data/eval/masquage/README.md`). Visages : seuil 0,5 et seconde passe sur 2×2 tuiles au-delà de 1000 px, identiques sur le téléphone et le serveur. Sur un jeu public de contrôle (WIDER Face + plaques Roboflow, pas Ouagadougou) : visages rappel 0,928 (cible 0,95 **non atteinte**), plaques 0,935. Le jeu de terrain n'existe pas encore : cibles non démontrées pour notre usage.
 - **Masquage, étape 4 — règles sur images masquées** : tests montrant que R2 (photo réutilisée) repère toujours la même photo masquée envoyée par deux téléphones, et la copie masquée d'une photo envoyée en clair (pHash : 4/64 d'écart, seuil 8), et que R11 ne prend pas une photo masquée pour une photo vide. Aucun seuil modifié.
