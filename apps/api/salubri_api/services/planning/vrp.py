@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 import numpy as np
 
+DETERMINISTIC_SOLUTIONS = 300  # mode reproductible (settings.deterministic_solvers)
 SCALE = 1000  # OR-Tools works on integers: tonnes -> kg, km -> m
 
 
@@ -154,6 +155,11 @@ def solve_vrp(
     # Large instances (whole city: 1,000+ points) need more than the default second to get past the first
     # insertion pass; under that limit OR-Tools can return an almost empty solution (every point dropped).
     params.time_limit.FromMilliseconds(int(effective_time_limit(time_limit_s, n) * 1000))
+    from salubri_api.config import get_settings
+
+    if get_settings().deterministic_solvers:  # même entrée → mêmes tournées : arrêt au nombre de solutions
+        params.solution_limit = DETERMINISTIC_SOLUTIONS
+        params.time_limit.FromSeconds(600)
     sol = routing.SolveWithParameters(params)
     if sol is None:
         from salubri_api.services.planning.vrp_fallback import solve_fallback

@@ -38,6 +38,10 @@ class Settings(BaseSettings):
     auto_recompute: bool = True
     # au démarrage, relancer les recalculs interrompus par un redémarrage (désactivé dans les tests)
     resume_on_startup: bool = True
+    # Solveurs reproductibles (contrôles « modules éteints », scripts/baseline.py) : CP-SAT sur un fil avec un
+    # temps déterministe, OR-Tools routage arrêté à un nombre de solutions et non à l'horloge. Plus lent ; jamais
+    # en démonstration. Faux par défaut : rien ne change.
+    deterministic_solvers: bool = False
 
 
 DEMO_TOKEN = "ouaga2026"

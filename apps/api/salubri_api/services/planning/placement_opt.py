@@ -43,6 +43,12 @@ class OptResult:
     warm_objective: float | None = None
 
 
+def _deterministic() -> bool:
+    from salubri_api.config import get_settings
+
+    return get_settings().deterministic_solvers
+
+
 def cost_matrix(xy: np.ndarray, cand: np.ndarray) -> np.ndarray:
     return np.hypot(xy[:, None, 0] - cand[None, :, 0], xy[:, None, 1] - cand[None, :, 1]) * DETOUR
 
@@ -149,6 +155,10 @@ def optimise(
     solver.parameters.max_time_in_seconds = time_limit_s
     solver.parameters.num_workers = 2
     solver.parameters.random_seed = seed
+    if _deterministic():  # même entrée → même plan (temps déterministe, un seul fil)
+        solver.parameters.num_workers = 1
+        solver.parameters.max_deterministic_time = time_limit_s
+        solver.parameters.max_time_in_seconds = 20 * time_limit_s
     st = solver.Solve(mdl)
     if st not in (cp_model.OPTIMAL, cp_model.FEASIBLE):
         nan = math.nan

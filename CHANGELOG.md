@@ -1,6 +1,10 @@
 # Journal des versions
 
-## 0.4.0 — en cours
+## 0.5.0 — en cours
+
+- **Étape 0.1 — référence « modules éteints »** : `scripts/baseline.py` photographie les plans de chaque scénario (résumé sans durées, points, tournées) et compare deux photographies ; `recalcul` relance un calcul complet sur une copie de la base. Constat : deux calculs du même code ne donnaient pas le même plan (solveurs arrêtés à l'horloge, îlots ordonnés par identifiant aléatoire au seed) ; réglage `SALUBRI_DETERMINISTIC_SOLVERS` (faux par défaut, rien ne change) : CP-SAT sur un fil en temps déterministe, routage arrêté à 300 solutions. Deux recalculs de la même base : **identiques** (ville entière et zone pilote). Test `tests/test_deterministic.py`.
+
+## 0.4.0
 
 - **Lot 8 — livrables écrits** : `docs/RAPPORT_TECHNIQUE.md` et PDF mis à jour (calage, sensibilité sur 8 paramètres, banc OR-Tools contre repli, facteur de détour, perturbations au hasard, masquage 0,933/0,938/0,935, six variantes de l'arrondissement 9 et population INSD, compteurs de tests) ; figures régénérées (étiquettes de la figure des scénarios élargies) ; `docs/MATRICE_CONTRIBUTION.md` avec une colonne « Masquage » ; `docs/CHECKLIST_FINALE.md` mise à jour (ligne carte publique, éléments à faire par l'équipe) ; `docs/RAPPORT_0.4.md` : exigence · avant · après · preuve, sans note.
 - **Lot 7 — import et carte publique** : 6ᵉ fichier inédit `6_photos_renommees.zip` (photo renommée en casse ou en extension, chemin Windows complet, photo oubliée, ligne sans photo) : la photo renommée est retrouvée et le rapport dit sous quel nom, la photo absente est signalée, deux candidats possibles → rien n'est deviné ; tests. Carte publique : ligne visible sous la carte « Vue publique : signalements vérifiés uniquement, photos masquées · Données © Équipe Salubri, ODbL 1.0 · Fond © contributeurs OpenStreetMap » (la partie « vue publique » disparaît une fois connecté) ; test navigateur. Le filtrage côté API (vérifiés ou nettoyés seulement, photos du dossier privé jamais servies) était déjà testé (`test_privacy.py`, `test_masking.py`).
