@@ -1,6 +1,6 @@
 # Rapport de répétition de l'épreuve
 
-Généré le 17/11/2026 11:00 UTC — API http://localhost:8088, OSRM down.
+Généré le 17/11/2026 13:45 UTC — API http://localhost:8088, OSRM down.
 
 ## Signalements piégés
 
@@ -69,12 +69,12 @@ Dépotoirs consolidés avant/après : 195 → 195 ✅
 
 | Étape | Événement | Étapes recalculées | En cache | Durée serveur | Durée totale | Points inchangés | Déplacement moyen / max | Tournées (Jaccard) | Δ coût | Couverture avant → après | Invariants |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.17 s | 1.31 s | 100 % | 0.0 / 0.0 m | 0.13 | -40963 | 100 % → 100 % | ✅ |
-| Saison des pluies | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.19 s | 1.39 s | 100 % | 0.0 / 0.0 m | 0.14 | 18284 | 100 % → 100 % | ✅ |
-| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 3.58 s | 3.80 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 100 % → 98 % | ✅ |
-| Budget −30 % | budget_changed | E6, E7 | E1, E2, E3, E4, E5 | 0.24 s | 0.44 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 98 % → 98 % | ✅ |
-| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.33 s | 1.49 s | 100 % | 0.0 / 0.0 m | 0.04 | 59936 | 98 % → 98 % | ✅ |
-| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.30 s | 1.50 s | 100 % | 0.0 / 0.0 m | 0.147 | -14018 | 98 % → 98 % | ✅ |
-| Deux modifications en 100 ms | subscription_changed | E7 | E1, E2, E3, E4, E5, E6 | 0.00 s | 0.26 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 98 % → 98 % | ✅ |
+| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.14 s | 1.29 s | 100 % | 0.0 / 0.0 m | 0.028 | -41447 | 100 % → 100 % | ✅ |
+| Saison des pluies | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.16 s | 1.28 s | 100 % | 0.0 / 0.0 m | 0.114 | 18923 | 100 % → 100 % | ✅ |
+| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 3.63 s | 4.07 s | 100 % | 0.0 / 0.0 m | 0.815 | 30 | 100 % → 97 % | ✅ |
+| Budget −30 % | budget_changed | E6, E7 | E1, E2, E3, E4, E5 | 0.22 s | 0.44 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 97 % → 97 % | ✅ |
+| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.21 s | 1.39 s | 100 % | 0.0 / 0.0 m | 0.067 | 60287 | 97 % → 97 % | ✅ |
+| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.25 s | 1.41 s | 100 % | 0.0 / 0.0 m | 0.141 | -13962 | 97 % → 97 % | ✅ |
+| Deux modifications en 100 ms | subscription_changed | E7 | E1, E2, E3, E4, E5, E6 | 0.00 s | 0.25 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 97 % → 97 % | ✅ |
 
 **Résultat : tout est vert.**

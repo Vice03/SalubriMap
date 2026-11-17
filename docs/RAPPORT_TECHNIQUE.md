@@ -119,7 +119,7 @@ partie des points n'est pas desservie : le plan chiffre le nombre de camions né
 
 ### 8.1 Tests
 
-API : plus de 200 tests (pytest, base PostGIS réelle), couverture de code ≥ 91 % exigée en CI ; applications :
+API : 194 tests (pytest, base PostGIS réelle), couverture de code 92 % (≥ 91 % exigé en CI) ; applications :
 tests Vitest ; parcours complets dans un vrai navigateur (Playwright, `tests/e2e`, 17 tests dont le signalement
 hors ligne avec masquage). CI : ruff épinglé, tests, builds, à chaque push.
 
