@@ -55,7 +55,7 @@ export function OutboxPage() {
                   {i.verdict.status !== 'rejected' && (
                     <ol className="timeline" aria-label="Suivi du signalement">
                       {STEPS.map((s) => (
-                        <li key={s.k} className={steps[s.k] ? 'done' : ''} aria-current={steps[s.k] ? undefined : 'step'}>
+                        <li key={s.k} className={steps[s.k] ? 'is-done' : ''} aria-current={steps[s.k] ? undefined : 'step'}>
                           <span className="dot">{steps[s.k] && <Check size={11} />}</span>{s.label}
                         </li>
                       ))}

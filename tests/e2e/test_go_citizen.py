@@ -51,7 +51,7 @@ def test_citizen_wording_timeline_and_steps(browser, base):  # type: ignore[no-u
     assert any(t in card for t in ("Merci ! La mairie va vérifier", "Signalement confirmé", "Nous n'avons pas pu confirmer"))
     if "Nous n'avons pas pu confirmer" not in card:
         assert page.locator(".timeline li").count() == 4
-        assert "done" in (page.locator(".timeline li").first.get_attribute("class") or "")  # « Reçu »
+        assert "is-done" in (page.locator(".timeline li").first.get_attribute("class") or "")  # « Reçu »
     assert not errors, errors
     ctx.close()
 

@@ -71,7 +71,7 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
     <div className="page with-sticky">
       <ol className="steps" aria-label="Étapes du signalement">
         {['Photo', 'Position', 'Type', 'Quantité'].map((s, n) => (
-          <li key={s} className={stepDone[n] ? 'done' : ''}><span>{stepDone[n] ? '✓' : n + 1}</span>{s}</li>
+          <li key={s} className={stepDone[n] ? 'is-done' : ''}><span>{stepDone[n] ? '✓' : n + 1}</span>{s}</li>
         ))}
       </ol>
       <section className="card">
