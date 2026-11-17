@@ -43,6 +43,8 @@ Sources : **mairie** (donnée à obtenir ou obtenue), **littérature** (référe
 | `sim_mode` | Modèle de simulation | agents ou agrege | agents / agrege | agents | choix technique : SIMULATION_ODD.md | simulation |
 | `placement_time_limit_s` | Temps de calcul du placement | s | 0,5 – 60 | 2 | choix technique : 2 s pour le test en direct | E3 placement |
 | `placement_stability_m` | Stabilité des points | m de marche équivalents | 0 – 2 000 | 300 | hypothèse : déplacer un point coûte comme faire marcher sa charge 300 m de plus | E3 placement |
+| `fallback_detour_dry` | Détour routier sans OSRM, saison sèche | × vol d'oiseau | 1 – 3 | 1,35 | hypothèse (valeurs usuelles 1,2–1,4 en ville) ; à caler sur OSRM avec scripts/calibrer_detour.py (docs/DETOUR_CALIBRATION.md) | tournées (repli sans OSRM) |
+| `fallback_detour_rain` | Détour routier sans OSRM, saison des pluies | × vol d'oiseau | 1 – 3 | 1,5 | hypothèse (voies inondables évitées) ; à caler sur le graphe OSRM « pluie » avec scripts/calibrer_detour.py | tournées (repli sans OSRM) |
 
 ## Comportements simulés (ménages, pré-collecteurs, brigade Laabal)
 

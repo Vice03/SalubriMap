@@ -481,7 +481,8 @@ def _execute(pv_id: str) -> None:
             depot = shape(commune.depot_geom)
             nodes = [(depot.x, depot.y)] + [(p.lon, p.lat) for p in placement.points]
             url = settings.osrm_rain_url if params.season == "rain" else settings.osrm_url
-            e4_key = _h(nodes, params.season, url, params.flood_speed_factor)
+            detour = params.fallback_detour_rain if params.season == "rain" else params.fallback_detour_dry
+            e4_key = _h(nodes, params.season, url, params.flood_speed_factor, detour)
             matrix: Matrix = _stage(
                 pv_id,
                 st,
@@ -490,7 +491,7 @@ def _execute(pv_id: str) -> None:
                 e4_key,
                 forced_all,
                 lambda: build_matrix(
-                    nodes, params.season, url or None, settings.osrm_timeout_s, params.flood_speed_factor
+                    nodes, params.season, url or None, settings.osrm_timeout_s, params.flood_speed_factor, detour
                 ),
             )
 

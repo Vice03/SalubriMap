@@ -63,6 +63,9 @@ class ScenarioParams(BaseModel):
     walk_distance_max_m: float = Field(300, gt=0)
     season: Literal["dry", "rain"] = "dry"
     flood_speed_factor: float = Field(0.7, gt=0, le=1)
+    # repli sans OSRM : km routiers ≈ vol d'oiseau × facteur (calé par scripts/calibrer_detour.py)
+    fallback_detour_dry: float = Field(1.35, ge=1, le=3)
+    fallback_detour_rain: float = Field(1.5, ge=1, le=3)
     truck_breakdown_rate_per_day: float = Field(0.02, ge=0, le=1)
     budget_fcfa_month: float = Field(25_000_000, ge=0)
     fuel_cost_fcfa_per_km: float = Field(450, ge=0)
@@ -101,6 +104,8 @@ PARAM_EVENT: dict[str, str] = {
     "walk_distance_max_m": "frequency_changed",
     "season": "season_changed",
     "flood_speed_factor": "season_changed",
+    "fallback_detour_dry": "fleet_changed",
+    "fallback_detour_rain": "fleet_changed",
     "budget_fcfa_month": "budget_changed",
     "fuel_cost_fcfa_per_km": "budget_changed",
     "cleanup_capacity_t_day": "budget_changed",

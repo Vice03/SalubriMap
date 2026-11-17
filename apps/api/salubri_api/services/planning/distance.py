@@ -15,6 +15,9 @@ from salubri_api.services.geo import haversine_matrix_m
 
 log = logging.getLogger("salubri.distance")
 
+# Facteur de détour du repli sans OSRM (km par route / km à vol d'oiseau), par saison. Valeurs par défaut ;
+# celles du scénario viennent de params_default.json (fallback_detour_dry/_rain), calées sur OSRM par
+# scripts/calibrer_detour.py (docs/DETOUR_CALIBRATION.md).
 DETOUR = {"dry": 1.35, "rain": 1.5}
 SPEED_KMH = 25.0
 CHUNK = 100
@@ -39,9 +42,11 @@ def cache_key(nodes: list[tuple[float, float]], season: str) -> str:
     return h.hexdigest()[:16]
 
 
-def approx_matrix(nodes: list[tuple[float, float]], season: str, flood_speed_factor: float = 0.7) -> Matrix:
+def approx_matrix(
+    nodes: list[tuple[float, float]], season: str, flood_speed_factor: float = 0.7, detour: float | None = None
+) -> Matrix:
     arr = np.array(nodes, dtype=float)
-    d_km = haversine_matrix_m(arr[:, 1], arr[:, 0]) / 1000 * DETOUR.get(season, 1.35)
+    d_km = haversine_matrix_m(arr[:, 1], arr[:, 0]) / 1000 * (detour or DETOUR.get(season, 1.35))
     speed = SPEED_KMH * (flood_speed_factor if season == "rain" else 1.0)
     return Matrix(d_km, d_km / speed * 60, "approx", cache_key(nodes, season))
 
@@ -79,6 +84,7 @@ def build_matrix(
     osrm_url: str | None,
     timeout: float = 1.5,
     flood_speed_factor: float = 0.7,
+    detour: float | None = None,
 ) -> Matrix:
     key = cache_key(nodes, season) + ("|" + osrm_url if osrm_url else "")
     if key in _CACHE:
@@ -92,9 +98,9 @@ def build_matrix(
             m = Matrix(d, t, "osrm", cache_key(nodes, season))
         except Exception as exc:  # network, timeout, bad graph: never fail the plan
             log.warning("OSRM indisponible (%s), repli haversine", exc)
-            m = approx_matrix(nodes, season, flood_speed_factor)
+            m = approx_matrix(nodes, season, flood_speed_factor, detour)
     else:
-        m = approx_matrix(nodes, season, flood_speed_factor)
+        m = approx_matrix(nodes, season, flood_speed_factor, detour)
     m.duration_ms = int((time.perf_counter() - t0) * 1000)
     if m.mode == "osrm":
         _CACHE[key] = m
