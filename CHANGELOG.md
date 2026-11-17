@@ -1,5 +1,9 @@
 # Journal des versions
 
+## 0.4.0 — en cours
+
+- **Masquage des visages et des plaques, étapes 1–2** : choix et documentation des modèles (`docs/MASQUAGE.md`, `docs/LICENCES_TIERCES.md`) — YuNet (OpenCV Zoo, MIT) pour les visages, YOLOv9-t 384 d'open-image-models (MIT) pour les plaques, exécutés hors ligne par onnxruntime-web et mis en cache par le service worker. Salubri Go détecte et pixellise visages et plaques juste après la photo, montre les cadres, permet d'annuler un faux positif ou de « Flouter une zone » à la main ; seule l'image masquée entre dans la file d'attente et part au serveur. GPS et date EXIF, lus avant le masquage, sont envoyés à part (`exif_lat`, `exif_lon`, `exif_taken_at`) et alimentent les règles comme avant. CSP : `'wasm-unsafe-eval'` pour le WebAssembly.
+
 ## 0.3.0 — 17 novembre 2026
 
 - **Comptes et rôles (lot A1)** : comptes de la mairie (`moderateur`, `admin`), connexion `POST /api/auth/login` avec session signée de 8 h, `GET /api/auth/me`, `POST /api/auth/logout` ; chaque route d'écriture exige le bon rôle (modération pour les signalements et dépotoirs, admin pour imports, scénarios, flotte, quartiers, recalculs) ; le journal signe chaque action « login (rôle) » au lieu de « system » ; outil `python -m salubri_api.users add|passwd|disable|list` ; `X-Salubri-Token` reste l'identifiant de service des scripts. Mots de passe en argon2id.

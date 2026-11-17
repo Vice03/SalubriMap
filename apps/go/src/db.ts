@@ -16,7 +16,11 @@ export interface OutboxItem {
   wasteType: WasteType
   volumeClass: VolumeClass
   comment: string
-  photo: Blob | null
+  photo: Blob | null // toujours la photo MASQUÉE (visages et plaques floutés) ; l'original n'est jamais stocké
+  /** EXIF lu avant le masquage (le JPEG masqué n'en a plus) : position et date de prise de vue */
+  exif?: { lat: number | null; lon: number | null; takenAt: string | null }
+  /** Zones floutées sur le téléphone */
+  masking?: { faces: number; plates: number; manual: number }
   state: 'pending' | 'sent' | 'error'
   attempts: number
   lastError?: string

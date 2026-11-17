@@ -80,6 +80,9 @@ def create_report(
     device_id: Annotated[str | None, Form()] = None,
     client_id: Annotated[str | None, Form()] = None,
     external_id: Annotated[str | None, Form()] = None,
+    exif_lat: Annotated[float | None, Form(description="Latitude EXIF lue sur le téléphone avant masquage")] = None,
+    exif_lon: Annotated[float | None, Form(description="Longitude EXIF lue sur le téléphone avant masquage")] = None,
+    exif_taken_at: Annotated[datetime | None, Form(description="Date de prise de vue EXIF, lue avant masquage")] = None,
     photo: Annotated[UploadFile | None, File()] = None,
     s: Session = Depends(get_session),
     commune: Commune = Depends(get_commune),
@@ -100,6 +103,9 @@ def create_report(
             device_id=device_id,
             client_id=client_id,
             external_id=external_id,
+            exif_lat=exif_lat,
+            exif_lon=exif_lon,
+            exif_taken_at=exif_taken_at,
         )
     except ValidationError as exc:
         raise RequestValidationError(exc.errors()) from exc

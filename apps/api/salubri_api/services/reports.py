@@ -2,7 +2,7 @@
 """Report ingestion shared by the API (Salubri Go) and file imports."""
 
 import uuid
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import UTC, datetime
 
 from shapely.geometry import Point
@@ -46,6 +46,12 @@ def stage_report(
 ) -> Staged:
     """Insert a report (and its photo) without validating it. Raises ValueError on an unreadable photo."""
     info = analyze(photo_bytes) if photo_bytes else None
+    if info is not None and info.exif_lat is None and info.exif_taken_at is None:
+        # photo masquée sur le téléphone (sans EXIF) : on reprend les valeurs lues avant le masquage
+        taken = data.exif_taken_at
+        if taken is not None and taken.tzinfo is None:
+            taken = taken.replace(tzinfo=UTC)
+        info = replace(info, exif_lat=data.exif_lat, exif_lon=data.exif_lon, exif_taken_at=taken)
     _touch_device(s, data.device_id)
     reported_at = data.reported_at or datetime.now(UTC)
     if reported_at.tzinfo is None:

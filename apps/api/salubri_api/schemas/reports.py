@@ -20,6 +20,11 @@ class ReportIn(BaseModel):
     device_id: str | None = Field(None, max_length=64)
     client_id: str | None = Field(None, max_length=64, description="Identifiant d'idempotence fourni par le client")
     external_id: str | None = Field(None, max_length=128)
+    # Lot masquage : la photo floutée sur le téléphone n'a plus d'EXIF ; le téléphone envoie à part ce que
+    # les règles utilisent (position et date de prise de vue), comme s'il était lu dans le fichier.
+    exif_lat: float | None = Field(None, ge=-90, le=90)
+    exif_lon: float | None = Field(None, ge=-180, le=180)
+    exif_taken_at: datetime | None = None
 
 
 class RuleHitOut(BaseModel):

@@ -124,3 +124,37 @@ def test_lying_zip_header_is_refused() -> None:
 def test_not_a_zip_and_import_size_cap(client):  # type: ignore[no-untyped-def]
     r = client.post("/api/imports", files={"file": ("jury.zip", b"PK\x03\x04 pas une archive")})
     assert r.status_code == 422 and "ZIP" in r.text
+
+
+def test_exif_sent_beside_a_masked_photo_feeds_the_rules(db, client, world):  # type: ignore[no-untyped-def]
+    """Lot masquage : la photo floutée sur le téléphone n'a plus d'EXIF ; position et date arrivent à part."""
+    lon, lat = free_point(world, n=8)
+    r = client.post(
+        "/api/reports",
+        data={
+            "lon": str(lon),
+            "lat": str(lat),
+            "device_id": "u-8",
+            "client_id": "u-8",
+            "exif_lat": "12.3714",
+            "exif_lon": "1.5197",
+            "exif_taken_at": "2026-11-17T08:00:00",
+        },
+        files={"photo": ("p.jpg", _img("JPEG"), "image/jpeg")},
+    )
+    assert r.status_code == 201, r.text
+    ph = db.query(Photo).filter(Photo.report_id == r.json()["id"]).one()
+    assert abs(ph.exif_lat - 12.3714) < 1e-6 and abs(ph.exif_lon - 1.5197) < 1e-6
+    assert ph.exif_taken_at.isoformat().startswith("2026-11-17T08:00")
+
+
+def test_exif_in_the_file_wins_over_sent_values(db, client, world):  # type: ignore[no-untyped-def]
+    raw = photo_for_name("demo-92-exifgps_12.3714_1.5197.jpg")
+    lon, lat = free_point(world, n=9)
+    r = client.post(
+        "/api/reports",
+        data={"lon": str(lon), "lat": str(lat), "device_id": "u-9", "exif_lat": "10.0", "exif_lon": "2.0"},
+        files={"photo": ("p.jpg", raw, "image/jpeg")},
+    )
+    ph = db.query(Photo).filter(Photo.report_id == r.json()["id"]).one()
+    assert abs(ph.exif_lat - 12.3714) < 1e-3

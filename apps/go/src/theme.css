@@ -75,3 +75,17 @@ nav i { position: absolute; top: 4px; left: calc(50% + 6px); background: #dc2626
 .why summary { cursor: pointer; font-size: 13px; color: #1e3a8a; font-weight: 600; min-height: 32px; display: flex; align-items: center; }
 .install-bar, .update-bar { position: fixed; left: 50%; transform: translateX(-50%); bottom: 84px; z-index: 30; width: min(540px, 94vw); display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 14px; background: #0f2b55; color: #fff; box-shadow: 0 10px 30px #0f2b5540; font-size: 14px; }
 .install-bar .btn, .update-bar .btn { margin-left: auto; }
+
+/* Masquage des visages et des plaques */
+.mask-editor { display: flex; flex-direction: column; gap: 8px; }
+.mask-area { position: relative; border-radius: 14px; overflow: hidden; background: #0f172a; touch-action: none; user-select: none; min-height: 160px; }
+.mask-area img { display: block; width: 100%; height: auto; }
+.mask-area.drawing { outline: 3px dashed #7c3aed; cursor: crosshair; }
+.mask-wait { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; color: #e2e8f0; min-height: 200px; font-weight: 600; }
+.mask-box { position: absolute; border: 3px solid; border-radius: 6px; background: transparent; padding: 0; min-height: 0; }
+.mask-box span { position: absolute; top: -2px; left: -2px; font-size: 11px; font-weight: 800; color: #fff; padding: 1px 6px; border-radius: 6px 0 6px 0; text-transform: capitalize; }
+.mask-box.off { border-style: dashed; opacity: .75; }
+.mask-box.off span { text-decoration: line-through; }
+.mask-box.draft { border-color: #7c3aed; background: #7c3aed33; pointer-events: none; }
+.mask-status { display: flex; gap: 6px; align-items: flex-start; font-size: 13.5px; color: #1e3a8a; background: #e0e7ff; border-radius: 10px; padding: 8px 10px; margin: 0; }
+.mask-actions { display: flex; gap: 8px; flex-wrap: wrap; }

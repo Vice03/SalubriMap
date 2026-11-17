@@ -32,6 +32,9 @@ async function send(item: OutboxItem, device: string): Promise<boolean> {
   f.append('device_id', device)
   f.append('client_id', item.clientId) // envoi idempotent : un renvoi ne crée jamais de doublon
   if (item.photo) f.append('photo', item.photo, 'photo.jpg')
+  if (item.exif?.lat != null && item.exif.lon != null) { f.append('exif_lat', String(item.exif.lat)); f.append('exif_lon', String(item.exif.lon)) }
+  if (item.exif?.takenAt) f.append('exif_taken_at', item.exif.takenAt)
+  if (item.masking) f.append('masking_client', JSON.stringify(item.masking))
   let res: Response
   try {
     res = await fetch('/api/reports', { method: 'POST', body: f })

@@ -3916,6 +3916,43 @@
       ],
       "title": "External Id"
      },
+     "exif_lat": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Exif Lat",
+      "description": "Latitude EXIF lue sur le téléphone avant masquage"
+     },
+     "exif_lon": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Exif Lon",
+      "description": "Longitude EXIF lue sur le téléphone avant masquage"
+     },
+     "exif_taken_at": {
+      "anyOf": [
+       {
+        "type": "string",
+        "format": "date-time"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Exif Taken At",
+      "description": "Date de prise de vue EXIF, lue avant masquage"
+     },
      "photo": {
       "anyOf": [
        {

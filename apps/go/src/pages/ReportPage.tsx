@@ -2,8 +2,9 @@
 import { Camera, CheckCircle2, LocateFixed, MapPinned, Send } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { accuracyLevel, useGps } from '../components/useGps'
-import { preparePhoto } from '../components/photo'
+import { MaskEditor, type Masked } from '../components/MaskEditor'
 import { outbox, uuid, type VolumeClass, type WasteType } from '../db'
+import { readExif, type ExifFields } from '../masking/exif'
 import { VOLUME, WASTE } from '../labels'
 import { notify, syncOutbox } from '../sync'
 
@@ -12,9 +13,12 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
   const [manual, setManual] = useState(false)
   const [mLat, setMLat] = useState('')
   const [mLon, setMLon] = useState('')
-  const [photo, setPhoto] = useState<Blob | null>(null)
-  const [preview, setPreview] = useState<string | null>(null)
+  // lot masquage : `source` (photo d'origine) reste en mémoire ; seule `masked` (floutée) entre dans la file
+  const [source, setSource] = useState<Blob | null>(null)
+  const [masked, setMasked] = useState<Masked | null>(null)
+  const [exif, setExif] = useState<ExifFields | null>(null)
   const [takenAt, setTakenAt] = useState<string | null>(null)
+  const photo = masked?.blob ?? null
   const [waste, setWaste] = useState<WasteType | null>(null)
   const [volume, setVolume] = useState<VolumeClass>('wheelbarrow')
   const [comment, setComment] = useState('')
@@ -22,14 +26,14 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
   const [done, setDone] = useState(false)
   const input = useRef<HTMLInputElement>(null)
 
-  useEffect(() => () => { if (preview) URL.revokeObjectURL(preview) }, [preview])
   useEffect(() => { if (gps.status === 'error') setManual(true) }, [gps.status])
 
   const pos = manual
     ? { lat: Number(mLat), lon: Number(mLon), accuracy: null }
     : gps.status === 'ok' ? gps.fix : null
   const posOk = pos != null && (!manual || (mLat.trim() !== '' && mLon.trim() !== '')) && Number.isFinite(pos.lat) && Number.isFinite(pos.lon) && Math.abs(pos.lat) <= 90 && Math.abs(pos.lon) <= 180
-  const ready = posOk && waste != null && !busy
+  const masking = source != null && masked == null // la photo choisie n'est pas encore masquée
+  const ready = posOk && waste != null && !busy && !masking
 
   const submit = async () => {
     if (!ready || !pos) return
@@ -37,6 +41,8 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
     await outbox.put({
       clientId: uuid(), createdAt: takenAt ?? new Date().toISOString(), lat: pos.lat, lon: pos.lon,
       accuracy: pos.accuracy, wasteType: waste!, volumeClass: volume, photo,
+      exif: photo ? exif ?? undefined : undefined,
+      masking: masked ? { faces: masked.faces, plates: masked.plates, manual: masked.manual } : undefined,
       comment: (manual ? `[Position saisie à la main] ${comment.trim()}` : comment.trim()).trim(),
       state: 'pending', attempts: 0,
     })
@@ -53,14 +59,14 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
         <h2>Merci, c'est enregistré !</h2>
         <p>{navigator.onLine ? 'Votre signalement part vers la mairie.' : 'Pas de réseau : il partira tout seul dès que le réseau revient.'}</p>
         <button className="btn primary" onClick={onSent}>Voir mes signalements</button>
-        <button className="btn ghost" onClick={() => { setDone(false); setPhoto(null); setPreview(null); setWaste(null); setComment(''); setTakenAt(null) }}>Signaler un autre dépotoir</button>
+        <button className="btn ghost" onClick={() => { setDone(false); setSource(null); setMasked(null); setExif(null); setWaste(null); setComment(''); setTakenAt(null) }}>Signaler un autre dépotoir</button>
       </div>
     )
   }
 
   const acc = accuracyLevel(pos?.accuracy ?? null)
   const stepDone = [photo != null, posOk, waste != null, true]
-  const why = !posOk ? 'Il manque la position (étape 2).' : waste == null ? 'Choisissez le type de déchets (étape 3).' : ''
+  const why = masking ? 'Masquage des visages et des plaques en cours…' : !posOk ? 'Il manque la position (étape 2).' : waste == null ? 'Choisissez le type de déchets (étape 3).' : ''
   return (
     <div className="page with-sticky">
       <ol className="steps" aria-label="Étapes du signalement">
@@ -74,13 +80,15 @@ export function ReportPage({ onSent }: { onSent: () => void }) {
           const f = e.target.files?.[0]
           if (!f) return
           setTakenAt(new Date().toISOString())
-          setPhoto(await preparePhoto(f))
-          setPreview(URL.createObjectURL(f))
+          setMasked(null)
+          setExif(await readExif(f)) // avant masquage : le JPEG masqué n'aura plus d'EXIF
+          setSource(f)
+          e.target.value = ''
         }} />
-        <button className={`photo ${preview ? 'has' : ''}`} onClick={() => input.current?.click()}>
-          {preview ? <img src={preview} alt="Photo du dépotoir" /> : <><Camera size={44} /><span>Prendre une photo</span></>}
-        </button>
-        {preview && <button className="link" onClick={() => input.current?.click()}>Reprendre la photo</button>}
+        {source
+          ? <MaskEditor source={source} onChange={setMasked} />
+          : <button className="photo" onClick={() => input.current?.click()}><Camera size={44} /><span>Prendre une photo</span></button>}
+        {source && <button className="link" onClick={() => input.current?.click()}>Reprendre la photo</button>}
       </section>
 
       <section className="card">
