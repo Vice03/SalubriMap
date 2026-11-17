@@ -1,0 +1,25 @@
+{
+ "images": 120,
+ "temps_ms_median": 98.7,
+ "par_type": {
+  "visage": {
+   "zones": 404,
+   "masquees": 375,
+   "ignorees": 425,
+   "detections": 715,
+   "justes": 607,
+   "rappel": 0.928,
+   "precision": 0.849
+  },
+  "plaque": {
+   "zones": 62,
+   "masquees": 58,
+   "ignorees": 1,
+   "detections": 67,
+   "justes": 59,
+   "rappel": 0.935,
+   "precision": 0.881
+  }
+ },
+ "jeu": "120 photos publiques : 60 WIDER Face (validation) + 60 plaques Roboflow (CC BY 4.0), pas Ouagadougou"
+}

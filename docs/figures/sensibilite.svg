@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="165" font-family="sans-serif" font-size="12">
+<text x="10" y="20" font-size="14" fill="#222">Indice de Sobol total — dépôts sauvages</text>
+<text x="222" y="49" text-anchor="end" fill="#222">Déchets par habitant (kg/j)</text>
+<rect x="230" y="37" width="312.5" height="18" rx="3" fill="#1d4e3f"/>
+<text x="548.5" y="50" fill="#666">0,92</text>
+<text x="222" y="79" text-anchor="end" fill="#222">Propension de base à jeter (log-cote)</text>
+<rect x="230" y="67" width="2.7" height="18" rx="3" fill="#1d4e3f"/>
+<text x="238.7" y="80" fill="#666">0,01</text>
+<text x="222" y="109" text-anchor="end" fill="#222">Pannes de camion (par jour)</text>
+<rect x="230" y="97" width="12.6" height="18" rx="3" fill="#1d4e3f"/>
+<text x="248.6" y="110" fill="#666">0,04</text>
+<text x="222" y="139" text-anchor="end" fill="#222">Poids de la norme sociale de l'îlot</text>
+<rect x="230" y="127" width="1.7" height="18" rx="3" fill="#1d4e3f"/>
+<text x="237.7" y="140" fill="#666">0,01</text>
+</svg>
