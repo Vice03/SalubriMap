@@ -16,3 +16,10 @@ data/osm/*.osm.pbf
 data/osm/.seeded_osm
 *.tsbuildinfo
 .coverage
+
+# Jeu de terrain du masquage : originaux avec visages, jamais versionnés (data/eval/masquage/README.md)
+data/eval/masquage/*
+!data/eval/masquage/README.md
+!data/eval/masquage/annotations.json
+!data/eval/masquage/resultat.json
+!data/eval/masquage/floutees/

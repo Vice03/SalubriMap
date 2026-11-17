@@ -11,7 +11,12 @@ export interface Box { x: number; y: number; w: number; h: number; kind: Kind; s
 
 export const FACE_SIZE = 640
 export const PLATE_SIZE = 384
-export const FACE_THRESHOLD = 0.6 // valeur par défaut de cv2.FaceDetectorYN
+// Visages : seuil 0,5 et passe sur 2×2 tuiles au-delà de 1000 px (rappel 0,82 → 0,93 sur le jeu public de
+// contrôle, docs/MASQUAGE.md) — identique au serveur (salubri_api/services/masking/detector.py).
+export const FACE_THRESHOLD = 0.5
+export const TILES = 2, TILE_MIN_SIDE = 1000, TILE_OVERLAP = 0.25
+/** Les tuiles cherchent les PETITS visages : plus haut qu'1/4 de tuile = faux positif probable (calandre, affiche). */
+export const TILE_MAX_FACE = 0.25
 export const PLATE_THRESHOLD = 0.25 // valeur par défaut d'open-image-models
 
 /** Suppression des boîtes qui se recouvrent (IoU > seuil), la meilleure gardée. */
@@ -70,4 +75,17 @@ export function withMargin(b: Box, width: number, height: number, margin = 0.2):
   const x = Math.max(0, Math.floor(b.x - mx)), y = Math.max(0, Math.floor(b.y - my))
   const x2 = Math.min(width, Math.ceil(b.x + b.w + mx)), y2 = Math.min(height, Math.ceil(b.y + b.h + my))
   return { x, y, w: Math.max(0, x2 - x), h: Math.max(0, y2 - y) }
+}
+
+/** Tuiles [x0, y0, x1, y1] qui se recouvrent de 25 % ; aucune sous TILE_MIN_SIDE px. Même découpe que le serveur. */
+export function tiles(width: number, height: number): [number, number, number, number][] {
+  if (Math.max(width, height) < TILE_MIN_SIDE) return []
+  const tw = width / TILES, th = height / TILES, out: [number, number, number, number][] = []
+  for (let i = 0; i < TILES; i++) for (let j = 0; j < TILES; j++) {
+    out.push([
+      Math.max(0, Math.trunc(i * tw - TILE_OVERLAP * tw)), Math.max(0, Math.trunc(j * th - TILE_OVERLAP * th)),
+      Math.min(width, Math.trunc((i + 1) * tw + TILE_OVERLAP * tw)), Math.min(height, Math.trunc((j + 1) * th + TILE_OVERLAP * th)),
+    ])
+  }
+  return out
 }

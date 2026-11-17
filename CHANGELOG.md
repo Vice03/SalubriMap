@@ -2,6 +2,7 @@
 
 ## 0.4.0 — en cours
 
+- **Masquage, étape 5 — mesure** : `scripts/eval_masquage.py` mesure rappel et précision par type sur un dossier annoté (format et protocole : `data/eval/masquage/README.md`). Visages : seuil 0,5 et seconde passe sur 2×2 tuiles au-delà de 1000 px, identiques sur le téléphone et le serveur. Sur un jeu public de contrôle (WIDER Face + plaques Roboflow, pas Ouagadougou) : visages rappel 0,928 (cible 0,95 **non atteinte**), plaques 0,935. Le jeu de terrain n'existe pas encore : cibles non démontrées pour notre usage.
 - **Masquage, étape 4 — règles sur images masquées** : tests montrant que R2 (photo réutilisée) repère toujours la même photo masquée envoyée par deux téléphones, et la copie masquée d'une photo envoyée en clair (pHash : 4/64 d'écart, seuil 8), et que R11 ne prend pas une photo masquée pour une photo vide. Aucun seuil modifié.
 - **Masquage, étape 3 — filet de sécurité serveur** : chaque photo reçue (Salubri Go, import ZIP) est relue par le serveur avec les mêmes modèles (onnxruntime) et ce qui reste est pixellisé avant l'enregistrement ; `reports.masking = {client, server}` (migration 0005). Sans modèles, aucune photo n'est enregistrée (503, ligne d'import refusée) et `/api/health` affiche `masking: indisponible`. Rattrapage des photos déjà enregistrées : `python -m salubri_api.services.masking.backfill`.
 - **Salubri Go, affichage** : l'étape « Reçu » du suivi et les étapes 1–4 du formulaire étaient décalées de 40 px (la classe `done` de l'écran « Merci » s'y appliquait) ; classe renommée `is-done`.

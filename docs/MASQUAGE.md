@@ -77,20 +77,62 @@ sur son grand côté ; chaque case est peinte de sa couleur moyenne (`apps/go/sr
 aucun pixel d'origine : un visage tient en quelques aplats, une plaque en 6 blocs pour 7 à 8 caractères. Ce n'est
 pas un flou gaussien, qu'on peut parfois inverser.
 
-## Mesures disponibles aujourd'hui
+## Réglage de la détection des visages
+
+Deux réglages, **identiques sur le téléphone et le serveur** (`apps/go/src/masking/geometry.ts`,
+`apps/api/salubri_api/services/masking/detector.py`, test « même découpe que le serveur ») :
+
+- seuil de score des visages **0,5** (défaut OpenCV : 0,6) ;
+- quand la photo dépasse **1000 px** de côté, une seconde passe sur **2×2 tuiles** qui se recouvrent de 25 % ; une
+  tuile ne garde que les visages de moins d'un quart de sa hauteur (elle sert aux petits visages ; au-delà, c'est
+  le plus souvent une calandre ou une affiche, que la passe sur l'image entière aurait déjà vue si c'était un visage).
+
+Pourquoi : à 640 px d'entrée, un visage de 30 px sur une photo de téléphone de 4000 px n'en fait plus que 5. Sur
+le jeu public de contrôle (ci-dessous), les essais ont donné :
+
+| Visages | Rappel | Précision | Temps serveur |
+|---|---|---|---|
+| seuil 0,6, image entière (réglage d'avant) | 0,822 | 0,979 | 75 ms |
+| seuil 0,5, image entière | 0,871 | 0,923 | 75 ms |
+| seuil 0,6, + 2×2 tuiles | 0,899 | 0,937 | ~340 ms |
+| **seuil 0,5, + 2×2 tuiles, filtre de taille (retenu)** | **0,928** | **0,849** | 99 ms (médiane*) |
+| seuil 0,5, + 3×3 tuiles | 0,943 | 0,814 | ~690 ms |
+
+\* la médiane baisse parce que la moitié des photos du jeu font moins de 1000 px et n'ont pas de tuiles.
+Pour la vie privée, un dépôt flouté en trop coûte moins qu'un visage oublié : on accepte la perte de précision,
+et le bouton « annuler » sur chaque cadre reste là pour les faux positifs. Le 3×3 gagne peu pour deux fois le
+temps : écarté.
+
+## Mesures
+
+### Jeu public de contrôle (pas Ouagadougou)
+
+120 photos publiques : 60 de WIDER Face (validation, foules et scènes de rue, 829 visages annotés) et 60 du jeu
+de plaques Roboflow (CC BY 4.0, 63 plaques). Réglage retenu, passe du serveur, mêmes critères que pour le jeu de
+terrain (`scripts/eval_masquage.py`) :
+
+| | Rappel | Précision | Cible de la fiche |
+|---|---|---|---|
+| Visages (404 zones de ≥ 20 px ; 425 plus petites ignorées) | **0,928** | 0,849 | rappel ≥ 0,95 — **non atteinte** |
+| Plaques (62 zones de ≥ 10 px) | **0,935** | 0,881 | rappel ≥ 0,90 — atteinte sur ce jeu |
+| Temps par photo, serveur | 99 ms (médiane, 2 cœurs) | | |
+
+Ce jeu n'est **pas** représentatif : WIDER Face est bien plus dense en petits visages que nos photos de dépotoirs,
+et les plaques Roboflow sont surtout européennes et américaines. Il sert à comparer des réglages, pas à prouver
+les cibles. Les visages manqués sont surtout de 20 à 30 px, flous ou de profil.
+
+### Jeu de terrain `data/eval/masquage/` — **non mesuré**
+
+Protocole dans `data/eval/masquage/README.md` (au moins 60 photos de l'équipe à Ouagadougou, consentement,
+annotation). Tant qu'il n'existe pas, les cibles de la fiche ne sont **pas démontrées** pour notre usage.
+
+### Autres mesures
 
 | Mesure | Résultat | Comment |
 |---|---|---|
 | Décodage identique à la référence Python | oui : boîte du visage (181, 67, 88, 107) et de la plaque (842, 197, 182, 69) égales à ±1 px | `tests/e2e/fixtures/visage_et_plaque.jpg`, référence onnxruntime Python |
-| Plaques, 5 images du jeu Roboflow (CC BY 4.0) | 5/5 détectées, recouvrement visuel avec la vérité terrain | contrôle manuel, pas une mesure de rappel |
 | Zone masquée dans la photo en file d'attente | part de pixels texturés : visage 59 % → 13 %, plaque 56 % → 6 % | `tests/e2e/test_go_masking.py` |
-| Temps sur le téléphone | non mesuré sur un vrai téléphone. Chrome sans écran, 2 cœurs : ~0,6 s par photo (1,4 s avec le chargement des modèles) ; même chose avec le processeur ralenti ×4 (profil « téléphone moyen » de DevTools) : ~2,4 s (3,7 s au premier) | `/tmp/masktime.py` (Playwright), photo de 1309×512 |
-| Temps sur le serveur | ~50 ms par photo (onnxruntime CPU, Python, 2 cœurs) | référence Python |
-
-**Non mesuré** : le rappel et la précision sur des photos de rues et de dépotoirs de Ouagadougou. Les cibles de
-la fiche (rappel ≥ 0,95 visages, ≥ 0,90 plaques) ne sont **pas démontrées** tant que le jeu
-`data/eval/masquage/` (60 photos de terrain annotées, étape 5) n'existe pas. En attendant, l'outil
-« Flouter une zone » reste le recours, et le serveur refera la détection (étape 3).
+| Temps sur le téléphone | non mesuré sur un vrai téléphone. Chrome sans écran, 2 cœurs, photo de 1309×512 (donc avec tuiles) : ~0,8 s par photo (1,7 s avec le chargement des modèles) ; processeur ralenti ×4 (profil « téléphone moyen » de DevTools) : ~3,3 s (4,8 s au premier) | Playwright, 5 essais |
 
 Limites connues des modèles publiés : YuNet perd des visages de moins de ~10 px et de profil marqué ; le détecteur
 de plaques est entraîné surtout sur des plaques européennes et américaines — les plaques burkinabè (fond blanc ou

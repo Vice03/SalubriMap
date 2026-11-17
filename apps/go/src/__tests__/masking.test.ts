@@ -88,3 +88,11 @@ describe('EXIF', () => {
     expect(exifDate(undefined)).toBeNull()
   })
 })
+
+describe('tuiles', () => {
+  it('même découpe que le serveur : rien sous 1000 px, 2×2 recouvrantes au-delà', async () => {
+    const { tiles } = await import('../masking/geometry')
+    expect(tiles(800, 600)).toEqual([])
+    expect(tiles(1309, 512)).toEqual([[0, 0, 818, 320], [0, 192, 818, 512], [490, 0, 1309, 320], [490, 192, 1309, 512]])
+  })
+})

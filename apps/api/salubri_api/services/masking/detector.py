@@ -18,7 +18,12 @@ from salubri_api.config import get_settings
 log = logging.getLogger("salubri.masquage")
 
 FACE_SIZE, PLATE_SIZE = 640, 384
-FACE_THRESHOLD, PLATE_THRESHOLD = 0.6, 0.25  # défauts de cv2.FaceDetectorYN et d'open-image-models
+# Visages : seuil 0,5 (défaut OpenCV 0,6) et passe supplémentaire sur 2×2 tuiles quand la photo dépasse 1000 px :
+# sur le jeu public de contrôle, rappel 0,82 → 0,93 pour une précision 0,98 → 0,86 (docs/MASQUAGE.md). Pour la
+# vie privée, un dépôt flouté en trop vaut mieux qu'un visage oublié.
+FACE_THRESHOLD, PLATE_THRESHOLD = 0.5, 0.25
+TILES, TILE_MIN_SIDE, TILE_OVERLAP = 2, 1000, 0.25
+TILE_MAX_FACE = 0.25  # les tuiles cherchent les PETITS visages ; plus haut qu'1/4 de tuile = faux positif probable
 FACE_FILE, PLATE_FILE = "visages-yunet-2023mar.onnx", "plaques-yolov9t-384.onnx"
 CELLS, MARGIN = 6, 0.2  # comme apps/go/src/masking/blur.ts
 
@@ -91,9 +96,7 @@ def _iou(a: Box, b: Box) -> float:
     return inter / union if union > 0 else 0.0
 
 
-def detect(img: Image.Image) -> list[Box]:
-    """Visages et plaques d'une image RGB déjà redressée ; coordonnées dans cette image."""
-    face_s, plate_s = _sessions(str(get_settings().masking_models_dir))
+def _faces(face_s, img: Image.Image) -> list[Box]:  # type: ignore[no-untyped-def]
     rgb, r = _square(img, FACE_SIZE, (0, 0, 0))
     blob = rgb[:, :, ::-1].transpose(2, 0, 1)[None].copy()  # BGR 0–255
     with _lock:
@@ -110,6 +113,36 @@ def detect(img: Image.Image) -> list[Box]:
             cx, cy = (col + bb[i, 0]) * s, (row + bb[i, 1]) * s
             w, h = float(np.exp(bb[i, 2]) * s), float(np.exp(bb[i, 3]) * s)
             faces.append(Box((cx - w / 2) / r, (cy - h / 2) / r, w / r, h / r, "visage", float(score[i])))
+    return faces
+
+
+def tiles(width: int, height: int) -> list[tuple[int, int, int, int]]:
+    """Tuiles (x0, y0, x1, y1) qui se recouvrent de 25 % ; aucune sous TILE_MIN_SIDE px (image entière suffit)."""
+    if max(width, height) < TILE_MIN_SIDE:
+        return []
+    tw, th = width / TILES, height / TILES
+    out = []
+    for i in range(TILES):
+        for j in range(TILES):
+            x0, y0 = max(0, int(i * tw - TILE_OVERLAP * tw)), max(0, int(j * th - TILE_OVERLAP * th))
+            x1, y1 = (
+                min(width, int((i + 1) * tw + TILE_OVERLAP * tw)),
+                min(height, int((j + 1) * th + TILE_OVERLAP * th)),
+            )
+            out.append((x0, y0, x1, y1))
+    return out
+
+
+def detect(img: Image.Image) -> list[Box]:
+    """Visages et plaques d'une image RGB déjà redressée ; coordonnées dans cette image."""
+    face_s, plate_s = _sessions(str(get_settings().masking_models_dir))
+    faces = _faces(face_s, img)
+    for x0, y0, x1, y1 in tiles(img.width, img.height):  # petits visages : vus de plus près
+        faces += [
+            Box(b.x + x0, b.y + y0, b.w, b.h, b.kind, b.score)
+            for b in _faces(face_s, img.crop((x0, y0, x1, y1)))
+            if b.h <= TILE_MAX_FACE * (y1 - y0)
+        ]
     boxes = _nms(faces, 0.3)
 
     rgb, r = _square(img, PLATE_SIZE, (114, 114, 114))
