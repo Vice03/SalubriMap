@@ -260,3 +260,8 @@ sans report. Les paramètres comportementaux [H] ne sont pas calés sur une enqu
   zéro. Les descentes doivent donc aller avec des rotations de camions sur les points concernés.
 - **Pré-collecteurs** : à la capacité par défaut (1,2 t pour 15 îlots), la charrette est le goulot ; de nouveaux
   abonnés n'augmentent pas la pré-collecte tant que la capacité ne suit pas.
+- **Sensibilité** (`docs/SENSIBILITE.md`, plan de la zone pilote, 3 282 simulations) : la quantité de déchets
+  par habitant explique à elle seule ~90 % de la variance des dépôts sauvages et du coût à la tonne ; les pannes
+  de camion ~24 % de celle du tonnage collecté. Les hypothèses de comportement (propension de base à jeter, norme
+  sociale) pèsent peu dans ces bornes (indice total < 1 % sur les dépôts). Priorité de mesure avec la mairie :
+  kg par habitant et par jour, puis taux de panne réel du parc.

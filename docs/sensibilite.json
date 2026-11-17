@@ -1,0 +1,306 @@
+{
+ "date": "2026-11-17",
+ "plan": "Zone pilote, plan v137",
+ "horizon_jours": 90,
+ "graines_par_point": 2,
+ "simulations": 3282,
+ "duree_s": 496.8,
+ "facteurs": [
+  {
+   "nom": "kg_per_person_day",
+   "bornes": [
+    0.4,
+    0.9
+   ],
+   "libelle": "Déchets par habitant (kg/j)",
+   "source": "0,6 annoncé par la mairie ; ±50 % selon quartier"
+  },
+  {
+   "nom": "subscription_rate",
+   "bornes": [
+    0.2,
+    0.5
+   ],
+   "libelle": "Taux d'abonnement initial",
+   "source": "hypothèse 35 %, aucune enquête"
+  },
+  {
+   "nom": "fee_fcfa_month",
+   "bornes": [
+    500.0,
+    3000.0
+   ],
+   "libelle": "Prix de l'abonnement (FCFA/mois)",
+   "source": "tarifs observés 1 000 à 2 500"
+  },
+  {
+   "nom": "p0",
+   "bornes": [
+    -2.5,
+    -0.5
+   ],
+   "libelle": "Propension de base à jeter (log-cote)",
+   "source": "hypothèse"
+  },
+  {
+   "nom": "slope_dist",
+   "bornes": [
+    0.002,
+    0.008
+   ],
+   "libelle": "Effet de la distance au-delà de la marche (/m)",
+   "source": "hypothèse"
+  },
+  {
+   "nom": "laabal_deterrence",
+   "bornes": [
+    0.2,
+    0.8
+   ],
+   "libelle": "Dissuasion d'un contrôle Laabal",
+   "source": "hypothèse"
+  },
+  {
+   "nom": "beta_norme",
+   "bornes": [
+    0.0,
+    4.0
+   ],
+   "libelle": "Poids de la norme sociale de l'îlot",
+   "source": "hypothèse"
+  },
+  {
+   "nom": "breakdown_rate",
+   "bornes": [
+    0.01,
+    0.1
+   ],
+   "libelle": "Pannes de camion (par jour)",
+   "source": "2 % par défaut ; parc vieillissant"
+  }
+ ],
+ "morris": {
+  "wild_dump_t": {
+   "kg_per_person_day": 1918.9088,
+   "subscription_rate": 49.3553,
+   "fee_fcfa_month": 57.9322,
+   "p0": 297.807,
+   "slope_dist": 41.2088,
+   "laabal_deterrence": 71.847,
+   "beta_norme": 76.2465,
+   "breakdown_rate": 253.0965
+  },
+  "collected_t": {
+   "kg_per_person_day": 509.3272,
+   "subscription_rate": 62.733,
+   "fee_fcfa_month": 62.5275,
+   "p0": 82.1632,
+   "slope_dist": 46.7738,
+   "laabal_deterrence": 41.2523,
+   "beta_norme": 49.6372,
+   "breakdown_rate": 271.8757
+  },
+  "cost_per_t": {
+   "kg_per_person_day": 981.45,
+   "subscription_rate": 33.75,
+   "fee_fcfa_month": 59.925,
+   "p0": 43.35,
+   "slope_dist": 31.95,
+   "laabal_deterrence": 32.85,
+   "beta_norme": 38.925,
+   "breakdown_rate": 138.525
+  },
+  "subscription_rate_final": {
+   "kg_per_person_day": 0.0364,
+   "subscription_rate": 0.1243,
+   "fee_fcfa_month": 0.1246,
+   "p0": 0.0061,
+   "slope_dist": 0.0075,
+   "laabal_deterrence": 0.0041,
+   "beta_norme": 0.007,
+   "breakdown_rate": 0.0065
+  }
+ },
+ "sobol_facteurs": [
+  "kg_per_person_day",
+  "p0",
+  "breakdown_rate",
+  "beta_norme"
+ ],
+ "part_hasard": {
+  "wild_dump_t": 0.001,
+  "collected_t": 0.009,
+  "cost_per_t": 0.001,
+  "subscription_rate_final": 0.149
+ },
+ "sobol": {
+  "wild_dump_t": {
+   "S1": [
+    0.94,
+    0.002,
+    0.052,
+    0.003
+   ],
+   "S1_ic": [
+    [
+     0.798,
+     -0.015,
+     0.015,
+     -0.006
+    ],
+    [
+     1.089,
+     0.017,
+     0.088,
+     0.015
+    ]
+   ],
+   "ST": [
+    0.919,
+    0.008,
+    0.037,
+    0.005
+   ],
+   "ST_ic": [
+    [
+     0.801,
+     0.007,
+     0.031,
+     0.004
+    ],
+    [
+     1.048,
+     0.01,
+     0.046,
+     0.006
+    ]
+   ]
+  },
+  "collected_t": {
+   "S1": [
+    0.681,
+    -0.02,
+    0.141,
+    -0.022
+   ],
+   "S1_ic": [
+    [
+     0.547,
+     -0.041,
+     0.044,
+     -0.046
+    ],
+    [
+     0.83,
+     0.006,
+     0.24,
+     0.005
+    ]
+   ],
+   "ST": [
+    0.741,
+    0.022,
+    0.235,
+    0.024
+   ],
+   "ST_ic": [
+    [
+     0.602,
+     0.018,
+     0.189,
+     0.019
+    ],
+    [
+     0.862,
+     0.027,
+     0.287,
+     0.03
+    ]
+   ]
+  },
+  "cost_per_t": {
+   "S1": [
+    0.856,
+    -0.0,
+    0.028,
+    0.002
+   ],
+   "S1_ic": [
+    [
+     0.677,
+     -0.009,
+     -0.007,
+     -0.006
+    ],
+    [
+     1.035,
+     0.007,
+     0.062,
+     0.01
+    ]
+   ],
+   "ST": [
+    0.848,
+    0.003,
+    0.029,
+    0.003
+   ],
+   "ST_ic": [
+    [
+     0.722,
+     0.002,
+     0.02,
+     0.002
+    ],
+    [
+     0.972,
+     0.004,
+     0.04,
+     0.004
+    ]
+   ]
+  },
+  "subscription_rate_final": {
+   "S1": [
+    0.829,
+    -0.024,
+    -0.029,
+    -0.006
+   ],
+   "S1_ic": [
+    [
+     0.687,
+     -0.072,
+     -0.08,
+     -0.05
+    ],
+    [
+     1.006,
+     0.024,
+     0.023,
+     0.044
+    ]
+   ],
+   "ST": [
+    0.903,
+    0.079,
+    0.068,
+    0.076
+   ],
+   "ST_ic": [
+    [
+     0.758,
+     0.064,
+     0.056,
+     0.06
+    ],
+    [
+     1.035,
+     0.1,
+     0.081,
+     0.097
+    ]
+   ]
+  }
+ }
+}
