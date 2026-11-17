@@ -1,0 +1,59 @@
+{
+ "type": "FeatureCollection",
+ "crs": {
+  "type": "name",
+  "properties": {
+   "name": "urn:ogc:def:crs:EPSG::32630"
+  }
+ },
+ "features": [
+  {
+   "type": "Feature",
+   "id": "UTM-1",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     657877.4,
+     1364688.8
+    ]
+   },
+   "properties": {
+    "type": "mixte",
+    "volume": "camion",
+    "date": "2026-11-02T10:00:00Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "UTM-2",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     658632.0,
+     1365909.7
+    ]
+   },
+   "properties": {
+    "type": "mixte",
+    "volume": "camion",
+    "date": "2026-11-03T10:00:00Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "UTM-3",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     659167.3,
+     1367461.3
+    ]
+   },
+   "properties": {
+    "type": "mixte",
+    "volume": "camion",
+    "date": "2026-11-04T10:00:00Z"
+   }
+  }
+ ]
+}

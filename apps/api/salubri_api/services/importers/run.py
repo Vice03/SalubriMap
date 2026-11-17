@@ -4,6 +4,8 @@
 import io
 import zipfile
 
+from geoalchemy2.shape import to_shape
+from sqlalchemy import text
 from sqlalchemy.orm import Session
 
 from salubri_api.models import Commune, ImportBatch
@@ -55,7 +57,11 @@ def _read(z: zipfile.ZipFile, info: zipfile.ZipInfo) -> bytes:
 
 
 def detect_and_parse(
-    filename: str, content: bytes, fmt: str | None = None, photos: dict[str, bytes] | None = None
+    filename: str,
+    content: bytes,
+    fmt: str | None = None,
+    photos: dict[str, bytes] | None = None,
+    bbox: tuple[float, float, float, float] | None = None,
 ) -> tuple[str, list[ParsedRow]]:
     name = filename.lower()
     photos = dict(photos or {})
@@ -79,8 +85,63 @@ def detect_and_parse(
     if fmt in (None, "", "auto"):
         fmt = "csv" if name.endswith(".csv") else "geojson"
     if fmt == "csv":
-        return "csv", parse_csv(content, photos)
-    return "geojson", parse_geojson(content, photos)
+        return "csv", parse_csv(content, photos, bbox)
+    return "geojson", parse_geojson(content, photos, bbox)
+
+
+def _duplicates_and_outside(s: Session, commune: Commune, parsed: list[ParsedRow]) -> None:
+    """Lignes refusées avant tout enregistrement, avec un message clair : doublon dans le fichier, identifiant déjà
+    importé. Un point hors de la commune est enregistré et rejeté par la règle R5, comme un signalement de Salubri Go
+    (le jury doit le retrouver « rejeté ») ; la ligne porte la distance en avertissement."""
+    seen: dict[object, int] = {}
+    ok = [pr for pr in parsed if pr.data is not None]
+    ids = [pr.data.external_id for pr in ok if pr.data and pr.data.external_id]
+    known = (
+        {
+            r.external_id
+            for r in s.execute(
+                text("SELECT external_id FROM reports WHERE commune_id = :c AND external_id = ANY(:ids)"),
+                {"c": commune.id, "ids": ids},
+            )
+        }
+        if ids
+        else set()
+    )
+    buf = float((commune.params_default or {}).get("validation", {}).get("zone_buffer_m", 500))
+    dist = {}
+    if ok and s.execute(text("SELECT count(*) FROM quartiers WHERE commune_id = :c"), {"c": commune.id}).scalar():
+        rows = s.execute(
+            text("""
+            SELECT u.i, (SELECT min(ST_Distance(q.geom::geography, ST_SetSRID(ST_MakePoint(u.lon, u.lat), 4326)::geography))
+                         FROM quartiers q WHERE q.commune_id = :c) AS d
+            FROM unnest(CAST(:lons AS float8[]), CAST(:lats AS float8[])) WITH ORDINALITY AS u(lon, lat, i)"""),
+            {"c": commune.id, "lons": [pr.data.lon for pr in ok], "lats": [pr.data.lat for pr in ok]},  # type: ignore[union-attr]
+        ).all()
+        dist = {ok[int(r.i) - 1].row: float(r.d) for r in rows}
+    for pr in ok:
+        d = pr.data
+        assert d is not None
+        problems = []
+        if dist.get(pr.row, 0.0) > buf:
+            pr.warnings.append(
+                f"Hors de la commune : à {dist[pr.row] / 1000:.1f} km des quartiers (marge {buf:.0f} m), "
+                f"point ({d.lat:.5f}, {d.lon:.5f}) — rejeté par la règle R5"
+            )
+        if d.external_id and d.external_id in known:
+            problems.append(f"Déjà importé : l'identifiant « {d.external_id} » existe déjà dans la base")
+        for key in (
+            ("id", d.external_id) if d.external_id else None,
+            ("pt", round(d.lat, 6), round(d.lon, 6), d.reported_at, d.waste_type, d.comment),
+        ):
+            if key is None:
+                continue
+            if key in seen:
+                what = "même identifiant" if key[0] == "id" else "même point, même date, même type"
+                problems.append(f"Doublon de la ligne {seen[key]} du fichier ({what})")
+                break
+            seen[key] = pr.row
+        if problems:
+            pr.data, pr.errors = None, problems
 
 
 def run_import(
@@ -93,7 +154,10 @@ def run_import(
     uploaded_by: str | None = None,
     photos: dict[str, bytes] | None = None,
 ) -> ImportResult:
-    fmt_used, parsed = detect_and_parse(filename, content, fmt, photos)
+    b = to_shape(commune.bbox).bounds if commune.bbox is not None else None
+    fmt_used, parsed = detect_and_parse(filename, content, fmt, photos, b)
+    info = getattr(parsed, "info", {})
+    _duplicates_and_outside(s, commune, parsed)
     sp = s.begin_nested() if dry_run else None
     batch = ImportBatch(filename=filename[:256], format=fmt_used, uploaded_by=uploaded_by)
     s.add(batch)
@@ -138,6 +202,8 @@ def run_import(
         accepted=accepted,
         rejected=len(rows) - accepted,
         report=rows,
+        crs=info.get("crs"),
+        colonnes=info.get("colonnes", {}),
     )
     if sp is not None:
         sp.rollback()

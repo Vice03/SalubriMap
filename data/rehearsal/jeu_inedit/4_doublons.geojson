@@ -1,0 +1,78 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "id": "D-1",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.548,
+     12.341
+    ]
+   },
+   "properties": {
+    "type": "ménager",
+    "date": "2026-11-03T08:00:00Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "D-1",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.548,
+     12.341
+    ]
+   },
+   "properties": {
+    "type": "ménager",
+    "date": "2026-11-03T08:00:00Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.541,
+     12.352
+    ]
+   },
+   "properties": {
+    "type": "plastique",
+    "date": "2026-11-04T08:00:00Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.541,
+     12.352
+    ]
+   },
+   "properties": {
+    "type": "plastique",
+    "date": "2026-11-04T08:00:00Z"
+   }
+  },
+  {
+   "type": "Feature",
+   "id": "D-3",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.536,
+     12.366
+    ]
+   },
+   "properties": {
+    "type": "gravats",
+    "date": "2026-11-05T08:00:00Z"
+   }
+  }
+ ]
+}

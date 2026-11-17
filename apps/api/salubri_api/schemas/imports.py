@@ -24,3 +24,5 @@ class ImportResult(BaseModel):
     accepted: int
     rejected: int
     report: list[ImportRow]
+    crs: str | None = None  # système de coordonnées lu ou deviné
+    colonnes: dict[str, str | None] = {}  # colonne du fichier -> champ de Salubri (None = ignorée)

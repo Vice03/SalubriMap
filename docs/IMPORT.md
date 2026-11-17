@@ -34,3 +34,20 @@ Un `.geojson`/`.json`/`.csv` et des photos (`.jpg`, `.jpeg`, `.png`, `.webp`) n'
 - Chaque ligne acceptée reçoit un score, un statut et ses règles déclenchées, exactement comme un signalement mobile.
 
 Exemples : `data/jury/exemple_import.csv` (10 lignes dont 2 rejetées) et `data/jury/exemple_import.geojson` (dont une ligne inversée).
+
+## Fichiers d'autres outils (jeu caché du jury)
+
+- **Noms de colonnes** : en plus des noms ci-dessus, les noms d'autres outils sont reconnus sans tenir compte des
+  accents, majuscules et séparateurs (« Latitude_DD », « Catégorie de déchets », « Quantité estimée », « Date du
+  signalement », « Observations », « _gps_latitude » de KoboToolbox…). La réponse donne `colonnes` : chaque
+  colonne du fichier et le champ qu'elle remplit, `null` si elle est ignorée.
+- **Systèmes de coordonnées** : un GeoJSON qui déclare son `crs` (« EPSG:32630 », « urn:ogc:def:crs:EPSG::32630 »)
+  est converti en WGS 84. Des coordonnées en mètres sans `crs` (ou dans un CSV) sont rapportées au système qui
+  les place près de la commune (UTM 30N, UTM 31N, Web Mercator) ; sinon le fichier est refusé avec un message.
+  La réponse donne `crs` : ce qui a été lu ou deviné.
+- **Doublons** : une ligne qui répète l'identifiant d'une ligne précédente, ou le même point à la même date avec
+  le même type et le même commentaire, est refusée (« Doublon de la ligne N du fichier ») ; un identifiant déjà
+  présent en base est refusé (« Déjà importé ») — réimporter le même fichier ne crée rien.
+- **Hors de la commune** : la ligne entre et le signalement est rejeté par la règle R5, comme depuis Salubri Go ;
+  l'avertissement de la ligne donne la distance aux quartiers.
+- Jeu d'essai : `data/rehearsal/jeu_inedit/` (5 fichiers, testés par `apps/api/tests/test_import_inedit.py`).

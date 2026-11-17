@@ -3,6 +3,8 @@
 
 import base64
 import re
+import unicodedata
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
@@ -75,7 +77,58 @@ KEY_SYNONYMS = {
     "accuracy": "accuracy",
     "precision": "accuracy",
     "gps_accuracy_m": "accuracy",
+    # jeux d'autres outils (KoboToolbox, ODK, tableurs de la mairie) : noms rencontrés ou plausibles
+    "lat_dd": "lat",
+    "latitude_dd": "lat",
+    "coord_y": "lat",
+    "gps_latitude": "lat",
+    "_gps_latitude": "lat",
+    "lon_dd": "lon",
+    "longitude_dd": "lon",
+    "coord_x": "lon",
+    "gps_longitude": "lon",
+    "_gps_longitude": "lon",
+    "categorie": "waste_type",
+    "categorie_de_dechets": "waste_type",
+    "type_de_dechet": "waste_type",
+    "type_de_dechets": "waste_type",
+    "nature": "waste_type",
+    "quantite": "volume_class",
+    "quantite_estimee": "volume_class",
+    "taille": "volume_class",
+    "date_du_signalement": "reported_at",
+    "date_signalement": "reported_at",
+    "date_heure": "reported_at",
+    "horodatage": "reported_at",
+    "submission_time": "reported_at",
+    "_submission_time": "reported_at",
+    "observations": "comment",
+    "observation": "comment",
+    "remarque": "comment",
+    "remarques": "comment",
+    "nom_photo": "photo",
+    "fichier_photo": "photo",
+    "code": "external_id",
+    "identifiant": "external_id",
+    "_uuid": "external_id",
+    "telephone": "device_id",
+    "precision_gps": "accuracy",
 }
+
+
+def key_of(name: str) -> str:
+    """Nom de colonne réduit : minuscules, sans accents, mots séparés par « _ »."""
+    s = unicodedata.normalize("NFKD", str(name)).encode("ascii", "ignore").decode().strip().lower()
+    return re.sub(r"[^a-z0-9]+", "_", s).strip("_")
+
+
+def column_mapping(columns: list[str]) -> dict[str, str | None]:
+    """Colonne du fichier → champ de Salubri (None = colonne ignorée), pour le rapport d'import."""
+    return {c: KEY_SYNONYMS.get(str(c).strip().lower()) or KEY_SYNONYMS.get(key_of(c)) for c in columns}
+
+
+Transform = Callable[[float, float], tuple[float, float]]  # (x, y) du fichier -> (lon, lat) WGS 84
+
 FR_DATE = re.compile(r"^(\d{2})/(\d{2})/(\d{4})(?:[ T](\d{2}):(\d{2})(?::(\d{2}))?)?$")
 
 
@@ -86,6 +139,12 @@ class ParsedRow:
     photo_bytes: bytes | None
     errors: list[str] = field(default_factory=list)
     warnings: list[str] = field(default_factory=list)
+
+
+class Parsed(list[ParsedRow]):
+    """Lignes lues, plus `info` : système de coordonnées et correspondance des colonnes (rapport d'import)."""
+
+    info: dict[str, Any] = {}
 
 
 def parse_date(v: Any) -> datetime:
@@ -113,10 +172,12 @@ def _photo(value: Any, photos: dict[str, bytes]) -> tuple[bytes | None, str | No
     return None, f"Photo « {name} » absente de l'archive : signalement importé sans photo"
 
 
-def normalise(row_no: int, raw: dict[str, Any], photos: dict[str, bytes]) -> ParsedRow:
+def normalise(
+    row_no: int, raw: dict[str, Any], photos: dict[str, bytes], transform: Transform | None = None
+) -> ParsedRow:
     vals: dict[str, Any] = {}
     for k, v in raw.items():
-        key = KEY_SYNONYMS.get(str(k).strip().lower())
+        key = KEY_SYNONYMS.get(str(k).strip().lower()) or KEY_SYNONYMS.get(key_of(k))
         if key and v not in (None, ""):
             vals[key] = v.strip() if isinstance(v, str) else v
     errors: list[str] = []
@@ -127,6 +188,12 @@ def normalise(row_no: int, raw: dict[str, Any], photos: dict[str, bytes]) -> Par
         lat, lon = float(str(vals["lat"]).replace(",", ".")), float(str(vals["lon"]).replace(",", "."))
     except ValueError:
         return ParsedRow(row_no, None, None, ["Coordonnées non numériques"])
+    if transform is not None:
+        lon, lat = transform(lon, lat)
+    elif abs(lat) > 90 or abs(lon) > 180:
+        return ParsedRow(
+            row_no, None, None, ["Coordonnées en mètres sans système de coordonnées reconnu (attendu : WGS 84)"]
+        )
     if -5 <= lat <= 0 and 10 <= lon <= 14:
         lat, lon = lon, lat
         warnings.append("coords_swapped : latitude et longitude inversées, corrigées automatiquement")
