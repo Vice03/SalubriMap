@@ -16,3 +16,18 @@ La liste complète des paquets (fichiers de verrouillage) sera générée pour l
 
 Images de test (pas dans l'application) : voir `tests/e2e/fixtures/README.md` (NASA, domaine public ;
 Roboflow, CC BY 4.0).
+
+## Modules optionnels (0.5.0) — éteints par défaut
+
+Aucune nouvelle bibliothèque dans l'application : le module « Saisons » n'utilise que shapely, numpy et
+SQLAlchemy (déjà là), le module « Assistant » httpx (déjà là) et la bibliothèque standard
+(`run/llm_detect.py`). Ce qui peut s'ajouter sur la machine, seulement si le module « Assistant » est allumé et
+avec l'accord de l'utilisateur :
+
+| Brique | Version | Licence | Où | Pourquoi |
+|---|---|---|---|---|
+| Ollama (image Docker `ollama/ollama`) | 0.12.6 | MIT | profil Docker `assistant` (absent de la pile par défaut) | servir un modèle de langue local, API compatible OpenAI |
+| Qwen2.5 1,5B / 7B / 14B instruct (Alibaba, poids) | 2.5 | Apache-2.0 | volume Docker `ollama`, téléchargé par `run/llm_detect.py` après accord | modèle de l'assistant selon la machine ; le 3B (licence de recherche Qwen, usage non commercial) n'est pas proposé |
+
+Un modèle déjà installé sur la machine (LM Studio, llama.cpp, Jan…) garde sa propre licence : `run/llm_detect.py`
+l'utilise tel quel, sans le redistribuer.

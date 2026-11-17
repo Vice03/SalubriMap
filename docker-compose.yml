@@ -21,6 +21,12 @@ x-api-env: &api-env
   # de démarrer sans secrets propres (run/start les génère dans .env) ni compte admin (run/admin le crée)
   SALUBRI_DEMO_MODE: ${SALUBRI_DEMO_MODE:-true}
   SALUBRI_SECRET_KEY: ${SALUBRI_SECRET_KEY:-}
+  # modules optionnels (docs/MODULES.md), éteints par défaut
+  SALUBRI_SEASONS_ENABLED: ${SALUBRI_SEASONS_ENABLED:-false}
+  SALUBRI_ASSISTANT_ENABLED: ${SALUBRI_ASSISTANT_ENABLED:-false}
+  SALUBRI_LLM_URL: ${SALUBRI_LLM_URL:-http://ollama:11434/v1}
+  SALUBRI_LLM_MODEL: ${SALUBRI_LLM_MODEL:-qwen2.5:7b-instruct}
+  SALUBRI_LLM_API_KEY: ${SALUBRI_LLM_API_KEY:-}
 
 services:
   db:
@@ -84,9 +90,12 @@ services:
     volumes:
       - ./data:/app/data:ro
       - ./scripts:/app/scripts:ro
+      - ./docs:/app/docs:ro  # module « Assistant » : documents de référence cherchés par l'assistant
       - photos:/app/var/photos
       - ./apps/go/public/models:/app/masking_models:ro  # masquage : mêmes modèles que Salubri Go
     ports: ["127.0.0.1:${API_PORT:-8000}:8000"]
+    # module « Assistant » : un modèle local lancé sur la machine (LM Studio, Ollama…) est joint par ce nom
+    extra_hosts: ["host.docker.internal:host-gateway"]
     depends_on:
       db: {condition: service_healthy}
       seed: {condition: service_completed_successfully}
@@ -104,7 +113,17 @@ services:
       timeout: 3s
       retries: 6
 
+  # Module « Assistant » (profil « assistant », absent de la pile par défaut) : modèle de langue local, rien sur
+  # la machine hôte. Les modèles téléchargés restent dans le volume « ollama ». run/llm_detect.py s'en sert.
+  ollama:
+    image: ollama/ollama:0.12.6
+    profiles: ["assistant"]
+    volumes: ["ollama:/root/.ollama"]
+    ports: ["127.0.0.1:11434:11434"]
+    restart: unless-stopped
+
 volumes:
+  ollama:
   pgdata:
   osrm:
   photos:

@@ -1,0 +1,12 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Module « Assistant » : GPU NVIDIA pour le conteneur Ollama (ajouté par run/llm_detect.py seulement si nvidia-smi
+# et le NVIDIA Container Toolkit sont présents). Sans ce fichier, le modèle tourne sur le processeur.
+services:
+  ollama:
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

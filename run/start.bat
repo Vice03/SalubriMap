@@ -21,6 +21,12 @@ if errorlevel 1 ( echo Generation des secrets impossible : voir .env.example & p
 rem Avec l'extrait OSM (scripts/prepare_osm_extract.sh) : vraies rues + calcul d'itineraires OSRM
 set PROFILES=
 if exist "data\osm\ouaga.osm.pbf" set PROFILES=--profile osrm
+rem Module "Assistant" (optionnel) : trouver un modele local, ou en proposer un adapte a la machine
+findstr /b /r /c:"SALUBRI_ASSISTANT_ENABLED=true" .env >nul 2>nul
+if not errorlevel 1 (
+  where python >nul 2>nul && ( python run\llm_detect.py %* ) || echo Assistant : Python absent, detection du modele local sautee.
+  findstr /b /c:"SALUBRI_LLM_URL=http://ollama:" .env >nul 2>nul && set PROFILES=%PROFILES% --profile assistant
+)
 rem On ne reconstruit que nos images (API, interfaces) : celles d'OSRM et de PostGIS viennent de registres
 rem (ghcr.io, Docker Hub) parfois injoignables ; deja presentes, elles servent telles quelles.
 docker compose build seed api web

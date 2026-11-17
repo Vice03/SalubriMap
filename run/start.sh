@@ -14,6 +14,12 @@ sh "$(dirname "$0")/secrets.sh" || exit 1
 # Les interfaces sont construites dans l'image Docker « web » : pas besoin de Node ici.
 PROFILES=""
 [ -s data/osm/ouaga.osm.pbf ] && PROFILES="--profile osrm"
+# Module « Assistant » (optionnel) : trouver un modèle local, ou en proposer un adapté à la machine (run/llm_detect.py)
+if grep -Eq '^SALUBRI_ASSISTANT_ENABLED=(true|1)' .env 2>/dev/null; then
+  if command -v python3 >/dev/null 2>&1; then python3 run/llm_detect.py "$@" || true
+  else echo "Assistant : Python 3 absent, détection du modèle local sautée."; fi
+  grep -q '^SALUBRI_LLM_URL=http://ollama:' .env 2>/dev/null && PROFILES="$PROFILES --profile assistant"
+fi
 # On ne reconstruit que nos images (API, interfaces) : OSRM et PostGIS viennent de registres (ghcr.io, Docker Hub)
 # parfois injoignables ; déjà présentes, elles servent telles quelles (compose ne construit que celles qui manquent).
 docker compose build seed api web || echo "Attention : reconstruction impossible (réseau ?) — démarrage avec les images déjà présentes."

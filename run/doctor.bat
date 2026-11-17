@@ -20,6 +20,8 @@ if exist "data\osm\ouaga.osm.pbf" (
   echo Carte             : ville synthetique ^(pas d'extrait data\osm\ouaga.osm.pbf, voir data\osm\README.md^)
 )
 findstr /r /c:"^SALUBRI_DEMO_MODE=false" .env >nul 2>nul && echo Mode              : production (.env) || echo Mode              : demonstration (compte demo / ouaga2026)
+rem module "Assistant" (optionnel) : moteur, modele et palier de la machine ; jamais bloquant
+where python >nul 2>nul && python run\llm_detect.py --doctor
 exit /b %ok%
 
 :port
