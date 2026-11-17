@@ -124,30 +124,43 @@ def hamming(a: str, b: str) -> int:
     return bin(int(a, 16) ^ int(b, 16)).count("1")
 
 
-def reencode(data: bytes) -> bytes:
-    """JPEG neuf, redressé, sans aucune métadonnée, côté le plus long ≤ STORED_MAX_SIDE."""
+def reencode(data: bytes, mask: bool = True) -> tuple[bytes, int]:
+    """JPEG neuf, redressé, sans aucune métadonnée, côté le plus long ≤ STORED_MAX_SIDE.
+
+    mask=True : seconde passe du masquage (visages et plaques détectés sur le serveur, puis pixellisés) ;
+    renvoie aussi le nombre de zones masquées par le serveur. Lève MaskingUnavailable sans modèles.
+    """
     with Image.open(io.BytesIO(data)) as im:
         up = ImageOps.exif_transpose(im).convert("RGB")
+        found = 0
+        if mask:
+            from salubri_api.services.masking import detect, pixelate
+
+            boxes = detect(up)
+            if boxes:
+                arr = np.array(up)
+                found = pixelate(arr, boxes)
+                up = Image.fromarray(arr)
         up.thumbnail((STORED_MAX_SIDE, STORED_MAX_SIDE))
         buf = io.BytesIO()
         up.save(buf, "JPEG", quality=85, optimize=True)
-        return buf.getvalue()
+        return buf.getvalue(), found
 
 
-def store(data: bytes, info: PhotoInfo, photos_dir: Path) -> str:
-    """Réencode puis enregistre sous un nom aléatoire ; renvoie le nom de fichier (jamais choisi par l'appelant).
+def store(data: bytes, info: PhotoInfo, photos_dir: Path) -> tuple[str, int]:
+    """Masque, réencode puis enregistre sous un nom aléatoire (jamais choisi par l'appelant).
 
-    info vient d'analyze(data) : le fichier a déjà été reconnu comme image valide.
+    Renvoie (nom de fichier, zones masquées par le serveur). info vient d'analyze(data).
     """
     photos_dir.mkdir(parents=True, exist_ok=True)
-    clean = reencode(data)
+    clean, found = reencode(data)
     while True:
         name = f"{secrets.token_hex(16)}.jpg"
         target = photos_dir / name
         try:
             with target.open("xb") as fh:  # x : n'écrase jamais un fichier existant
                 fh.write(clean)
-            return name
+            return name, found
         except FileExistsError:
             continue
 

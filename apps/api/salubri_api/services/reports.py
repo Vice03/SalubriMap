@@ -80,7 +80,8 @@ def stage_report(
         {"c": commune.id, "lon": data.lon, "lat": data.lat},
     ).scalar()
     if info is not None and photo_bytes is not None:
-        path = store(photo_bytes, info, get_settings().photos_dir)
+        path, server_masked = store(photo_bytes, info, get_settings().photos_dir)
+        rep.masking = {"client": data.masking_client, "server": server_masked}
         b = info.bands
         s.add(
             Photo(

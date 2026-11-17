@@ -94,6 +94,8 @@ class Report(Base, Timestamped):
     status: Mapped[str] = mapped_column(String(16), default="pending", index=True)
     score: Mapped[int] = mapped_column(Integer, default=100)
     rule_hits: Mapped[list[dict[str, Any]]] = mapped_column(JSONB, default=list)
+    # masquage des visages et plaques : {"client": {faces, plates, manual} | None, "server": n zones}
+    masking: Mapped[dict[str, Any] | None] = mapped_column(JSONB, nullable=True)
     duplicate_of: Mapped[uuid.UUID | None] = mapped_column(ForeignKey("reports.id", ondelete="SET NULL"), nullable=True)
     dump_site_id: Mapped[uuid.UUID | None] = mapped_column(
         ForeignKey("dump_sites.id", ondelete="SET NULL"), nullable=True, index=True

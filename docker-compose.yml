@@ -12,6 +12,7 @@ x-api-env: &api-env
   SALUBRI_OSRM_RAIN_URL: http://osrm_rain:5000
   SALUBRI_DATA_DIR: /app/data
   SALUBRI_PHOTOS_DIR: /app/var/photos
+  SALUBRI_MASKING_MODELS_DIR: /app/masking_models  # masquage des visages et plaques (volume ci-dessous)
   SALUBRI_COMMUNE: ${SALUBRI_COMMUNE:-ouagadougou}
   SALUBRI_CORS_ORIGINS: ${SALUBRI_CORS_ORIGINS:-}
   # code d'accès mairie (modération, imports, scénarios) : à changer via un fichier .env
@@ -72,6 +73,7 @@ services:
     volumes:
       - ./data:/app/data:ro
       - photos:/app/var/photos
+      - ./apps/go/public/models:/app/masking_models:ro  # masquage : mêmes modèles que Salubri Go
     depends_on:
       db: {condition: service_healthy}
     restart: "no"
@@ -83,6 +85,7 @@ services:
       - ./data:/app/data:ro
       - ./scripts:/app/scripts:ro
       - photos:/app/var/photos
+      - ./apps/go/public/models:/app/masking_models:ro  # masquage : mêmes modèles que Salubri Go
     ports: ["127.0.0.1:${API_PORT:-8000}:8000"]
     depends_on:
       db: {condition: service_healthy}

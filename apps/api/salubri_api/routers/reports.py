@@ -1,4 +1,5 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
+import json
 from datetime import datetime
 from typing import Annotated, Any
 
@@ -19,6 +20,7 @@ from salubri_api.schemas.reports import MergeIn, ReportCreated, ReportIn, Report
 from salubri_api.services.auth import Principal
 from salubri_api.services.consolidation import consolidate
 from salubri_api.services.geo import feature_collection, shape
+from salubri_api.services.masking import MaskingUnavailable
 from salubri_api.services.plan.trigger import reports_changed
 from salubri_api.services.reports import find_by_client_id, stage_report, thresholds_for, validate_staged
 from salubri_api.services.validation.engine import corroborate, photo_info_from_row, validate_report
@@ -37,6 +39,17 @@ def _created(r: Report, already: bool = False) -> ReportCreated:
         duplicate_of=str(r.duplicate_of) if r.duplicate_of else None,
         already_received=already,
     )
+
+
+def _masking_client(raw: str | None) -> dict[str, int] | None:
+    """Compte annoncé par le téléphone ; un JSON invalide est ignoré (le serveur masque de toute façon)."""
+    if not raw:
+        return None
+    try:
+        d = json.loads(raw)
+        return {k: max(0, min(int(d.get(k, 0)), 999)) for k in ("faces", "plates", "manual")}
+    except (ValueError, TypeError, AttributeError):
+        return None
 
 
 def _check_device_rate(s: Session, commune: Commune, device_id: str | None) -> None:
@@ -83,6 +96,9 @@ def create_report(
     exif_lat: Annotated[float | None, Form(description="Latitude EXIF lue sur le téléphone avant masquage")] = None,
     exif_lon: Annotated[float | None, Form(description="Longitude EXIF lue sur le téléphone avant masquage")] = None,
     exif_taken_at: Annotated[datetime | None, Form(description="Date de prise de vue EXIF, lue avant masquage")] = None,
+    masking_client: Annotated[
+        str | None, Form(description='Zones floutées sur le téléphone, JSON {"faces":1,"plates":0,"manual":0}')
+    ] = None,
     photo: Annotated[UploadFile | None, File()] = None,
     s: Session = Depends(get_session),
     commune: Commune = Depends(get_commune),
@@ -106,6 +122,7 @@ def create_report(
             exif_lat=exif_lat,
             exif_lon=exif_lon,
             exif_taken_at=exif_taken_at,
+            masking_client=_masking_client(masking_client),
         )
     except ValidationError as exc:
         raise RequestValidationError(exc.errors()) from exc
@@ -117,6 +134,9 @@ def create_report(
         st = stage_report(s, commune, data, raw or None)
     except ValueError as exc:
         raise HTTPException(422, str(exc)) from exc
+    except MaskingUnavailable as exc:
+        # jamais de photo enregistrée sans masquage : le téléphone garde le signalement et réessaiera
+        raise HTTPException(503, "Masquage des visages indisponible sur le serveur : nouvel essai plus tard") from exc
     validate_staged(s, commune, [st])
     if st.report.status == "verified":
         consolidate(s, commune.id)

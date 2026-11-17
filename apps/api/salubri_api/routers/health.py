@@ -9,6 +9,7 @@ from salubri_api.config import get_settings
 from salubri_api.db import get_session
 from salubri_api.models import Commune, PlanVersion
 from salubri_api.services.dataset import dataset_key
+from salubri_api.services.masking.detector import available as masking_available
 from salubri_api.services.plan import trigger
 
 router = APIRouter(tags=["Santé"])
@@ -40,5 +41,9 @@ def health(s: Session = Depends(get_session)) -> dict[str, object]:
         "version": __version__,
         "demo_mode": get_settings().demo_mode,
         "dataset": dataset,  # carte chargée : routes-osm_… (vraies rues) ou routes-synthetiques_…
-        "queue": queue,  # recalculs en attente : la répétition attend qu'ils soient tous finis
+        "queue": queue,
+        # masquage des visages et plaques (seconde passe serveur) : sans modèles, les photos sont refusées (503)
+        "masking": "ok"
+        if masking_available()
+        else "indisponible",  # recalculs en attente : la répétition attend qu'ils soient tous finis
     }

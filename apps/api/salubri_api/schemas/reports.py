@@ -25,6 +25,8 @@ class ReportIn(BaseModel):
     exif_lat: float | None = Field(None, ge=-90, le=90)
     exif_lon: float | None = Field(None, ge=-180, le=180)
     exif_taken_at: datetime | None = None
+    # zones floutées sur le téléphone (visages, plaques, à la main), telles que Salubri Go les annonce
+    masking_client: dict[str, int] | None = None
 
 
 class RuleHitOut(BaseModel):

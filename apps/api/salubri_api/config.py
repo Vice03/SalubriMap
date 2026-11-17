@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     osrm_timeout_s: float = 1.5
     data_dir: Path = REPO_ROOT / "data"
     photos_dir: Path = REPO_ROOT / "var" / "photos"
+    # modèles ONNX du masquage, partagés avec Salubri Go (docker-compose les monte en lecture seule)
+    masking_models_dir: Path = REPO_ROOT / "apps" / "go" / "public" / "models"
     commune: str = "ouagadougou"
     # Origines autorisées en cross-origin ; vide = même origine seulement (nginx sert l'UI et l'API ensemble).
     cors_origins: str = ""

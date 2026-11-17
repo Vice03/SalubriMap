@@ -11,14 +11,33 @@ personne ou une plaque ne doit être enregistrée ni publiée.
 |---|---|---|
 | 1. Détection + flou **sur le téléphone**, avant la file d'attente | Salubri Go (`apps/go/src/masking/`, `components/MaskEditor.tsx`) | **fait** |
 | 2. Retouche par le citoyen : annuler un faux positif, « Flouter une zone » | Salubri Go | **fait** |
-| 3. Seconde passe sur le serveur (filet de sécurité), imports ZIP compris, `masking: {client, server}` | API | à faire (étape 3 du lot) |
-| 4. Règles anti-pièges vérifiées sur images masquées | API | à faire (étape 4) |
+| 3. Seconde passe sur le serveur (filet de sécurité), imports ZIP compris, `masking: {client, server}` | API (`services/masking/`) | **fait** |
+| 4. Règles anti-pièges vérifiées sur images masquées | `tests/test_masking_rules.py` | **fait** (aucun seuil changé) |
 | 5. Mesure du rappel et de la précision sur des photos de terrain de Ouagadougou | `data/eval/masquage/` | à faire (étape 5 : photos de l'équipe nécessaires) |
 
 L'image d'origine reste en mémoire le temps de l'écran ; **seule l'image masquée** est écrite dans la file
 d'attente (IndexedDB) et envoyée. La position GPS et la date de prise de vue, que les règles anti-pièges
 utilisent, sont lues dans l'EXIF **avant** le masquage et envoyées à part (`exif_lat`, `exif_lon`,
 `exif_taken_at`) : le JPEG masqué n'a plus d'EXIF.
+
+## Côté serveur
+
+Chaque photo reçue (Salubri Go, autre client, import ZIP) est relue par le serveur avec **les mêmes modèles**
+avant d'être enregistrée ; ce qu'il trouve encore est pixellisé de la même façon. Le signalement garde
+`masking: {"client": {"faces", "plates", "manual"} | null, "server": n}` : `client` est ce que le téléphone
+annonce, `server` le nombre de zones que le serveur a dû masquer lui-même (0 si le téléphone avait tout fait).
+
+- **Sans modèles, aucune photo n'est enregistrée** : l'envoi répond 503 « Masquage des visages indisponible »
+  (Salubri Go garde le signalement et réessaie), l'import refuse la ligne. `GET /api/health` affiche
+  `"masking": "ok"` ou `"indisponible"`.
+- Les modèles ne sont pas copiés deux fois : l'API lit `apps/go/public/models/` (monté en lecture seule dans
+  le conteneur, `SALUBRI_MASKING_MODELS_DIR`).
+- **Rattrapage** des photos enregistrées avant le masquage ou par une ancienne version :
+  `docker compose exec api python -m salubri_api.services.masking.backfill` (`--dry-run` pour compter).
+  Rejouable ; chaque photo réécrite est marquée `"rattrapage": true`.
+- Règles anti-pièges : l'empreinte SHA-256 et le pHash sont calculés sur la photo **reçue**. Masquer une photo
+  ne déplace son pHash que de 4/64 sur l'image de test (seuil de R2 : 8) ; la variance de luminance (R11) reste
+  au-dessus du seuil ; dimensions inchangées. Aucun seuil n'a été modifié.
 
 ## Modèles choisis
 
