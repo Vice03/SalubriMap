@@ -152,7 +152,7 @@ Généré par `scripts/plan_arrondissement.py --arrondissement 9` le 2026-11-17,
 
 - **Pannes** : avec 2 camions en moins, 34 points ne sont pas desservis (21 en référence) ; aucun point ne bouge (points inchangés : 100 %), mais les tournées sont refaites (camions sur les mêmes points : 1 %). Prévoir un camion de réserve ou une rotation supplémentaire.
 - **Pré-collecte** : la charrette est le goulot (`SIMULATION_ODD.md` § 11) ; plus d'abonnés sans plus de pré-collecteurs n'augmente pas la pré-collecte.
-- **Données** : la quantité de déchets par habitant explique ~90 % de l'incertitude sur les dépôts (`SENSIBILITE.md`) ; la mesurer par pesée dans l'arrondissement avant de dimensionner.
+- **Données** : la quantité de déchets par habitant explique ~90 % de l'incertitude sur les dépôts (`SIMULATION_SENSIBILITE.md`) ; la mesurer par pesée dans l'arrondissement avant de dimensionner.
 
 ## Saison des pluies
 

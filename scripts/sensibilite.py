@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Sensibilité globale du modèle à agents : Morris sur 8 paramètres incertains, puis Sobol sur les 4 premiers.
+"""Sensibilité globale du modèle à agents : 30 réplications au point nominal, Morris puis Sobol sur 8 paramètres.
 
     PYTHONPATH=apps/api python scripts/sensibilite.py            # plan du scénario de base (base de données)
     PYTHONPATH=apps/api python scripts/sensibilite.py --synthetique   # plan de test (~19 000 ménages), sans base
 
-Écrit docs/SENSIBILITE.md et docs/sensibilite.json. Le hasard propre au modèle (graines) est mesuré à part, au point
+Écrit docs/SIMULATION_SENSIBILITE.md, docs/sensibilite.json et docs/figures/sensibilite_sobol.svg. Le hasard propre au modèle (graines) est mesuré à part, au point
 nominal : si sa variance est du même ordre que celle due aux paramètres, les indices de cette sortie sont du bruit. Chaque évaluation = moyenne de `--graines` simulations
-(mêmes graines pour tous les points : nombres aléatoires communs). Durée : ~(90 + 6 × N) × graines simulations.
+(mêmes graines pour tous les points : nombres aléatoires communs). Durée : ~(9 × r + 10 × N) × graines + 30 simulations.
 """
 
 import argparse
@@ -93,6 +93,7 @@ def main() -> int:
     ap.add_argument("--sobol-n", type=int, default=256)
     ap.add_argument("--graines", type=int, default=2)
     ap.add_argument("--horizon", type=int, default=90)
+    ap.add_argument("--sobol-k", type=int, default=8, help="nombre de paramètres passés à Sobol (les plus influents)")
     a = ap.parse_args()
     if a.synthetique:
         plan, params, origine = plan_synthetique(), ScenarioParams(), "plan synthétique de test (650 îlots)"
@@ -129,7 +130,7 @@ def main() -> int:
     for j, (k, _) in enumerate(SORTIES):
         y = cache["morris"][:, j]
         mo_all[k] = morris(lambda _u, y=y: y, len(FACTEURS), r=a.morris_r, seed=1)["mu_star"]
-    top = list(np.argsort(-mo["mu_star"])[:4])
+    top = list(np.argsort(-mo["mu_star"])[: a.sobol_k])
     so_all = {}
 
     def f_sobol(u: np.ndarray) -> np.ndarray:
@@ -143,6 +144,15 @@ def main() -> int:
     del so
     # hasard propre au modèle : 30 graines au point nominal ; variance de la moyenne de `graines` simulations
     nominal = [simulate_agents(plan, sp0, 5000 + g, ap0).summary for g in range(30)]
+    replications = {
+        k: {
+            "mediane": float(np.median([r[k] for r in nominal])),
+            "p5": float(np.percentile([r[k] for r in nominal], 5)),
+            "p95": float(np.percentile([r[k] for r in nominal], 95)),
+        }
+        for k in nominal[0]
+        if isinstance(nominal[0][k], int | float)
+    }
     n_runs += 30
     part_hasard = {}
     for j, (k, _) in enumerate(SORTIES):
@@ -162,6 +172,7 @@ def main() -> int:
         "morris": {k: dict(zip(names, np.round(v, 4).tolist(), strict=True)) for k, v in mo_all.items()},
         "sobol_facteurs": [names[i] for i in top],
         "part_hasard": part_hasard,
+        "replications_nominal": replications,
         "sobol": {
             k: {
                 "S1": np.round(v["S1"], 3).tolist(),
@@ -173,7 +184,9 @@ def main() -> int:
         },
     }
     (ROOT / "docs/sensibilite.json").write_text(json.dumps(res, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    (ROOT / "docs/SENSIBILITE.md").write_text(rapport(res), encoding="utf-8")
+    (ROOT / "docs/SIMULATION_SENSIBILITE.md").write_text(rapport(res), encoding="utf-8")
+    (ROOT / "docs/figures").mkdir(parents=True, exist_ok=True)
+    (ROOT / "docs/figures/sensibilite_sobol.svg").write_text(figure_sobol(res), encoding="utf-8")
     print(f"{n_runs} simulations en {duree:.0f} s ; facteurs retenus pour Sobol : {res['sobol_facteurs']}")
     return 0
 
@@ -184,15 +197,54 @@ def _n(x: float) -> str:
     return s.replace(",", " ").replace(".", ",")
 
 
+def figure_sobol(r: dict) -> str:
+    """Barres horizontales S1 (plein) et ST (contour) pour les dépôts sauvages ; une teinte, valeurs en clair."""
+    lib = {f["nom"]: f["libelle"] for f in r["facteurs"]}
+    s = r["sobol"]["wild_dump_t"]
+    noms = r["sobol_facteurs"]
+    ml, mt, bw, bh, gap = 290, 34, 300, 16, 12
+    w, h = ml + bw + 80, mt + len(noms) * (bh + gap) + 30
+    out = [
+        f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" font-family="sans-serif" font-size="12">',
+        f'<rect width="{w}" height="{h}" fill="#fff"/>',
+        '<text x="10" y="18" fill="#333">Tonnes jetées en dépôt sauvage : S1 (plein) et ST (contour)</text>',
+    ]
+    for i, nom in enumerate(noms):
+        y = mt + i * (bh + gap)
+        s1, st = max(s["S1"][i], 0.0), max(s["ST"][i], 0.0)
+        out.append(f'<text x="{ml - 8}" y="{y + bh - 3}" text-anchor="end" fill="#333">{lib[nom]}</text>')
+        out.append(
+            f'<rect x="{ml}" y="{y}" width="{bw * min(st, 1):.1f}" height="{bh}" fill="none" stroke="#1f6f8b" stroke-width="2" rx="2"/>'
+        )
+        out.append(f'<rect x="{ml}" y="{y}" width="{bw * min(s1, 1):.1f}" height="{bh}" fill="#1f6f8b" rx="2"/>')
+        out.append(
+            f'<text x="{ml + bw * min(max(st, s1), 1) + 6:.1f}" y="{y + bh - 3}" fill="#555">{_n(s1)} / {_n(st)}</text>'
+        )
+    out.append("</svg>")
+    return "\n".join(out) + "\n"
+
+
 def rapport(r: dict) -> str:
     lib = {f["nom"]: f["libelle"] for f in r["facteurs"]}
     lines = [
         "<!-- SPDX-License-Identifier: CC-BY-4.0 -->",
-        "# Sensibilité du modèle à agents",
+        "# Incertitude et sensibilité du modèle à agents",
         "",
         f"Généré par `scripts/sensibilite.py` le {r['date']} — {r['plan']}, horizon {r['horizon_jours']} jours, "
         f"{r['graines_par_point']} graines par point, {r['simulations']} simulations en {_n(r['duree_s'])} s. "
         "Ne pas modifier à la main : relancer le script.",
+        "",
+        "## 0. Incertitude propre au modèle : 30 réplications au point nominal",
+        "",
+        "Mêmes paramètres, 30 graines. Médiane et intervalle à 90 % (5ᵉ – 95ᵉ centile) de chaque indicateur sur "
+        "l'horizon. C'est ce que montre le tableau de bord (bandes autour des courbes).",
+        "",
+        "| Indicateur | Médiane | Intervalle 90 % |",
+        "|---|---|---|",
+        *[
+            f"| `{k}` | {_n(v['mediane'])} | {_n(v['p5'])} – {_n(v['p95'])} |"
+            for k, v in r["replications_nominal"].items()
+        ],
         "",
         "## Paramètres étudiés",
         "",
@@ -215,7 +267,9 @@ def rapport(r: dict) -> str:
         lines.append(f"| {f['libelle']} | " + " | ".join(_n(r["morris"][k][f["nom"]]) for k, _ in SORTIES) + " |")
     lines += [
         "",
-        "## 2. Indices de Sobol sur les 4 paramètres les plus influents (dépôts sauvages)",
+        f"## 2. Indices de Sobol sur les {len(r['sobol_facteurs'])} paramètres, classés par Morris",
+        "",
+        "![Indices de Sobol, dépôts sauvages](figures/sensibilite_sobol.svg)",
         "",
         "S1 = part de la variance de la sortie due au paramètre seul ; ST = part totale, interactions comprises. "
         "Entre crochets : intervalle de confiance à 95 % (bootstrap). Avec peu d'échantillons, les intervalles "

@@ -17,7 +17,7 @@
    "libelle": "Déchets par habitant",
    "unite": "kg/hab/jour",
    "defaut": 0.6,
-   "source": "mairie de Ouagadougou citée par Sidwaya (≈ 0,6 kg/hab/j) ; à confirmer par pesée (SENSIBILITE.md : paramètre le plus influent)",
+   "source": "mairie de Ouagadougou citée par Sidwaya (≈ 0,6 kg/hab/j) ; à confirmer par pesée (SIMULATION_SENSIBILITE.md : paramètre le plus influent)",
    "modeles": [
     "E2 demande",
     "E3 placement",
@@ -160,7 +160,7 @@
    "libelle": "Taux de panne des camions",
    "unite": "par camion et par jour",
    "defaut": 0.02,
-   "source": "hypothèse : 2 % ; à remplacer par l'historique du parc (SENSIBILITE.md : 2ᵉ paramètre le plus influent sur le tonnage collecté)",
+   "source": "hypothèse : 2 % ; à remplacer par l'historique du parc (SIMULATION_SENSIBILITE.md : 2ᵉ paramètre le plus influent sur le tonnage collecté)",
    "modeles": [
     "simulation"
    ],
@@ -557,6 +557,405 @@
    ],
    "min": 0,
    "max": 100
+  }
+ },
+ "comportement": {
+  "household_size": {
+   "libelle": "Taille moyenne des ménages",
+   "unite": "personnes",
+   "defaut": 7.0,
+   "source": "INSD : ménages de 5 à 7 personnes à Ouagadougou ; 7 retenu, à confirmer avec le RGPH 2019",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 3,
+   "max": 12
+  },
+  "ilots_per_precollector": {
+   "libelle": "Îlots par pré-collecteur",
+   "unite": "îlots",
+   "defaut": 15,
+   "source": "hypothèse : une charrette sert ~15 îlots de ~30 concessions",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 5,
+   "max": 40
+  },
+  "p0": {
+   "libelle": "Propension de base à jeter, point hors de portée",
+   "unite": "log-cote",
+   "defaut": -1.5,
+   "source": "calé sur le SDGD 2020 (docs/SIMULATION_CALIBRATION.md)",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": -4,
+   "max": 1
+  },
+  "slope_dist": {
+   "libelle": "Effet de la distance au-delà de la marche",
+   "unite": "log-cote par m",
+   "defaut": 0.004,
+   "source": "hypothèse : +0,4 de log-cote par 100 m de trop",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 0,
+   "max": 0.02
+  },
+  "slope_full": {
+   "libelle": "Effet d'un point plein",
+   "unite": "log-cote",
+   "defaut": 0.5,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 0,
+   "max": 3
+  },
+  "slope_rain": {
+   "libelle": "Effet de la pluie",
+   "unite": "log-cote",
+   "defaut": 0.3,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 0,
+   "max": 2
+  },
+  "rain_waste_factor": {
+   "libelle": "Déchets en plus en saison des pluies",
+   "unite": "part",
+   "defaut": 0.15,
+   "source": "hypothèse : +15 % (déchets mouillés, plus lourds)",
+   "modeles": [
+    "simulation",
+    "E2 demande"
+   ],
+   "min": 0,
+   "max": 0.5
+  },
+  "sub_up": {
+   "libelle": "Hausse mensuelle des abonnements si le service est régulier",
+   "unite": "part par mois",
+   "defaut": 0.02,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agrégé ; agents homogènes)"
+   ],
+   "min": 0,
+   "max": 0.2
+  },
+  "sub_down": {
+   "libelle": "Baisse mensuelle des abonnements si le service est irrégulier",
+   "unite": "part par mois",
+   "defaut": 0.03,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agrégé ; agents homogènes)"
+   ],
+   "min": 0,
+   "max": 0.2
+  },
+  "regularity_ok": {
+   "libelle": "Régularité jugée suffisante",
+   "unite": "part des passages faits",
+   "defaut": 0.8,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 0.5,
+   "max": 1
+  },
+  "recurring_days": {
+   "libelle": "Délai pour dire qu'un dépotoir revient",
+   "unite": "jours",
+   "defaut": 15,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 1,
+   "max": 90
+  },
+  "sub_wait_days": {
+   "libelle": "Attente d'un abonné avant de décider seul",
+   "unite": "jours de production",
+   "defaut": 4.0,
+   "source": "hypothèse : poubelle domestique pleine en ~4 jours",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 1,
+   "max": 14
+  },
+  "laabal_ilots_per_operation": {
+   "libelle": "Îlots contrôlés par descente Laabal",
+   "unite": "îlots",
+   "defaut": 6,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 1,
+   "max": 30
+  },
+  "laabal_watch_days": {
+   "libelle": "Durée de l'effet d'un contrôle Laabal",
+   "unite": "jours",
+   "defaut": 21,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 1,
+   "max": 90
+  },
+  "laabal_sub_boost": {
+   "libelle": "Abonnements gagnés après un contrôle Laabal",
+   "unite": "part",
+   "defaut": 0.05,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agrégé",
+    "agents)"
+   ],
+   "min": 0,
+   "max": 0.3
+  },
+  "heterogeneite": {
+   "libelle": "Ménages différents (taille, revenu, distance)",
+   "unite": "oui / non",
+   "defaut": true,
+   "source": "choix de modélisation (SIMULATION_ODD.md § 8 : non = contrôle de cohérence)",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "valeurs": [
+    true,
+    false
+   ]
+  },
+  "revenu_parts": {
+   "libelle": "Parts des classes de revenu (faible, moyen, élevé)",
+   "unite": "parts",
+   "defaut": [
+    0.5,
+    0.35,
+    0.15
+   ],
+   "source": "hypothèse : aucune enquête de revenus utilisée",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 1
+  },
+  "revenu_fcfa_mois": {
+   "libelle": "Revenu de référence par classe",
+   "unite": "FCFA/mois",
+   "defaut": [
+    40000.0,
+    90000.0,
+    250000.0
+   ],
+   "source": "hypothèse : SMIG ~45 000 FCFA ; ordres de grandeur",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 10000,
+   "max": 1000000
+  },
+  "sigma_production": {
+   "libelle": "Dispersion de la production par ménage",
+   "unite": "écart-type log",
+   "defaut": 0.3,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 1
+  },
+  "jitter_distance_m": {
+   "libelle": "Écart de position du ménage dans l'îlot",
+   "unite": "m",
+   "defaut": 50.0,
+   "source": "hypothèse : îlot de ~30 concessions ≈ 100 m de côté",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 200
+  },
+  "alpha_porter": {
+   "libelle": "Constante du choix « porter » quand le point est à portée",
+   "unite": "log-cote",
+   "defaut": 8.0,
+   "source": "choix de modélisation : porter est presque certain sans autre terme (P > 0,999)",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 20
+  },
+  "beta_dist_porter": {
+   "libelle": "Effet de la distance sur « porter »",
+   "unite": "log-cote par 100 m",
+   "defaut": 0.3,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 3
+  },
+  "beta_reg": {
+   "libelle": "Effet de la régularité vécue (attendre le pré-collecteur)",
+   "unite": "log-cote",
+   "defaut": 2.0,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 10
+  },
+  "beta_norme": {
+   "libelle": "Poids de la norme sociale de l'îlot",
+   "unite": "log-cote",
+   "defaut": 2.0,
+   "source": "hypothèse : sensibilité faible (SIMULATION_SENSIBILITE.md)",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 10
+  },
+  "norme_reference": {
+   "libelle": "Part de référence de voisins qui jettent",
+   "unite": "part",
+   "defaut": 0.2,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 1
+  },
+  "beta_habitude": {
+   "libelle": "Poids de l'habitude (refaire le choix de la veille)",
+   "unite": "log-cote",
+   "defaut": 0.5,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 5
+  },
+  "a_abo": {
+   "libelle": "Constante de l'abonnement mensuel",
+   "unite": "log-cote",
+   "defaut": -3.11,
+   "source": "calée pour retrouver sub_up au point de référence (SIMULATION_ODD.md § 7.1)",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": -10,
+   "max": 0
+  },
+  "a_desabo": {
+   "libelle": "Constante du désabonnement mensuel",
+   "unite": "log-cote",
+   "defaut": -4.93,
+   "source": "calée pour retrouver sub_down au point de référence",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": -10,
+   "max": 0
+  },
+  "beta_reg_mois": {
+   "libelle": "Effet de la régularité sur l'abonnement",
+   "unite": "log-cote",
+   "defaut": 4.0,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 20
+  },
+  "beta_prix": {
+   "libelle": "Effet du prix rapporté au revenu",
+   "unite": "log-cote par unité",
+   "defaut": 20.0,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 100
+  },
+  "extension_marge": {
+   "libelle": "Marge pour qu'un pré-collecteur reprenne des îlots",
+   "unite": "× coût",
+   "defaut": 1.5,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 1,
+   "max": 5
+  },
+  "extension_charge_max": {
+   "libelle": "Charge maximale de la charrette pour s'étendre",
+   "unite": "part",
+   "defaut": 0.7,
+   "source": "hypothèse : ",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 1
+  },
+  "amende_fcfa": {
+   "libelle": "Amende Laabal par ménage pris à jeter",
+   "unite": "FCFA",
+   "defaut": 5000.0,
+   "source": "hypothèse : aucun barème publié trouvé",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 0,
+   "max": 100000
+  },
+  "priorite_recurrent": {
+   "libelle": "Priorité de nettoyage d'un dépotoir récurrent",
+   "unite": "×",
+   "defaut": 1.3,
+   "source": "fiche du défi (récurrents en priorité) ; valeur hypothèse",
+   "modeles": [
+    "simulation (agents)"
+   ],
+   "min": 1,
+   "max": 5
   }
  }
 }

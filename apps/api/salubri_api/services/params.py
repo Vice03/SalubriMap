@@ -76,6 +76,9 @@ class ScenarioParams(BaseModel):
     horizon_days: int = Field(90, ge=7, le=365)
     # Simulation : "agents" = un agent par ménage (docs/SIMULATION_ODD.md), "agrege" = flux moyens par îlot (rapide)
     sim_mode: Literal["agents", "agrege"] = "agents"
+    # Paramètres de comportement de la simulation (ménages, pré-collecteurs, Laabal) : valeurs du fichier
+    # params_default.json « comportement », documentées dans params_schema.json (docs/PARAMETRES.md)
+    comportement: dict[str, float | list[float] | bool] = Field(default_factory=dict)
     seed: int = 42
     vrp_time_limit_s: float = Field(1.0, gt=0, le=30)
     # Placement optimisé (CP-SAT) : temps de calcul, et coût de déplacement d'un point existant, exprimé comme si
@@ -112,6 +115,7 @@ PARAM_EVENT: dict[str, str] = {
     "horizon_days": "subscription_changed",
     "seed": "subscription_changed",
     "sim_mode": "subscription_changed",
+    "comportement": "subscription_changed",
     "vrp_time_limit_s": "fleet_changed",
     "placement_time_limit_s": "frequency_changed",
     "placement_stability_m": "frequency_changed",

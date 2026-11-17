@@ -17,18 +17,37 @@ SCHEMA = load_schema()
 
 def test_chaque_cle_est_documentee_et_dans_son_intervalle() -> None:
     assert check(DEFAULTS, SCHEMA) == []
-    keys = {k for k in DEFAULTS if not k.startswith("_") and k != "validation"}
+    keys = {k for k in DEFAULTS if not k.startswith("_") and k not in ("validation", "comportement")}
     assert keys == set(SCHEMA["parametres"])
     assert set(DEFAULTS["validation"]) == set(SCHEMA["validation"])
-    for sect in ("parametres", "validation"):
+    assert set(DEFAULTS["comportement"]) == set(SCHEMA["comportement"])
+    for sect in ("parametres", "validation", "comportement"):
         for k, m in SCHEMA[sect].items():
             assert m["unite"] and m["source"] and m["modeles"] and m["libelle"], k
-            val = DEFAULTS[k] if sect == "parametres" else DEFAULTS["validation"][k]
+            val = DEFAULTS[k] if sect == "parametres" else DEFAULTS[sect][k]
             assert m["defaut"] == val, k
 
 
+def test_every_behaviour_parameter_of_both_models_is_in_the_file() -> None:
+    """Lot 3.1 : chaque paramètre de comportement (modèle agrégé et modèle à agents) est dans le fichier, et le
+    fichier fixe bien ce qu'utilise la simulation (mêmes valeurs que les défauts du code aujourd'hui)."""
+    from dataclasses import MISSING, fields
+
+    from salubri_api.services.simulation.abm.model import abm_params
+    from salubri_api.services.simulation.abm.params import AbmParams
+    from salubri_api.services.simulation.params import SimParams
+
+    beh = DEFAULTS["comportement"]
+    code = [f.name for f in fields(SimParams) if f.default is not MISSING and f.name != "abm"]
+    code += [f.name for f in fields(AbmParams)]
+    assert sorted(code) == sorted(beh)
+    sp = SimParams.from_scenario(ScenarioParams(comportement={**beh, "p0": -0.9, "beta_norme": 3.5}))
+    assert sp.p0 == -0.9 and abm_params(sp).beta_norme == 3.5
+    assert abm_params(sp).revenu_parts == tuple(beh["revenu_parts"])
+
+
 def test_le_json_reste_chargeable_comme_avant() -> None:
-    ScenarioParams(**{k: v for k, v in DEFAULTS.items() if k != "validation"})
+    ScenarioParams(**{k: v for k, v in DEFAULTS.items() if k != "validation" and not k.startswith("_")})
     ValidationThresholds(**DEFAULTS["validation"])
 
 

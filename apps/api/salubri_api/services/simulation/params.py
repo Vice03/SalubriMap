@@ -5,6 +5,8 @@ from dataclasses import dataclass
 
 from salubri_api.services.params import ScenarioParams
 
+INT_FIELDS = {"ilots_per_precollector", "recurring_days", "laabal_ilots_per_operation", "laabal_watch_days"}
+
 
 @dataclass(frozen=True)
 class SimParams:
@@ -43,10 +45,24 @@ class SimParams:
     laabal_ilots_per_operation: int = 6  # îlots inspectés par opération (descente de quartier)
     laabal_watch_days: int = 21  # durée de l'effet dissuasif après un contrôle
     laabal_sub_boost: float = 0.05  # ménages contraints de s'abonner à la pré-collecte après contrôle
+    abm: tuple[tuple[str, float], ...] = ()  # paramètres du modèle à agents (AbmParams) venus du fichier
 
     @staticmethod
     def from_scenario(p: ScenarioParams) -> "SimParams":
+        """Paramètres du scénario + paramètres de comportement du fichier (`comportement` dans params_default.json,
+        documentés dans params_schema.json) : ceux de ce dataclass et ceux du modèle à agents."""
+        from dataclasses import MISSING, fields
+
+        from salubri_api.services.simulation.abm.params import AbmParams
+
+        beh = dict(p.comportement or {})
+        own = {f.name for f in fields(SimParams) if f.default is not MISSING} - {"abm"}  # comportement seulement
+        abm_names = {f.name for f in fields(AbmParams)}
+        sim_kw = {k: (int(v) if k in INT_FIELDS else float(v)) for k, v in beh.items() if k in own}
+        abm_kw = tuple(sorted((k, tuple(v) if isinstance(v, list) else v) for k, v in beh.items() if k in abm_names))
         return SimParams(
+            **sim_kw,
+            abm=abm_kw,
             horizon_days=p.horizon_days,
             kg_per_person_day=p.waste_kg_per_person_day,
             population_factor=p.population_factor,

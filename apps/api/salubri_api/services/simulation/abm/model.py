@@ -48,13 +48,22 @@ def _fill(groups: np.ndarray, amounts: np.ndarray, room: np.ndarray) -> np.ndarr
     return out
 
 
+def abm_params(sp: SimParams) -> AbmParams:
+    """AbmParams du fichier de paramètres (sp.abm), défauts du code pour le reste."""
+    kw: dict[str, object] = {}
+    for k, v in sp.abm:
+        cur = getattr(AbmParams(), k)
+        kw[k] = tuple(v) if isinstance(cur, tuple) else (bool(v) if isinstance(cur, bool) else float(v))
+    return AbmParams(**kw)  # type: ignore[arg-type]
+
+
 def households_count(plan: PlanSnapshot, sp: SimParams) -> int:
     pop = plan.ilot_population.astype(float) * sp.population_factor
     return int(np.where(pop > 0, np.maximum(1, np.rint(pop / sp.household_size)), 0).sum())
 
 
 def simulate_agents(plan: PlanSnapshot, sp: SimParams, seed: int = 42, ap: AbmParams | None = None) -> SimResult:
-    ap = ap or AbmParams()
+    ap = ap or abm_params(sp)
     het = ap.heterogeneite
     t0 = time.perf_counter()
     rng = np.random.default_rng(seed)
@@ -378,4 +387,4 @@ def simulate_agents(plan: PlanSnapshot, sp: SimParams, seed: int = 42, ap: AbmPa
             "voluntary_t": round(float(sum(dd["voluntary_t"])), 2),
         }
     )
-    return SimResult(dict(rec.daily), summary, int((time.perf_counter() - t0) * 1000))
+    return SimResult(dict(rec.daily), summary, int((time.perf_counter() - t0) * 1000), wild_kg.copy())

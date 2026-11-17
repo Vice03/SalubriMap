@@ -23,6 +23,7 @@ from typing import Any
 from salubri_api.config import REPO_ROOT, get_settings
 
 META_KEYS = {"_sources", "_description"}
+SECTIONS = ("validation", "comportement")  # sous-objets de params_default.json, décrits chacun dans le schéma
 
 
 class ParamError(ValueError):
@@ -50,7 +51,12 @@ def _check_one(key: str, value: Any, meta: dict[str, Any] | None) -> str | None:
     if meta is None:
         return f"« {key} » : paramètre inconnu (voir docs/PARAMETRES.md)"
     if "valeurs" in meta:
-        return None if value in meta["valeurs"] else f"« {key} » = {value!r} : valeurs possibles {meta['valeurs']}"
+        ok = value in meta["valeurs"] and type(value) is type(meta["valeurs"][0])
+        return None if ok else f"« {key} » = {value!r} : valeurs possibles {meta['valeurs']}"
+    if isinstance(value, list):  # plusieurs valeurs de même unité (parts, revenus par classe)
+        if not isinstance(meta["defaut"], list) or len(value) != len(meta["defaut"]):
+            return f"« {key} » : liste de {len(meta['defaut']) if isinstance(meta['defaut'], list) else 1} valeur(s) attendue"
+        return next((p for v in value if (p := _check_one(key, v, {**meta, "defaut": 0})) is not None), None)
     if isinstance(value, bool) or not isinstance(value, int | float):
         return f"« {key} » = {value!r} : un nombre est attendu ({meta['unite']})"
     if not meta["min"] <= value <= meta["max"]:
@@ -67,15 +73,13 @@ def check(values: dict[str, Any], schema: dict[str, Any]) -> list[str]:
     for k, v in values.items():
         if k in META_KEYS:
             continue
-        if k == "validation":
+        if k in SECTIONS:
             if not isinstance(v, dict):
-                problems.append("« validation » doit être un objet")
+                problems.append(f"« {k} » doit être un objet")
                 continue
             for vk, vv in v.items():
-                if (p := _check_one(f"validation.{vk}", vv, schema["validation"].get(vk))) is not None:
-                    problems.append(
-                        p.replace(f"« validation.{vk} » : paramètre inconnu", f"« validation.{vk} » : seuil inconnu")
-                    )
+                if (p := _check_one(f"{k}.{vk}", vv, schema[k].get(vk))) is not None:
+                    problems.append(p)
             continue
         if (p := _check_one(k, v, schema["parametres"].get(k))) is not None:
             problems.append(p)
@@ -92,18 +96,19 @@ def diff(old: dict[str, Any], new: dict[str, Any]) -> list[tuple[str, Any, Any]]
     for k, v in new.items():
         if k in META_KEYS:
             continue
-        if k == "validation":
-            out += [(f"validation.{vk}", (old.get("validation") or {}).get(vk), vv) for vk, vv in v.items()
-                    if (old.get("validation") or {}).get(vk) != vv]  # fmt: skip
+        if k in SECTIONS:
+            out += [(f"{k}.{vk}", (old.get(k) or {}).get(vk), vv) for vk, vv in v.items()
+                    if (old.get(k) or {}).get(vk) != vv]  # fmt: skip
         elif old.get(k) != v:
             out.append((k, old.get(k), v))
     return out
 
 
 def merge(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
-    out = {**old, **{k: v for k, v in new.items() if k != "validation"}}
-    if "validation" in new:
-        out["validation"] = {**(old.get("validation") or {}), **new["validation"]}
+    out = {**old, **{k: v for k, v in new.items() if k not in SECTIONS}}
+    for k in SECTIONS:
+        if k in new:
+            out[k] = {**(old.get(k) or {}), **new[k]}
     return out
 
 
@@ -112,6 +117,10 @@ def _fmt(v: Any) -> str:
         return f"{v:,.6g}".replace(",", " ").replace(".", ",")
     if isinstance(v, int) and not isinstance(v, bool):
         return f"{v:,}".replace(",", " ")
+    if isinstance(v, bool):
+        return "oui" if v else "non"
+    if isinstance(v, list):
+        return " / ".join(_fmt(x) for x in v)
     return str(v)
 
 
@@ -140,6 +149,11 @@ def render_doc(schema: dict[str, Any], defaults: dict[str, Any]) -> str:
     ]
     for title, key, vals in (
         ("Plan et simulation", "parametres", defaults),
+        (
+            "Comportements simulés (ménages, pré-collecteurs, brigade Laabal)",
+            "comportement",
+            defaults.get("comportement", {}),
+        ),
         ("Règles de validation des signalements", "validation", defaults.get("validation", {})),
     ):
         lines += [
@@ -149,18 +163,18 @@ def render_doc(schema: dict[str, Any], defaults: dict[str, Any]) -> str:
             "|---|---|---|---|---|---|---|",
         ]
         for k, m in schema[key].items():
-            rng = " / ".join(m["valeurs"]) if "valeurs" in m else f"{_fmt(m['min'])} – {_fmt(m['max'])}"
+            rng = (
+                " / ".join(_fmt(x) for x in m["valeurs"]) if "valeurs" in m else f"{_fmt(m['min'])} – {_fmt(m['max'])}"
+            )
             lines.append(
                 f"| `{k}` | {m['libelle']} | {m['unite']} | {rng} | {_fmt(vals.get(k, m['defaut']))} | {m['source']} "
                 f"| {', '.join(m['modeles'])} |"
             )
         lines.append("")
     lines += [
-        "## Paramètres de comportement du modèle à agents",
-        "",
-        "Propres à la simulation, hors de ce fichier : `apps/api/salubri_api/services/simulation/abm/params.py`, "
-        "décrits et justifiés dans `docs/SIMULATION_ODD.md` § 7 ; leur influence est mesurée dans "
-        "`docs/SENSIBILITE.md`.",
+        "Ces comportements ne sont calés sur aucune enquête ; le SDGD 2020 ne suffit pas à caler `p0` et `slope_dist` "
+        "(`docs/SIMULATION_CALIBRATION.md`). Leur influence est "
+        "mesurée dans `docs/SIMULATION_SENSIBILITE.md`, leur rôle décrit dans `docs/SIMULATION_ODD.md` § 7.",
         "",
     ]
     return "\n".join(lines)
@@ -204,6 +218,8 @@ def _import(path: Path, slug: str, simulation: bool, dry: bool, write_file: bool
             if base is not None:
                 cur = ScenarioParams(**(base.params or {}))
                 upd = {k: v for k, v in new.items() if k not in META_KEYS and k != "validation"}
+                if "comportement" in upd:
+                    upd["comportement"] = {**(cur.comportement or {}), **upd["comportement"]}
                 base.params = ScenarioParams(**{**cur.model_dump(), **upd}).model_dump(mode="json")
                 s.commit()
                 if upd:
@@ -239,8 +255,9 @@ def main(argv: list[str] | None = None) -> int:
         values = json.loads((folder(a.commune) / "params_default.json").read_text(encoding="utf-8"))
         problems = check(values, load_schema(a.commune))
         schema = load_schema(a.commune)
-        missing = [k for k in values if k not in META_KEYS and k != "validation" and k not in schema["parametres"]]
-        missing += [k for k in values.get("validation", {}) if k not in schema["validation"]]
+        missing = [k for k in values if k not in META_KEYS and k not in SECTIONS and k not in schema["parametres"]]
+        for sec in SECTIONS:
+            missing += [k for k in values.get(sec, {}) if k not in schema[sec]]
         for p in problems:
             print(p)
         print("OK" if not problems and not missing else f"{len(problems)} problème(s)")

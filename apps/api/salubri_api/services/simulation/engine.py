@@ -29,6 +29,8 @@ class SimResult:
     daily: dict[str, list[float]]
     summary: dict[str, float]
     duration_ms: int
+    # stock final de chaque dépôt sauvage (kg) : sert au calage (taille des dépôts), jamais renvoyé par l'API
+    wild_final_kg: np.ndarray | None = None
 
 
 def _sigmoid(x: np.ndarray) -> np.ndarray:
@@ -278,7 +280,7 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
     remaining = to_cet + cleanup_total + wild.kg.sum() + il.stock_kg.sum() + level.sum()
     err = abs(produced_total - remaining) / max(produced_total, 1.0)
     summary = rec.summary(mass_error=float(err), recurring=int(wild.recurring.sum()))
-    return SimResult(dict(rec.daily), summary, int((time.perf_counter() - t0) * 1000))
+    return SimResult(dict(rec.daily), summary, int((time.perf_counter() - t0) * 1000), wild.kg.copy())
 
 
 def run(plan: PlanSnapshot, sp: SimParams, seed: int, mode: str = "agrege") -> SimResult:

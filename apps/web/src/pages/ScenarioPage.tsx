@@ -12,7 +12,7 @@ import { useApi, useApp } from '../state/app'
 
 const MAIN = ['budget_fcfa_month', 'subscription_rate', 'pickup_frequency_per_week', 'precollector_frequency_per_week',
   'collection_point_capacity_t', 'cleanup_capacity_t_day', 'laabal_operations_per_week', 'laabal_deterrence', 'waste_kg_per_person_day', 'population_factor', 'walk_distance_max_m']
-const HIDDEN = ['season', 'active_quartier_ids']
+const HIDDEN = ['season', 'active_quartier_ids', 'comportement'] // comportement : fichier documenté (docs/PARAMETRES.md)
 const ENUM_LABELS: Record<string, string> = { agents: 'Agents (un par ménage)', agrege: 'Agrégé (rapide)', dry: 'Saison sèche', rain: 'Saison des pluies' }
 const LAYERS: Layers = { quartiers: true, dumps: false, reports: false, points: true, routes: true, trucks: true }
 

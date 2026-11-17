@@ -18,7 +18,7 @@ Sources : **mairie** (donnée à obtenir ou obtenue), **littérature** (référe
 | Clé | Paramètre | Unité | Intervalle plausible | Défaut | Source | Utilisé par |
 |---|---|---|---|---|---|---|
 | `population_factor` | Facteur de population | × | 0,5 – 3 | 1 | hypothèse : 1 = populations de quartiers.geojson ; >1 pour une croissance ou un recensement plus récent | E2 demande, simulation |
-| `waste_kg_per_person_day` | Déchets par habitant | kg/hab/jour | 0,3 – 1,2 | 0,6 | mairie de Ouagadougou citée par Sidwaya (≈ 0,6 kg/hab/j) ; à confirmer par pesée (SENSIBILITE.md : paramètre le plus influent) | E2 demande, E3 placement, simulation |
+| `waste_kg_per_person_day` | Déchets par habitant | kg/hab/jour | 0,3 – 1,2 | 0,6 | mairie de Ouagadougou citée par Sidwaya (≈ 0,6 kg/hab/j) ; à confirmer par pesée (SIMULATION_SENSIBILITE.md : paramètre le plus influent) | E2 demande, E3 placement, simulation |
 | `subscription_rate` | Taux d'abonnement à la pré-collecte | part | 0,05 – 0,8 | 0,35 | hypothèse : 35 %, aucune enquête disponible ; à mesurer auprès des associations de pré-collecte | simulation |
 | `subscription_fee_fcfa_month` | Tarif d'abonnement | FCFA/mois | 500 – 5 000 | 1 500 | hypothèse : 1 500 FCFA, ordre de grandeur des tarifs pratiqués par les pré-collecteurs (1 000 à 2 500) | simulation |
 | `precollector_capacity_t` | Capacité d'un pré-collecteur | t par tournée | 0,3 – 3 | 1,2 | hypothèse : charrette ou tricycle de 1 à 2 m³ | simulation |
@@ -30,7 +30,7 @@ Sources : **mairie** (donnée à obtenir ou obtenue), **littérature** (référe
 | `walk_distance_max_m` | Distance de marche acceptable | m | 100 – 800 | 300 | hypothèse : 300 m, valeur courante des schémas de gestion des déchets (à confirmer par enquête ménages) | E3 placement, simulation |
 | `season` | Saison | dry ou rain | dry / rain | dry | fiche du défi : scénario saison des pluies | E2 demande (+15 %), E4 distances, simulation |
 | `flood_speed_factor` | Vitesse en saison des pluies | facteur | 0,3 – 1 | 0,7 | hypothèse : × 0,7 sur les vitesses, voies en terre presque impraticables | E4 distances |
-| `truck_breakdown_rate_per_day` | Taux de panne des camions | par camion et par jour | 0 – 0,2 | 0,02 | hypothèse : 2 % ; à remplacer par l'historique du parc (SENSIBILITE.md : 2ᵉ paramètre le plus influent sur le tonnage collecté) | simulation |
+| `truck_breakdown_rate_per_day` | Taux de panne des camions | par camion et par jour | 0 – 0,2 | 0,02 | hypothèse : 2 % ; à remplacer par l'historique du parc (SIMULATION_SENSIBILITE.md : 2ᵉ paramètre le plus influent sur le tonnage collecté) | simulation |
 | `budget_fcfa_month` | Budget mensuel de la collecte | FCFA/mois | 1 000 000 – 500 000 000 | 2,5e+07 | hypothèse : 25 M FCFA, à remplacer par le budget fourni par la mairie | simulation |
 | `fuel_cost_fcfa_per_km` | Coût du carburant | FCFA/km | 150 – 1 500 | 450 | hypothèse : ≈ 0,6 L/km à ~750 FCFA/L | simulation, coût des tournées |
 | `cleanup_capacity_t_day` | Nettoyage des dépotoirs | t/jour | 0 – 100 | 12 | hypothèse : services techniques de la mairie, 12 t/jour | simulation |
@@ -43,6 +43,45 @@ Sources : **mairie** (donnée à obtenir ou obtenue), **littérature** (référe
 | `sim_mode` | Modèle de simulation | agents ou agrege | agents / agrege | agents | choix technique : SIMULATION_ODD.md | simulation |
 | `placement_time_limit_s` | Temps de calcul du placement | s | 0,5 – 60 | 2 | choix technique : 2 s pour le test en direct | E3 placement |
 | `placement_stability_m` | Stabilité des points | m de marche équivalents | 0 – 2 000 | 300 | hypothèse : déplacer un point coûte comme faire marcher sa charge 300 m de plus | E3 placement |
+
+## Comportements simulés (ménages, pré-collecteurs, brigade Laabal)
+
+| Clé | Paramètre | Unité | Intervalle plausible | Défaut | Source | Utilisé par |
+|---|---|---|---|---|---|---|
+| `household_size` | Taille moyenne des ménages | personnes | 3 – 12 | 7 | INSD : ménages de 5 à 7 personnes à Ouagadougou ; 7 retenu, à confirmer avec le RGPH 2019 | simulation (agrégé, agents) |
+| `ilots_per_precollector` | Îlots par pré-collecteur | îlots | 5 – 40 | 15 | hypothèse : une charrette sert ~15 îlots de ~30 concessions | simulation (agrégé, agents) |
+| `p0` | Propension de base à jeter, point hors de portée | log-cote | -4 – 1 | -1,5 | calé sur le SDGD 2020 (docs/SIMULATION_CALIBRATION.md) | simulation (agrégé, agents) |
+| `slope_dist` | Effet de la distance au-delà de la marche | log-cote par m | 0 – 0,02 | 0,004 | hypothèse : +0,4 de log-cote par 100 m de trop | simulation (agrégé, agents) |
+| `slope_full` | Effet d'un point plein | log-cote | 0 – 3 | 0,5 | hypothèse :  | simulation (agrégé, agents) |
+| `slope_rain` | Effet de la pluie | log-cote | 0 – 2 | 0,3 | hypothèse :  | simulation (agrégé, agents) |
+| `rain_waste_factor` | Déchets en plus en saison des pluies | part | 0 – 0,5 | 0,15 | hypothèse : +15 % (déchets mouillés, plus lourds) | simulation, E2 demande |
+| `sub_up` | Hausse mensuelle des abonnements si le service est régulier | part par mois | 0 – 0,2 | 0,02 | hypothèse :  | simulation (agrégé ; agents homogènes) |
+| `sub_down` | Baisse mensuelle des abonnements si le service est irrégulier | part par mois | 0 – 0,2 | 0,03 | hypothèse :  | simulation (agrégé ; agents homogènes) |
+| `regularity_ok` | Régularité jugée suffisante | part des passages faits | 0,5 – 1 | 0,8 | hypothèse :  | simulation (agrégé, agents) |
+| `recurring_days` | Délai pour dire qu'un dépotoir revient | jours | 1 – 90 | 15 | hypothèse :  | simulation (agrégé, agents) |
+| `sub_wait_days` | Attente d'un abonné avant de décider seul | jours de production | 1 – 14 | 4 | hypothèse : poubelle domestique pleine en ~4 jours | simulation (agrégé, agents) |
+| `laabal_ilots_per_operation` | Îlots contrôlés par descente Laabal | îlots | 1 – 30 | 6 | hypothèse :  | simulation (agrégé, agents) |
+| `laabal_watch_days` | Durée de l'effet d'un contrôle Laabal | jours | 1 – 90 | 21 | hypothèse :  | simulation (agrégé, agents) |
+| `laabal_sub_boost` | Abonnements gagnés après un contrôle Laabal | part | 0 – 0,3 | 0,05 | hypothèse :  | simulation (agrégé, agents) |
+| `heterogeneite` | Ménages différents (taille, revenu, distance) | oui / non | oui / non | oui | choix de modélisation (SIMULATION_ODD.md § 8 : non = contrôle de cohérence) | simulation (agents) |
+| `revenu_parts` | Parts des classes de revenu (faible, moyen, élevé) | parts | 0 – 1 | 0,5 / 0,35 / 0,15 | hypothèse : aucune enquête de revenus utilisée | simulation (agents) |
+| `revenu_fcfa_mois` | Revenu de référence par classe | FCFA/mois | 10 000 – 1 000 000 | 40 000 / 90 000 / 250 000 | hypothèse : SMIG ~45 000 FCFA ; ordres de grandeur | simulation (agents) |
+| `sigma_production` | Dispersion de la production par ménage | écart-type log | 0 – 1 | 0,3 | hypothèse :  | simulation (agents) |
+| `jitter_distance_m` | Écart de position du ménage dans l'îlot | m | 0 – 200 | 50 | hypothèse : îlot de ~30 concessions ≈ 100 m de côté | simulation (agents) |
+| `alpha_porter` | Constante du choix « porter » quand le point est à portée | log-cote | 0 – 20 | 8 | choix de modélisation : porter est presque certain sans autre terme (P > 0,999) | simulation (agents) |
+| `beta_dist_porter` | Effet de la distance sur « porter » | log-cote par 100 m | 0 – 3 | 0,3 | hypothèse :  | simulation (agents) |
+| `beta_reg` | Effet de la régularité vécue (attendre le pré-collecteur) | log-cote | 0 – 10 | 2 | hypothèse :  | simulation (agents) |
+| `beta_norme` | Poids de la norme sociale de l'îlot | log-cote | 0 – 10 | 2 | hypothèse : sensibilité faible (SIMULATION_SENSIBILITE.md) | simulation (agents) |
+| `norme_reference` | Part de référence de voisins qui jettent | part | 0 – 1 | 0,2 | hypothèse :  | simulation (agents) |
+| `beta_habitude` | Poids de l'habitude (refaire le choix de la veille) | log-cote | 0 – 5 | 0,5 | hypothèse :  | simulation (agents) |
+| `a_abo` | Constante de l'abonnement mensuel | log-cote | -10 – 0 | -3,11 | calée pour retrouver sub_up au point de référence (SIMULATION_ODD.md § 7.1) | simulation (agents) |
+| `a_desabo` | Constante du désabonnement mensuel | log-cote | -10 – 0 | -4,93 | calée pour retrouver sub_down au point de référence | simulation (agents) |
+| `beta_reg_mois` | Effet de la régularité sur l'abonnement | log-cote | 0 – 20 | 4 | hypothèse :  | simulation (agents) |
+| `beta_prix` | Effet du prix rapporté au revenu | log-cote par unité | 0 – 100 | 20 | hypothèse :  | simulation (agents) |
+| `extension_marge` | Marge pour qu'un pré-collecteur reprenne des îlots | × coût | 1 – 5 | 1,5 | hypothèse :  | simulation (agents) |
+| `extension_charge_max` | Charge maximale de la charrette pour s'étendre | part | 0 – 1 | 0,7 | hypothèse :  | simulation (agents) |
+| `amende_fcfa` | Amende Laabal par ménage pris à jeter | FCFA | 0 – 100 000 | 5 000 | hypothèse : aucun barème publié trouvé | simulation (agents) |
+| `priorite_recurrent` | Priorité de nettoyage d'un dépotoir récurrent | × | 1 – 5 | 1,3 | fiche du défi (récurrents en priorité) ; valeur hypothèse | simulation (agents) |
 
 ## Règles de validation des signalements
 
@@ -72,6 +111,4 @@ Sources : **mairie** (donnée à obtenir ou obtenue), **littérature** (référe
 | `probable_min` | Score « probable » | points | 0 – 100 | 70 | choix de conception : RULES.md | score de validation |
 | `review_min` | Score « à vérifier » | points | 0 – 100 | 40 | choix de conception : RULES.md | score de validation |
 
-## Paramètres de comportement du modèle à agents
-
-Propres à la simulation, hors de ce fichier : `apps/api/salubri_api/services/simulation/abm/params.py`, décrits et justifiés dans `docs/SIMULATION_ODD.md` § 7 ; leur influence est mesurée dans `docs/SENSIBILITE.md`.
+Ces comportements ne sont calés sur aucune enquête ; le SDGD 2020 ne suffit pas à caler `p0` et `slope_dist` (`docs/SIMULATION_CALIBRATION.md`). Leur influence est mesurée dans `docs/SIMULATION_SENSIBILITE.md`, leur rôle décrit dans `docs/SIMULATION_ODD.md` § 7.
