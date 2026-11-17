@@ -1,5 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Constrained placement of collection points (weighted k-means + projection on roads + exclusions).
+"""Constrained placement of collection points: weighted k-means (warm start and fallback), then CP-SAT
+optimisation over road candidates (planning/placement_opt.py) when candidates are available.
 
 Pure: spatial look-ups (road projection, exclusion test) are injected callables so the same code runs
 against PostGIS in the API and against shapely objects in tests.
@@ -17,6 +18,8 @@ from salubri_api.services.params import ScenarioParams
 
 ProjectFn = Callable[[list[tuple[float, float]]], list[tuple[float, float]]]
 ExcludedFn = Callable[[list[tuple[float, float]]], list[bool]]
+# (lon_min, lat_min, lon_max, lat_max) -> candidate sites on roads, lon/lat
+CandidatesFn = Callable[[tuple[float, float, float, float]], list[tuple[float, float]]]
 
 M_PER_DEG = 111_320.0
 
@@ -40,6 +43,7 @@ class PlacementResult:
     iterations: int
     duration_ms: int
     k: int
+    optimisation: dict[str, object] | None = None  # résumé CP-SAT (objectif, borne, écart) ou raison du repli
 
 
 class LocalProj:
@@ -109,6 +113,8 @@ def place_points(
     frozen: list[PlacedPoint] | None = None,
     seed: int = 42,
     max_iter: int = 5,
+    candidates: CandidatesFn | None = None,
+    previous: list[PlacedPoint] | None = None,
 ) -> PlacementResult:
     t0 = time.perf_counter()
     n = len(ilot_lonlat)
@@ -178,4 +184,111 @@ def place_points(
     if frozen:  # keep frozen positions bit-exact
         for i, f in enumerate(frozen):
             points[i].lon, points[i].lat = f.lon, f.lat
-    return PlacementResult(points, assign, iterations, int((time.perf_counter() - t0) * 1000), len(points))
+    res = PlacementResult(points, assign, iterations, int((time.perf_counter() - t0) * 1000), len(points))
+    if candidates is not None:
+        res = _optimise(res, ilot_lonlat, w_week, p, proj, candidates, excluded, frozen, previous or [], seed)
+        res.duration_ms = int((time.perf_counter() - t0) * 1000)
+    return res
+
+
+def _optimise(
+    warm: PlacementResult,
+    ilot_lonlat: np.ndarray,
+    w_week: np.ndarray,
+    p: ScenarioParams,
+    proj: LocalProj,
+    candidates: CandidatesFn,
+    excluded: ExcludedFn | None,
+    frozen: list[PlacedPoint],
+    previous: list[PlacedPoint],
+    seed: int,
+) -> PlacementResult:
+    """CP-SAT sur : points figés (ouverts), points de la version précédente (pénalité de stabilité), centres du
+    k-means (solution de départ), sites des routes hors exclusions. Repli sur le k-means si rien de mieux."""
+    from salubri_api.services.planning.placement_opt import optimise
+
+    pad = p.walk_distance_max_m / M_PER_DEG
+    lo, hi = ilot_lonlat.min(0) - pad, ilot_lonlat.max(0) + pad
+    road = candidates((float(lo[0]), float(lo[1]), float(hi[0]), float(hi[1])))
+    if road and excluded is not None:
+        road = [c for c, bad in zip(road, excluded(road), strict=True) if not bad]
+    cand: list[PlacedPoint] = [*warm.points[: len(frozen)]]
+    prev_keys = {f.key for f in frozen}
+    stab_pts = [q for q in previous if q.key not in prev_keys]
+    cand += [PlacedPoint(q.key, q.lon, q.lat, p.collection_point_capacity_t) for q in stab_pts]
+    warm_new = warm.points[len(frozen) :]
+    cand += [PlacedPoint("", q.lon, q.lat, p.collection_point_capacity_t) for q in warm_new]
+    cand += [PlacedPoint("", lon, lat, p.collection_point_capacity_t) for lon, lat in road]
+    cand_xy = proj.xy(np.array([[c.lon, c.lat] for c in cand]))
+    xy = proj.xy(ilot_lonlat)
+    cap_week = p.collection_point_capacity_t * p.pickup_frequency_per_week
+    # déplacer un point existant coûte comme faire marcher sa charge de `placement_stability_m` de plus
+    stability: dict[int, float] = {}
+    if stab_pts:
+        prev_xy = cand_xy[len(frozen) : len(frozen) + len(stab_pts)]
+        prev_assign, _ = _nearest(xy, prev_xy)
+        load = np.bincount(prev_assign, weights=w_week, minlength=len(stab_pts))
+        stability = {len(frozen) + k: float(load[k] * p.placement_stability_m) for k in range(len(stab_pts))}
+    off = len(frozen) + len(stab_pts)
+    max_points = max(p.collection_point_max, len(frozen), len(warm.points))
+    r = optimise(
+        xy,
+        w_week,
+        cand_xy,
+        cap_week,
+        p.walk_distance_max_m,
+        max_points,
+        fixed=list(range(len(frozen))),
+        stability=stability,
+        # départ : les points de la version précédente s'il y en a (stabilité), sinon le k-means
+        warm_open=list(range(len(frozen)))
+        + (list(range(len(frozen), off)) if stab_pts else list(range(off, off + len(warm_new)))),
+        time_limit_s=p.placement_time_limit_s,
+        seed=seed,
+    )
+    info: dict[str, object] = {
+        "methode": "CP-SAT",
+        "statut": r.status,
+        "candidats": len(cand),
+        "candidats_routes": len(road),
+        "objectif": None if math.isnan(r.objective) else round(r.objective, 1),
+        "borne": None if math.isnan(r.bound) else round(r.bound, 1),
+        "ecart": None if math.isnan(r.gap) else round(r.gap, 4),
+        "depart": "version précédente" if stab_pts else "k-means",
+        "objectif_depart": None if r.warm_objective is None else round(r.warm_objective, 1),
+        "marche_t_m": None if math.isnan(r.walk_t_m) else round(r.walk_t_m, 1),
+        "demande_hors_marche_t_semaine": None if math.isnan(r.uncovered_t) else round(r.uncovered_t, 3),
+        "surcharge_t_semaine": None if math.isnan(r.overload_t) else round(r.overload_t, 3),
+        "duree_ms": r.duration_ms,
+    }
+    if r.status == "repli":  # sinon la solution part de l'indice : au moins aussi bonne, aux arrondis près
+        info["statut"] = "repli"
+        info["raison"] = "CP-SAT sans solution meilleure que le k-means dans le temps imparti"
+        warm.optimisation = info
+        return warm
+    load = np.bincount(r.assignment, weights=w_week, minlength=len(r.open))
+    pts: list[PlacedPoint] = []
+    for k, j in enumerate(r.open):
+        c = cand[j]
+        pts.append(
+            PlacedPoint(
+                c.key,
+                c.lon,
+                c.lat,
+                p.collection_point_capacity_t,
+                float(load[k]),
+                np.flatnonzero(r.assignment == k).tolist(),
+                frozen=j < len(frozen),
+                constrained_ok=True,
+            )
+        )
+    used = {q.key for q in pts if q.key}
+    nxt = 1
+    for q in pts:
+        if not q.key:
+            while f"P{nxt:03d}" in used:
+                nxt += 1
+            q.key = f"P{nxt:03d}"
+            used.add(q.key)
+    info["points_conserves"] = sum(1 for j in r.open if len(frozen) <= j < off)
+    return PlacementResult(pts, r.assignment.astype(int), warm.iterations, 0, len(pts), info)

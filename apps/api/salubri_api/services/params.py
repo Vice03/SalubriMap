@@ -78,6 +78,10 @@ class ScenarioParams(BaseModel):
     sim_mode: Literal["agents", "agrege"] = "agents"
     seed: int = 42
     vrp_time_limit_s: float = Field(1.0, gt=0, le=30)
+    # Placement optimisé (CP-SAT) : temps de calcul, et coût de déplacement d'un point existant, exprimé comme si
+    # toute sa charge devait marcher autant de mètres en plus.
+    placement_time_limit_s: float = Field(2.0, gt=0, le=60)
+    placement_stability_m: float = Field(300.0, ge=0, le=2000)
     ilot_size_buildings: int = Field(30, ge=5, le=500)
 
 
@@ -109,6 +113,8 @@ PARAM_EVENT: dict[str, str] = {
     "seed": "subscription_changed",
     "sim_mode": "subscription_changed",
     "vrp_time_limit_s": "fleet_changed",
+    "placement_time_limit_s": "frequency_changed",
+    "placement_stability_m": "frequency_changed",
 }
 
 # Breadth order: when several keys change at once, the widest event wins.

@@ -140,6 +140,29 @@ def _project_fn(s: Session, commune_id: uuid.UUID):  # type: ignore[no-untyped-d
     return project
 
 
+def _candidates_fn(s: Session, commune_id: uuid.UUID):  # type: ignore[no-untyped-def]
+    """Sites candidats : points des routes praticables tous les ~50 m dans l'emprise, au plus ~2500 (grille plus
+    lâche au-delà), pour le placement CP-SAT."""
+
+    def candidates(bbox: tuple[float, float, float, float]) -> list[tuple[float, float]]:
+        for cell in (0.00045, 0.0009, 0.0018, 0.0036):  # ~50, 100, 200, 400 m
+            rows = s.execute(
+                text("""
+                WITH env AS (SELECT ST_MakeEnvelope(:x0, :y0, :x1, :y1, 4326) AS g),
+                pts AS (
+                  SELECT (ST_DumpPoints(ST_Segmentize(ST_Intersection(r.geom, env.g)::geography, 50)::geometry)).geom AS g
+                  FROM roads r, env WHERE r.commune_id = :c AND r.truck_ok AND r.geom && env.g)
+                SELECT DISTINCT ON (ST_SnapToGrid(g, :cell)) ST_X(g) AS lon, ST_Y(g) AS lat FROM pts
+                WHERE GeometryType(g) = 'POINT' LIMIT 2501"""),
+                {"x0": bbox[0], "y0": bbox[1], "x1": bbox[2], "y1": bbox[3], "c": commune_id, "cell": cell},
+            ).all()
+            if len(rows) <= 2500:
+                return [(float(r.lon), float(r.lat)) for r in rows]
+        return [(float(r.lon), float(r.lat)) for r in rows[:2500]]
+
+    return candidates
+
+
 def _excluded_fn(s: Session, commune_id: uuid.UUID):  # type: ignore[no-untyped-def]
     def excluded(pts: list[tuple[float, float]]) -> list[bool]:
         rows = s.execute(
@@ -385,6 +408,13 @@ def _execute(pv_id: str) -> None:
                 ):
                     g = shape(cp.geom)
                     frozen.append(PlacedPoint(cp.key, g.x, g.y, cp.capacity_t, frozen=True))
+            previous: list[
+                PlacedPoint
+            ] = []  # placement complet : points d'avant, déplacés seulement si ça vaut le coût
+            if not incremental and prev is not None:
+                for cp in s.query(CollectionPoint).filter(CollectionPoint.plan_version_id == prev.id):
+                    g = shape(cp.geom)
+                    previous.append(PlacedPoint(cp.key, g.x, g.y, cp.capacity_t))
             if params.use_existing_cct:
                 # CCT existants (SDGD 2020) qui desservent la zone active : gardés tels quels
                 have = {f.key for f in frozen}
@@ -405,6 +435,8 @@ def _execute(pv_id: str) -> None:
                 params.population_factor,
                 params.waste_kg_per_person_day,
                 [f.key for f in frozen] if (incremental or params.use_existing_cct) else None,
+                params.placement_time_limit_s,
+                params.placement_stability_m,
             )
             e3_forced = forced_all or ("E3" in must and kind != "season_changed")
             cached_e3 = cache.get("E3")
@@ -427,6 +459,8 @@ def _execute(pv_id: str) -> None:
                     excluded=_excluded_fn(s, commune.id),
                     frozen=frozen or None,
                     seed=params.seed,
+                    candidates=_candidates_fn(s, commune.id) if _project_fn(s, commune.id) is not None else None,
+                    previous=previous,
                 )
                 pts = Points(res, _time_windows(s, commune.id, res.points))
                 pts.ilot_sig = ilots.sig  # type: ignore[attr-defined]
@@ -529,6 +563,7 @@ def _execute(pv_id: str) -> None:
                 "demand_t_week": round(float(w_week.sum()), 2),
                 "points": len(placement.points),
                 "points_constraint_relaxed": sum(1 for p in placement.points if not p.constrained_ok),
+                "placement": placement.optimisation,
                 "routes": len(vrp.solution.routes),
                 "vehicles_available": len(vehicles),
                 "km_day": round(sum(r.distance_km for r in vrp.solution.routes), 1),

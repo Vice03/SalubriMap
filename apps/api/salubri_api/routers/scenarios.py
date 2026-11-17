@@ -41,6 +41,8 @@ PARAM_LABELS = {
     "seed": "Graine aléatoire",
     "sim_mode": "Modèle de simulation (agents ou agrégé)",
     "vrp_time_limit_s": "Temps max. de calcul des tournées (s)",
+    "placement_time_limit_s": "Temps max. de calcul du placement des points (s)",
+    "placement_stability_m": "Stabilité des points : coût d'un déplacement (m de marche en plus)",
     "ilot_size_buildings": "Bâtiments par îlot",
 }
 
