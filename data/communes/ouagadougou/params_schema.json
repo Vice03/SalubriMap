@@ -1,0 +1,562 @@
+{
+ "_description": "Métadonnées de params_default.json : unité, intervalle plausible (vérifié au chargement), valeur par défaut, source, modèles qui l'utilisent. docs/PARAMETRES.md est généré depuis ce fichier (python -m salubri_api.params doc).",
+ "parametres": {
+  "population_factor": {
+   "libelle": "Facteur de population",
+   "unite": "×",
+   "defaut": 1.0,
+   "source": "hypothèse : 1 = populations de quartiers.geojson ; >1 pour une croissance ou un recensement plus récent",
+   "modeles": [
+    "E2 demande",
+    "simulation"
+   ],
+   "min": 0.5,
+   "max": 3
+  },
+  "waste_kg_per_person_day": {
+   "libelle": "Déchets par habitant",
+   "unite": "kg/hab/jour",
+   "defaut": 0.6,
+   "source": "mairie de Ouagadougou citée par Sidwaya (≈ 0,6 kg/hab/j) ; à confirmer par pesée (SENSIBILITE.md : paramètre le plus influent)",
+   "modeles": [
+    "E2 demande",
+    "E3 placement",
+    "simulation"
+   ],
+   "min": 0.3,
+   "max": 1.2
+  },
+  "subscription_rate": {
+   "libelle": "Taux d'abonnement à la pré-collecte",
+   "unite": "part",
+   "defaut": 0.35,
+   "source": "hypothèse : 35 %, aucune enquête disponible ; à mesurer auprès des associations de pré-collecte",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 0.05,
+   "max": 0.8
+  },
+  "subscription_fee_fcfa_month": {
+   "libelle": "Tarif d'abonnement",
+   "unite": "FCFA/mois",
+   "defaut": 1500.0,
+   "source": "hypothèse : 1 500 FCFA, ordre de grandeur des tarifs pratiqués par les pré-collecteurs (1 000 à 2 500)",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 500,
+   "max": 5000
+  },
+  "precollector_capacity_t": {
+   "libelle": "Capacité d'un pré-collecteur",
+   "unite": "t par tournée",
+   "defaut": 1.2,
+   "source": "hypothèse : charrette ou tricycle de 1 à 2 m³",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 0.3,
+   "max": 3
+  },
+  "precollector_frequency_per_week": {
+   "libelle": "Passages de pré-collecte",
+   "unite": "par semaine",
+   "defaut": 2.0,
+   "source": "hypothèse : 2 passages par semaine",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 1,
+   "max": 7
+  },
+  "precollector_cost_fcfa_month": {
+   "libelle": "Coût d'un pré-collecteur",
+   "unite": "FCFA/mois",
+   "defaut": 60000.0,
+   "source": "hypothèse : salaire, entretien de la charrette ; 60 000 FCFA",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 20000,
+   "max": 200000
+  },
+  "collection_point_capacity_t": {
+   "libelle": "Capacité d'un point de regroupement",
+   "unite": "t",
+   "defaut": 2.5,
+   "source": "hypothèse : bac de 6 m³ ≈ 2,5 t (densité 0,4 t/m³)",
+   "modeles": [
+    "E3 placement",
+    "E5 tournées",
+    "simulation"
+   ],
+   "min": 0.5,
+   "max": 10
+  },
+  "collection_point_max": {
+   "libelle": "Nombre maximum de points",
+   "unite": "points",
+   "defaut": 80,
+   "source": "mairie : nombre de bacs ou de sites disponibles ; 80 par défaut pour la démo",
+   "modeles": [
+    "E3 placement"
+   ],
+   "min": 1,
+   "max": 500
+  },
+  "pickup_frequency_per_week": {
+   "libelle": "Enlèvements par camion",
+   "unite": "par semaine",
+   "defaut": 2.0,
+   "source": "hypothèse : 2 enlèvements par semaine et par point",
+   "modeles": [
+    "E3 placement",
+    "E5 tournées",
+    "simulation"
+   ],
+   "min": 1,
+   "max": 7
+  },
+  "walk_distance_max_m": {
+   "libelle": "Distance de marche acceptable",
+   "unite": "m",
+   "defaut": 300.0,
+   "source": "hypothèse : 300 m, valeur courante des schémas de gestion des déchets (à confirmer par enquête ménages)",
+   "modeles": [
+    "E3 placement",
+    "simulation"
+   ],
+   "min": 100,
+   "max": 800
+  },
+  "season": {
+   "libelle": "Saison",
+   "unite": "dry ou rain",
+   "defaut": "dry",
+   "source": "fiche du défi : scénario saison des pluies",
+   "modeles": [
+    "E2 demande (+15 %)",
+    "E4 distances",
+    "simulation"
+   ],
+   "valeurs": [
+    "dry",
+    "rain"
+   ]
+  },
+  "flood_speed_factor": {
+   "libelle": "Vitesse en saison des pluies",
+   "unite": "facteur",
+   "defaut": 0.7,
+   "source": "hypothèse : × 0,7 sur les vitesses, voies en terre presque impraticables",
+   "modeles": [
+    "E4 distances"
+   ],
+   "min": 0.3,
+   "max": 1
+  },
+  "truck_breakdown_rate_per_day": {
+   "libelle": "Taux de panne des camions",
+   "unite": "par camion et par jour",
+   "defaut": 0.02,
+   "source": "hypothèse : 2 % ; à remplacer par l'historique du parc (SENSIBILITE.md : 2ᵉ paramètre le plus influent sur le tonnage collecté)",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 0,
+   "max": 0.2
+  },
+  "budget_fcfa_month": {
+   "libelle": "Budget mensuel de la collecte",
+   "unite": "FCFA/mois",
+   "defaut": 25000000.0,
+   "source": "hypothèse : 25 M FCFA, à remplacer par le budget fourni par la mairie",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 1000000,
+   "max": 500000000
+  },
+  "fuel_cost_fcfa_per_km": {
+   "libelle": "Coût du carburant",
+   "unite": "FCFA/km",
+   "defaut": 450.0,
+   "source": "hypothèse : ≈ 0,6 L/km à ~750 FCFA/L",
+   "modeles": [
+    "simulation",
+    "coût des tournées"
+   ],
+   "min": 150,
+   "max": 1500
+  },
+  "cleanup_capacity_t_day": {
+   "libelle": "Nettoyage des dépotoirs",
+   "unite": "t/jour",
+   "defaut": 12.0,
+   "source": "hypothèse : services techniques de la mairie, 12 t/jour",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 0,
+   "max": 100
+  },
+  "laabal_operations_per_week": {
+   "libelle": "Opérations de la brigade Laabal",
+   "unite": "par semaine",
+   "defaut": 3,
+   "source": "hypothèse : 3 descentes par semaine ; aucun chiffre publié",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 0,
+   "max": 14
+  },
+  "laabal_deterrence": {
+   "libelle": "Effet dissuasif d'un contrôle Laabal",
+   "unite": "0 à 1",
+   "defaut": 0.5,
+   "source": "hypothèse : −50 % de dépôts pendant 21 jours ; aucun chiffre publié",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 0,
+   "max": 1
+  },
+  "horizon_days": {
+   "libelle": "Horizon de simulation",
+   "unite": "jours",
+   "defaut": 90,
+   "source": "choix d'étude : 90 jours = un trimestre",
+   "modeles": [
+    "simulation"
+   ],
+   "min": 7,
+   "max": 365
+  },
+  "seed": {
+   "libelle": "Graine aléatoire",
+   "unite": "entier",
+   "defaut": 42,
+   "source": "choix technique : reproductibilité",
+   "modeles": [
+    "simulation",
+    "E3 placement (k-means)"
+   ],
+   "min": 0,
+   "max": 2147483647
+  },
+  "vrp_time_limit_s": {
+   "libelle": "Temps de calcul des tournées",
+   "unite": "s",
+   "defaut": 1.0,
+   "source": "choix technique : 1 s pour le test en direct (BENCHMARK_TOURNEES.md)",
+   "modeles": [
+    "E5 tournées"
+   ],
+   "min": 0.2,
+   "max": 30
+  },
+  "ilot_size_buildings": {
+   "libelle": "Bâtiments par îlot",
+   "unite": "bâtiments",
+   "defaut": 30,
+   "source": "choix technique : ~30 concessions par îlot",
+   "modeles": [
+    "E1 îlots"
+   ],
+   "min": 5,
+   "max": 500
+  },
+  "sim_mode": {
+   "libelle": "Modèle de simulation",
+   "unite": "agents ou agrege",
+   "defaut": "agents",
+   "source": "choix technique : SIMULATION_ODD.md",
+   "modeles": [
+    "simulation"
+   ],
+   "valeurs": [
+    "agents",
+    "agrege"
+   ]
+  },
+  "placement_time_limit_s": {
+   "libelle": "Temps de calcul du placement",
+   "unite": "s",
+   "defaut": 2.0,
+   "source": "choix technique : 2 s pour le test en direct",
+   "modeles": [
+    "E3 placement"
+   ],
+   "min": 0.5,
+   "max": 60
+  },
+  "placement_stability_m": {
+   "libelle": "Stabilité des points",
+   "unite": "m de marche équivalents",
+   "defaut": 300.0,
+   "source": "hypothèse : déplacer un point coûte comme faire marcher sa charge 300 m de plus",
+   "modeles": [
+    "E3 placement"
+   ],
+   "min": 0,
+   "max": 2000
+  }
+ },
+ "validation": {
+  "duplicate_radius_m": {
+   "libelle": "Rayon de doublon",
+   "unite": "m",
+   "defaut": 30,
+   "source": "hypothèse : 30 m, précision GPS d'un téléphone en ville",
+   "modeles": [
+    "R1 doublon"
+   ],
+   "min": 5,
+   "max": 200
+  },
+  "duplicate_window_h": {
+   "libelle": "Fenêtre de doublon",
+   "unite": "h",
+   "defaut": 72,
+   "source": "hypothèse : 72 h",
+   "modeles": [
+    "R1 doublon"
+   ],
+   "min": 1,
+   "max": 720
+  },
+  "phash_max_hamming": {
+   "libelle": "Écart maximal de pHash",
+   "unite": "bits sur 64",
+   "defaut": 8,
+   "source": "littérature : seuil usuel 8–10 pour des copies d'une même image (Zauner, 2010) ; test sur photos masquées (MASQUAGE.md)",
+   "modeles": [
+    "R2 photo réutilisée"
+   ],
+   "min": 0,
+   "max": 20
+  },
+  "exif_gps_max_m": {
+   "libelle": "Écart GPS photo / signalement",
+   "unite": "m",
+   "defaut": 500,
+   "source": "hypothèse : 500 m",
+   "modeles": [
+    "R3 lieu de la photo"
+   ],
+   "min": 50,
+   "max": 5000
+  },
+  "exif_max_age_days": {
+   "libelle": "Âge maximal de la photo",
+   "unite": "jours",
+   "defaut": 30,
+   "source": "hypothèse : 30 jours",
+   "modeles": [
+    "R4 date de la photo"
+   ],
+   "min": 1,
+   "max": 365
+  },
+  "zone_buffer_m": {
+   "libelle": "Marge autour de la commune",
+   "unite": "m",
+   "defaut": 500,
+   "source": "hypothèse : 500 m",
+   "modeles": [
+    "R5 hors zone"
+   ],
+   "min": 0,
+   "max": 5000
+  },
+  "building_min_confidence": {
+   "libelle": "Confiance minimale des bâtiments",
+   "unite": "0 à 1",
+   "defaut": 0.7,
+   "source": "Open Buildings (Google) : 0,7 = seuil « haute précision » recommandé",
+   "modeles": [
+    "R6 dans un bâtiment"
+   ],
+   "min": 0.5,
+   "max": 1
+  },
+  "building_small_m2": {
+   "libelle": "Petit bâtiment",
+   "unite": "m²",
+   "defaut": 40,
+   "source": "hypothèse : en dessous, souvent un abri ou une cour",
+   "modeles": [
+    "R6 dans un bâtiment"
+   ],
+   "min": 10,
+   "max": 200
+  },
+  "building_large_m2": {
+   "libelle": "Grand bâtiment",
+   "unite": "m²",
+   "defaut": 200,
+   "source": "hypothèse : au-dessus, un dépôt sur une cour reste peu probable",
+   "modeles": [
+    "R6 dans un bâtiment"
+   ],
+   "min": 50,
+   "max": 2000
+  },
+  "waterway_buffer_m": {
+   "libelle": "Marge autour des cours d'eau",
+   "unite": "m",
+   "defaut": 8,
+   "source": "hypothèse : 8 m",
+   "modeles": [
+    "R7 dans l'eau"
+   ],
+   "min": 0,
+   "max": 50
+  },
+  "big_water_m2": {
+   "libelle": "Grande étendue d'eau",
+   "unite": "m²",
+   "defaut": 10000,
+   "source": "hypothèse : 1 ha",
+   "modeles": [
+    "R7 dans l'eau"
+   ],
+   "min": 1000,
+   "max": 1000000
+  },
+  "gps_accuracy_max_m": {
+   "libelle": "Précision GPS maximale",
+   "unite": "m",
+   "defaut": 150,
+   "source": "hypothèse : 150 m",
+   "modeles": [
+    "R8 faux GPS"
+   ],
+   "min": 10,
+   "max": 1000
+  },
+  "same_point_m": {
+   "libelle": "Même point exact",
+   "unite": "m",
+   "defaut": 1,
+   "source": "hypothèse : 1 m : coordonnées recopiées",
+   "modeles": [
+    "R8 faux GPS"
+   ],
+   "min": 0.1,
+   "max": 10
+  },
+  "max_speed_kmh": {
+   "libelle": "Vitesse impossible",
+   "unite": "km/h",
+   "defaut": 120,
+   "source": "hypothèse : 120 km/h entre deux signalements d'un même téléphone",
+   "modeles": [
+    "R9 vitesse impossible"
+   ],
+   "min": 30,
+   "max": 300
+  },
+  "spam_per_hour": {
+   "libelle": "Signalements par heure",
+   "unite": "par téléphone",
+   "defaut": 10,
+   "source": "hypothèse : 10",
+   "modeles": [
+    "R10 pourriel"
+   ],
+   "min": 3,
+   "max": 100
+  },
+  "spam_block_factor": {
+   "libelle": "Facteur de blocage",
+   "unite": "× spam_per_hour",
+   "defaut": 3,
+   "source": "hypothèse : refus 429 au-delà de 3 × spam_per_hour",
+   "modeles": [
+    "limite d'envoi (lot A3)"
+   ],
+   "min": 1,
+   "max": 10
+  },
+  "spam_same_comment": {
+   "libelle": "Même commentaire répété",
+   "unite": "fois",
+   "defaut": 5,
+   "source": "hypothèse : 5",
+   "modeles": [
+    "R10 pourriel"
+   ],
+   "min": 2,
+   "max": 50
+  },
+  "luminance_var_min": {
+   "libelle": "Variance de luminance minimale",
+   "unite": "niveaux de gris²",
+   "defaut": 25,
+   "source": "hypothèse : 25 : photo noire ou blanche",
+   "modeles": [
+    "R11 photo sans information"
+   ],
+   "min": 0,
+   "max": 500
+  },
+  "photo_min_side_px": {
+   "libelle": "Petit côté minimal de la photo",
+   "unite": "px",
+   "defaut": 200,
+   "source": "hypothèse : 200 px",
+   "modeles": [
+    "R11 photo sans information"
+   ],
+   "min": 50,
+   "max": 2000
+  },
+  "truck_photo_min_bytes": {
+   "libelle": "Taille minimale d'une photo « camion »",
+   "unite": "octets",
+   "defaut": 50000,
+   "source": "hypothèse : 50 ko",
+   "modeles": [
+    "R12 cohérence du type"
+   ],
+   "min": 1000,
+   "max": 1000000
+  },
+  "medical_poi_radius_m": {
+   "libelle": "Rayon autour des centres de santé",
+   "unite": "m",
+   "defaut": 300,
+   "source": "hypothèse : 300 m",
+   "modeles": [
+    "R12 cohérence du type"
+   ],
+   "min": 50,
+   "max": 2000
+  },
+  "probable_min": {
+   "libelle": "Score « probable »",
+   "unite": "points",
+   "defaut": 70,
+   "source": "choix de conception : RULES.md",
+   "modeles": [
+    "score de validation"
+   ],
+   "min": 0,
+   "max": 100
+  },
+  "review_min": {
+   "libelle": "Score « à vérifier »",
+   "unite": "points",
+   "defaut": 40,
+   "source": "choix de conception : RULES.md",
+   "modeles": [
+    "score de validation"
+   ],
+   "min": 0,
+   "max": 100
+  }
+ }
+}

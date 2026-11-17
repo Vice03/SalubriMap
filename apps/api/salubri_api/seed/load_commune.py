@@ -24,6 +24,11 @@ log = logging.getLogger("salubri.seed")
 def load_commune(s: Session, folder: Path) -> Commune:
     meta = json.loads((folder / "commune.json").read_text(encoding="utf-8"))
     params = json.loads((folder / "params_default.json").read_text(encoding="utf-8"))
+    if (folder / "params_schema.json").exists():  # intervalles plausibles (docs/PARAMETRES.md)
+        from salubri_api.params import ParamError, check
+
+        if problems := check(params, json.loads((folder / "params_schema.json").read_text(encoding="utf-8"))):
+            raise ParamError(problems)
     x0, y0, x1, y1 = meta["bbox"]
     c = Commune(
         slug=meta["slug"],

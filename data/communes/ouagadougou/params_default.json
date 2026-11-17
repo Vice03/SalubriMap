@@ -22,6 +22,9 @@
   "seed": 42,
   "vrp_time_limit_s": 1.0,
   "ilot_size_buildings": 30,
+  "sim_mode": "agents",
+  "placement_time_limit_s": 2.0,
+  "placement_stability_m": 300.0,
   "validation": {
     "duplicate_radius_m": 30,
     "duplicate_window_h": 72,
@@ -44,7 +47,8 @@
     "truck_photo_min_bytes": 50000,
     "medical_poi_radius_m": 300,
     "probable_min": 70,
-    "review_min": 40
+    "review_min": 40,
+    "spam_block_factor": 3
   },
   "_sources": {
     "waste_kg_per_person_day": "≈ 0,6 kg/hab/j, Sidwaya (mairie de Ouagadougou) ; à confirmer avec la mairie",
