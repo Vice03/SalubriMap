@@ -48,7 +48,7 @@ from salubri_api.services.plan.diff import PlanView, diff_plans
 from salubri_api.services.plan.events import INCREMENTAL_POINTS, INVALIDATES, STAGES
 from salubri_api.services.planning.collection_points import PlacedPoint, PlacementResult, place_points
 from salubri_api.services.planning.distance import Matrix, build_matrix, route_geometry
-from salubri_api.services.planning.vrp import VehicleSpec, VrpSolution, solve_vrp
+from salubri_api.services.planning.vrp import VehicleSpec, VrpSolution, lower_bound_km, solve_vrp
 from salubri_api.services.reference import existing_cct
 from salubri_api.services.simulation.agents import PlanSnapshot, TruckRoute
 from salubri_api.services.simulation.engine import SimResult
@@ -572,6 +572,7 @@ def _execute(pv_id: str) -> None:
                 "points": len(placement.points),
                 "points_constraint_relaxed": sum(1 for p in placement.points if not p.constrained_ok),
                 "placement": placement.optimisation,
+                "vrp": _vrp_quality(vrp, matrix.distance_km, demand_nodes),
                 "coverage_walk": coverage_walk,
                 "routes": len(vrp.solution.routes),
                 "vehicles_available": len(vehicles),
@@ -605,6 +606,24 @@ def _execute(pv_id: str) -> None:
                 pv.status, pv.error, pv.finished_at = "failed", str(exc)[:2000], utcnow()
                 s.commit()
             bus.publish(pv_id, "failed", {"error": str(exc)})
+
+
+def _vrp_quality(vrp: Vrp, dist_km: np.ndarray, demand: np.ndarray) -> dict[str, object]:
+    """Qualité des tournées : km faits, borne inférieure garantie (vrp.lower_bound_km) et écart majorant."""
+    sol = vrp.solution
+    served = sorted({s for r in sol.routes for s in r.stops})
+    km = float(sum(r.distance_km for r in sol.routes))
+    cap = max((v.capacity_t for v in vrp.vehicles), default=0.0)
+    lb = lower_bound_km(dist_km, demand, served, cap)
+    return {
+        "solveur": sol.solver,
+        "km": round(km, 1),
+        "borne_inf_km": round(lb, 1),
+        "ecart_max": round((km - lb) / km, 3) if km > 0 else None,
+        "duree_ms": sol.duration_ms,
+        "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit "
+        "(meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    }
 
 
 def _snapshot(ilots: Ilots, placement: PlacementResult, vrp: Vrp, params: ScenarioParams) -> PlanSnapshot:

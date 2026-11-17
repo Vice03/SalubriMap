@@ -79,6 +79,7 @@ def solve_vrp(
     time_limit_s: float = 2.0,
     rotations: int = 2,
     drop_penalty: int = 10_000_000,
+    first_solution: str = "PARALLEL_CHEAPEST_INSERTION",
 ) -> VrpSolution:
     t0 = time.perf_counter()
     n = len(demand_t)
@@ -146,7 +147,7 @@ def solve_vrp(
         routing.AddVariableMinimizedByFinalizer(tdim.CumulVar(end))
 
     params = pywrapcp.DefaultRoutingSearchParameters()
-    params.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PARALLEL_CHEAPEST_INSERTION
+    params.first_solution_strategy = getattr(routing_enums_pb2.FirstSolutionStrategy, first_solution)
     params.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
     # Large instances (whole city: 1,000+ points) need more than the default second to get past the first
     # insertion pass; under that limit OR-Tools can return an almost empty solution (every point dropped).
@@ -201,3 +202,21 @@ def effective_time_limit(time_limit_s: float, n_nodes: int) -> float:
 
 def _left_t(unserved: list[int], demand_t: np.ndarray) -> float:
     return float(sum(demand_t[i] for i in unserved))
+
+
+STRATEGIES = ["PARALLEL_CHEAPEST_INSERTION", "PATH_CHEAPEST_ARC", "SAVINGS"]  # 3 départs pour la meilleure connue
+
+
+def lower_bound_km(dist_km: np.ndarray, demand_t: np.ndarray, served: list[int], capacity_max_t: float) -> float:
+    """Borne inférieure valide des km pour desservir `served` depuis le dépôt (nœud 0), distances symétrisées.
+
+    - borne radiale : chaque tonne doit aller du point au dépôt et en revenir, un camion porte au plus
+      `capacity_max_t` : km ≥ 2 · Σ q_i · d(0, i) / Q ;
+    - point le plus lointain : au moins un aller-retour, km ≥ 2 · max d(0, i).
+    Faible quand les points sont proches du dépôt, mais garantie : l'écart rapporté est un majorant de l'écart réel.
+    """
+    if not served or capacity_max_t <= 0:
+        return 0.0
+    d0 = np.minimum(dist_km[0, served], dist_km[served, 0])
+    radial = 2 * float((demand_t[served] * d0).sum()) / capacity_max_t
+    return max(radial, 2 * float(d0.max()))
