@@ -1,15 +1,32 @@
 {
  "images": 120,
- "temps_ms_median": 98.7,
- "par_type": {
+ "temps_ms_median": 115.4,
+ "telephone": {
   "visage": {
    "zones": 404,
-   "masquees": 375,
+   "masquees": 377,
    "ignorees": 425,
-   "detections": 715,
-   "justes": 607,
-   "rappel": 0.928,
-   "precision": 0.849
+   "detections": 805,
+   "justes": 654,
+   "rappel": 0.933,
+   "precision": 0.812,
+   "par_taille": {
+    "petite": {
+     "zones": 208,
+     "masquees": 182,
+     "rappel": 0.875
+    },
+    "moyenne": {
+     "zones": 150,
+     "masquees": 149,
+     "rappel": 0.993
+    },
+    "grande": {
+     "zones": 46,
+     "masquees": 46,
+     "rappel": 1.0
+    }
+   }
   },
   "plaque": {
    "zones": 62,
@@ -18,8 +35,136 @@
    "detections": 67,
    "justes": 59,
    "rappel": 0.935,
-   "precision": 0.881
-  }
+   "precision": 0.881,
+   "par_taille": {
+    "petite": {
+     "zones": 36,
+     "masquees": 33,
+     "rappel": 0.917
+    },
+    "moyenne": {
+     "zones": 24,
+     "masquees": 23,
+     "rappel": 0.958
+    },
+    "grande": {
+     "zones": 2,
+     "masquees": 2,
+     "rappel": 1.0
+    }
+   }
+  },
+  "sous_types": {}
+ },
+ "telephone_serveur": {
+  "visage": {
+   "zones": 404,
+   "masquees": 379,
+   "ignorees": 425,
+   "detections": 1181,
+   "justes": 973,
+   "rappel": 0.938,
+   "precision": 0.824,
+   "par_taille": {
+    "petite": {
+     "zones": 208,
+     "masquees": 184,
+     "rappel": 0.885
+    },
+    "moyenne": {
+     "zones": 150,
+     "masquees": 149,
+     "rappel": 0.993
+    },
+    "grande": {
+     "zones": 46,
+     "masquees": 46,
+     "rappel": 1.0
+    }
+   }
+  },
+  "plaque": {
+   "zones": 62,
+   "masquees": 58,
+   "ignorees": 1,
+   "detections": 104,
+   "justes": 73,
+   "rappel": 0.935,
+   "precision": 0.702,
+   "par_taille": {
+    "petite": {
+     "zones": 36,
+     "masquees": 33,
+     "rappel": 0.917
+    },
+    "moyenne": {
+     "zones": 24,
+     "masquees": 23,
+     "rappel": 0.958
+    },
+    "grande": {
+     "zones": 2,
+     "masquees": 2,
+     "rappel": 1.0
+    }
+   }
+  },
+  "sous_types": {}
+ },
+ "par_type": {
+  "visage": {
+   "zones": 404,
+   "masquees": 379,
+   "ignorees": 425,
+   "detections": 1181,
+   "justes": 973,
+   "rappel": 0.938,
+   "precision": 0.824,
+   "par_taille": {
+    "petite": {
+     "zones": 208,
+     "masquees": 184,
+     "rappel": 0.885
+    },
+    "moyenne": {
+     "zones": 150,
+     "masquees": 149,
+     "rappel": 0.993
+    },
+    "grande": {
+     "zones": 46,
+     "masquees": 46,
+     "rappel": 1.0
+    }
+   }
+  },
+  "plaque": {
+   "zones": 62,
+   "masquees": 58,
+   "ignorees": 1,
+   "detections": 104,
+   "justes": 73,
+   "rappel": 0.935,
+   "precision": 0.702,
+   "par_taille": {
+    "petite": {
+     "zones": 36,
+     "masquees": 33,
+     "rappel": 0.917
+    },
+    "moyenne": {
+     "zones": 24,
+     "masquees": 23,
+     "rappel": 0.958
+    },
+    "grande": {
+     "zones": 2,
+     "masquees": 2,
+     "rappel": 1.0
+    }
+   }
+  },
+  "sous_types": {}
  },
  "jeu": "120 photos publiques : 60 WIDER Face (validation) + 60 plaques Roboflow (CC BY 4.0), pas Ouagadougou"
 }

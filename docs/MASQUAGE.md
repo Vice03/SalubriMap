@@ -131,6 +131,10 @@ sont coupées tant que le jeu de terrain (plaques de moto, § jeu de terrain) n'
 
 ## Mesures
 
+Rapport détaillé par type, taille et chaîne (téléphone seul / téléphone + serveur) : [`MASQUAGE_EVALUATION.md`](MASQUAGE_EVALUATION.md),
+généré par `scripts/eval_masquage.py`. Sur le jeu public, ce sont les **petits visages (< 40 px)** qui manquent :
+rappel 0,875, contre 0,993 et 1,000 pour les moyens et les grands.
+
 ### Jeu public de contrôle (pas Ouagadougou)
 
 120 photos publiques : 60 de WIDER Face (validation, foules et scènes de rue, 829 visages annotés) et 60 du jeu
