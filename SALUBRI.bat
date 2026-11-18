@@ -355,7 +355,9 @@ if errorlevel 1 (
 ) else (
   echo   %G%=================================================================%N%
   echo   %G%Pret.%N%  Salubri Map : %W%%URL%/%N%    Salubri Go : %W%%URL%/go/%N%
-  echo          Connexion mairie : %W%admin%N% / %W%Salubri2026%N%   %D%^(ou demo / ouaga2026^)%N%
+  echo          Connexion mairie, deux comptes au choix ^(sans espace, majuscules comme ci-dessous^) :
+  echo             identifiant %W%admin%N%   mot de passe %W%Salubri2026%N%
+  echo             identifiant %W%demo%N%    mot de passe %W%ouaga2026%N%
   echo   %G%=================================================================%N%
 )
 rem adresse a saisir dans l'APK (reaffichee ici : la fenetre reste ouverte grace a pause)
