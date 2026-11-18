@@ -62,6 +62,9 @@ curl.exe -s -f -o nul -m 3 --noproxy "*" %LOC%/api/health >nul 2>nul || powershe
 if errorlevel 1 ( timeout /t 2 /nobreak >nul & goto wait )
 echo Salubri est pret : %URL%   (Salubri Go : %URL%/go/ , API : %URL%/api/docs)
 echo Compte de demonstration (SALUBRI_DEMO_MODE=true) : demo / ouaga2026. Production : voir .env.example
+echo.
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0adresses.ps1" -Port %WEBP%
+echo.
 start "" %URL%
 exit /b 0
 

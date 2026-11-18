@@ -4,6 +4,7 @@ import { useRef, useState } from 'react'
 import { accuracyLevel, useGps } from '../../components/useGps'
 import { MaskEditor, type Masked } from '../../components/MaskEditor'
 import { deviceId } from '../../db'
+import { apiUrl } from '../../server'
 
 /** Module « Saisons » : signaler une route impraticable (photo masquée comme un signalement de dépotoir).
  *  La mairie vérifie avant d'en tenir compte dans les tournées. Envoi direct : il faut du réseau. */
@@ -37,7 +38,7 @@ export function RoadReportPage() {
       f.append('masking_client', JSON.stringify({ faces: masked.faces, plates: masked.plates, manual: masked.manual, mode: masked.mode }))
     }
     try {
-      const r = await fetch('/api/roads/reports', { method: 'POST', body: f })
+      const r = await fetch(apiUrl('/api/roads/reports'), { method: 'POST', body: f })
       const b = await r.json().catch(() => ({}))
       setMsg(r.ok ? 'Merci : la mairie va vérifier cette route avant de changer les tournées.' : `Refusé : ${typeof b.detail === 'string' ? b.detail : r.status}`)
       if (r.ok) { setSource(null); setMasked(null); setComment('') }

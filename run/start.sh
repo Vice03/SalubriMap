@@ -41,4 +41,10 @@ until curl -fs "$URL/api/health" >/dev/null 2>&1; do
 done
 echo; echo "Salubri est prêt : $URL  (Salubri Go : $URL/go/ , API : $URL/api/docs)"
 echo "Compte de démonstration (SALUBRI_DEMO_MODE=true) : demo / ouaga2026. Production : voir .env.example"
+# Adresse(s) du serveur pour l'application Android (même réseau Wi-Fi)
+IPS=$( (hostname -I 2>/dev/null | tr ' ' '\n'; ifconfig 2>/dev/null | awk '/inet /{print $2}') | grep -E '^(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.)' | grep -v '^172\.17\.' | sort -u)
+PSUF=""; [ "$WEBP" = 80 ] || PSUF=":$WEBP"
+for ip in $IPS; do echo "Sur le téléphone, adresse du serveur : http://$ip$PSUF"; done
+echo "Si le téléphone n'atteint pas le serveur, autorisez le port $WEBP sur le pare-feu de cet ordinateur."
+echo "Windows (PowerShell en administrateur) : New-NetFirewallRule -DisplayName \"Salubri\" -Direction Inbound -Protocol TCP -LocalPort $WEBP -Action Allow -Profile Private"
 ( command -v xdg-open >/dev/null && xdg-open http://localhost ) || ( command -v open >/dev/null && open http://localhost ) || true

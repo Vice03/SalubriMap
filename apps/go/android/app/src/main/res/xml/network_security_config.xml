@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android ne sait pas filtrer le texte clair par plage d'adresses IP (domain-config = noms d'hôtes seulement).
+     Le texte clair est donc permis ici, et l'application n'accepte comme serveur qu'une adresse privée
+     (10.x, 172.16-31.x, 192.168.x, localhost) : voir apps/go/src/server.ts (estReseauLocal). -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

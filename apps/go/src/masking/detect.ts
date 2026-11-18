@@ -9,8 +9,8 @@ import { decodePlates, decodeYunet, FACE_SIZE, FACE_TILE, nms, PLATE_SIZE, PLATE
 ort.env.wasm.numThreads = 1 // pas d'isolation cross-origin : un seul fil, comme sur tous les téléphones
 
 export const MODEL_URLS = {
-  face: '/go/models/visages-yunet-2023mar.onnx',
-  plate: '/go/models/plaques-yolov9t-384.onnx',
+  face: `${import.meta.env.BASE_URL}models/visages-yunet-2023mar.onnx`,
+  plate: `${import.meta.env.BASE_URL}models/plaques-yolov9t-384.onnx`,
 }
 
 let sessions: Promise<{ face: ort.InferenceSession; plate: ort.InferenceSession }> | null = null

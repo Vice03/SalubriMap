@@ -9,10 +9,20 @@ import { ReportPage } from './pages/ReportPage'
 import { onOutboxChange, startAutoSync } from './sync'
 import { RoadReportPage } from './modules/seasons/RoadReportPage'
 import { useSeasonsEnabled } from './modules/seasons/useSeasons'
+import { ServerSetup } from './components/ServerSetup'
+import { getServer, isNative } from './server'
 
 type Tab = 'report' | 'outbox' | 'nearby' | 'road'
 
+/** Application Android : sans adresse de serveur enregistrée, on la demande d'abord. */
 export function App() {
+  const [, bump] = useState(0)
+  const [editing, setEditing] = useState(false)
+  if (isNative() && (!getServer() || editing)) return <ServerSetup onSaved={() => { setEditing(false); bump((n) => n + 1) }} onCancel={getServer() ? () => setEditing(false) : undefined} />
+  return <Main onChangeServer={isNative() ? () => setEditing(true) : undefined} />
+}
+
+function Main({ onChangeServer }: { onChangeServer?: () => void }) {
   const [tab, setTab] = useState<Tab>('report')
   const [online, setOnline] = useState(navigator.onLine)
   const [pending, setPending] = useState(0)
@@ -30,7 +40,7 @@ export function App() {
   return (
     <div className="app">
       <header>
-        <div className="brand"><img src="/go/icon.svg" alt="" /><div><b>Salubri <span>Go</span></b><small>Signalez un dépotoir, la mairie planifie</small></div></div>
+        <div className="brand"><img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" /><div><b>Salubri <span>Go</span></b><small>Signalez un dépotoir, la mairie planifie</small></div></div>
         <span className={`net ${online ? 'on' : 'off'}`}>{online ? <Wifi size={14} /> : <WifiOff size={14} />}{online ? 'En ligne' : 'Hors ligne'}</span>
       </header>
       <main>
@@ -40,6 +50,7 @@ export function App() {
         {seasons && tab === 'road' && <RoadReportPage />}
       </main>
       <PwaBars />
+      {onChangeServer && <p style={{ textAlign: 'center', margin: '0 0 96px', fontSize: 13 }}><a href="#" onClick={(e) => { e.preventDefault(); onChangeServer() }}>Changer de serveur</a></p>}
       <nav aria-label="Navigation principale">
         <button className={tab === 'report' ? 'on' : ''} onClick={() => setTab('report')}><Camera size={22} />Signaler</button>
         <button className={tab === 'outbox' ? 'on' : ''} onClick={() => setTab('outbox')}><Inbox size={22} />Mes envois{pending > 0 && <i>{pending}</i>}</button>

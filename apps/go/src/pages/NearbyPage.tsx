@@ -2,6 +2,7 @@
 import { Navigation } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { useGps } from '../components/useGps'
+import { apiUrl } from '../server'
 
 interface Dump {
   geometry: { coordinates: [number, number] }
@@ -26,7 +27,7 @@ export function NearbyPage() {
     const d = 0.02 // ≈ 2 km
     const q = new URLSearchParams({ bbox: [here.lon - d, here.lat - d, here.lon + d, here.lat + d].join(',') })
     q.append('status', 'active'); q.append('status', 'recurring')
-    fetch(`/api/dump-sites?${q}`).then((r) => r.json()).then((fc) => { setDumps(fc.features); setErr(null) })
+    fetch(apiUrl(`/api/dump-sites?${q}`)).then((r) => r.json()).then((fc) => { setDumps(fc.features); setErr(null) })
       .catch(() => setErr('Hors ligne : la liste se charge au retour du réseau'))
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])

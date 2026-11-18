@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+import { apiUrl } from './server'
 import { deviceId, outbox, type OutboxItem, type Steps, type Verdict } from './db'
 
 let running: Promise<number> | null = null
@@ -37,7 +38,7 @@ async function send(item: OutboxItem, device: string): Promise<boolean> {
   if (item.masking) f.append('masking_client', JSON.stringify(item.masking))
   let res: Response
   try {
-    res = await fetch('/api/reports', { method: 'POST', body: f })
+    res = await fetch(apiUrl('/api/reports'), { method: 'POST', body: f })
   } catch {
     await outbox.put({ ...item, attempts: item.attempts + 1, lastError: 'Pas de réseau : nouvel essai automatique' })
     throw new Error('offline')
@@ -95,7 +96,7 @@ export async function refreshFollowUp(): Promise<void> {
   if (!sent.length || !navigator.onLine) return
   const q = sent.map((i) => `client_id=${encodeURIComponent(i.clientId)}`).join('&')
   try {
-    const res = await fetch(`/api/reports/suivi?${q}`)
+    const res = await fetch(apiUrl(`/api/reports/suivi?${q}`))
     if (!res.ok) return
     const rows = (await res.json()) as { client_id: string; status: string; steps: Steps; rule_hits: Verdict['rule_hits'] }[]
     for (const r of rows) {

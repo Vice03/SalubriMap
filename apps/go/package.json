@@ -12,6 +12,8 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@capacitor/android": "^7.6.10",
+    "@capacitor/core": "^7.6.10",
     "@fontsource/inter": "5",
     "exifr": "^7.1.3",
     "lucide-react": "^0.460.0",
@@ -20,6 +22,7 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^7.6.10",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.3",
