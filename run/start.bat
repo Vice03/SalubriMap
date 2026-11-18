@@ -61,7 +61,7 @@ rem curl.exe (inclus dans Windows 10+) sur 127.0.0.1 sans proxy : PowerShell pas
 curl.exe -s -f -o nul -m 3 --noproxy "*" %LOC%/api/health >nul 2>nul || powershell -NoProfile -Command "try { (Invoke-WebRequest -UseBasicParsing %LOC%/api/health -TimeoutSec 3) | Out-Null; exit 0 } catch { exit 1 }"
 if errorlevel 1 ( timeout /t 2 /nobreak >nul & goto wait )
 echo Salubri est pret : %URL%   (Salubri Go : %URL%/go/ , API : %URL%/api/docs)
-echo Comptes (SALUBRI_DEMO_MODE=true) : admin / Salubri2026 ^(administrateur^) ou demo / ouaga2026. Production : voir .env.example
+for /f "tokens=2 delims==" %%a in ('findstr /b /c:"SALUBRI_BOOTSTRAP_ADMIN_PASSWORD=" ".env" 2^>nul') do echo Connexion mairie : identifiant admin, mot de passe %%a ^(garde dans .env^)
 echo.
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0adresses.ps1" -Port %WEBP%
 echo.

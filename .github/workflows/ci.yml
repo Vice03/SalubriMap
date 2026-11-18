@@ -63,6 +63,8 @@ jobs:
   stack:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    env:
+      SALUBRI_DEMO_MODE: "true"  # la pile est vérifiée en mode démonstration (compte demo, code ouaga2026) ; le défaut du dépôt est la production
     steps:
       - uses: actions/checkout@v4
       - name: Diagnostic

@@ -6,6 +6,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 PY="${PYTHON:-python}"
+export SALUBRI_DEMO_MODE=true  # pile vérifiée en démonstration (le défaut du dépôt est la production)
 start=$(date +%s)
 docker compose up --build -d
 for _ in $(seq 1 120); do curl -fs http://localhost/api/health >/dev/null && break; sleep 5; done

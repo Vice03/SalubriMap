@@ -2,7 +2,7 @@
 
 ## Non publié
 
-- Compte administrateur par défaut `admin` / `Salubri2026`, créé ou réparé à chaque démarrage en mode démonstration (sans badge) sur toute copie du dépôt ; `run\diag.bat` produit `diag.log` pour diagnostiquer ; hors démonstration l'API refuse de démarrer tant qu'il garde ce mot de passe.
+- **Production par défaut** : `SALUBRI_DEMO_MODE` vaut `false` (`docker-compose.yml`, `SALUBRI.bat`). Au premier lancement, `run/start` génère dans `.env` le code de service, la clé de session et le mot de passe du compte `admin` (`SALUBRI_BOOTSTRAP_ADMIN_PASSWORD`), affiché à la fin du lancement ; l'API crée `admin` s'il n'y a aucun admin, remplace le mot de passe de démonstration d'une base existante et désactive `demo`. `SALUBRI_DEMO_MODE=true` garde la démonstration ouverte (`demo` / `ouaga2026`, `admin` / `Salubri2026`). `run\diag.bat` produit `diag.log`. Menu de `SALUBRI.bat` allégé. Non vérifié ici : démarrage complet sous Docker et Windows.
 - Salubri Go : guide vocal pour les non-lecteurs (langue français/mooré au lancement, signalement pas à pas à la voix, boutons qui brillent, voix françaises générées, voix mooré enregistrées et découpées, à faire valider ; détail dans `docs/AUDIO_GO.md`).
 - Dossier `livrable/` : les six livrables du défi, reconstruits par `scripts/livrable.py` (vérifié en CI) ; choix G du lanceur et `run/livrable` l'ouvrent.
 

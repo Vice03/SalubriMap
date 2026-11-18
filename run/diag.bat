@@ -12,7 +12,9 @@ docker compose exec -T api python -c "from salubri_api.config import get_setting
 echo == comptes >> "%LOG%"
 docker compose exec -T api python -m salubri_api.users list >> "%LOG%" 2>&1
 echo == connexion admin >> "%LOG%"
-curl.exe -s -m 10 --noproxy "*" -X POST http://127.0.0.1:%WP%/api/auth/login -H "Content-Type: application/json" -d "{\"login\":\"admin\",\"password\":\"Salubri2026\"}" >> "%LOG%" 2>&1
+set "BP=Salubri2026"
+for /f "tokens=2 delims==" %%a in ('findstr /b /c:"SALUBRI_BOOTSTRAP_ADMIN_PASSWORD=" ".env" 2^>nul') do set "BP=%%a"
+curl.exe -s -m 10 --noproxy "*" -X POST http://127.0.0.1:%WP%/api/auth/login -H "Content-Type: application/json" -d "{\"login\":\"admin\",\"password\":\"%BP%\"}" >> "%LOG%" 2>&1
 echo. >> "%LOG%"
 echo == journal de l API >> "%LOG%"
 docker compose logs api --tail 400 2>&1 | findstr /i "admin demonstration traceback error refus" >> "%LOG%"

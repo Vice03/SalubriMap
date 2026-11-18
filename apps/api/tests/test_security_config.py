@@ -86,3 +86,24 @@ def test_demo_account_logs_in_and_health_shows_demo_mode(db):  # type: ignore[no
         r = c.post("/api/auth/login", json={"login": "demo", "password": DEMO_TOKEN})
         assert r.status_code == 200 and r.json()["user"]["role"] == "admin"
         assert c.get("/api/health").json()["demo_mode"] is True
+
+
+def test_bootstrap_admin_makes_a_fresh_production_start_possible(db):  # type: ignore[no-untyped-def]
+    from salubri_api.services.auth import verify_password
+    from salubri_api.services.security_config import bootstrap_admin
+
+    demo = Settings(demo_mode=True, admin_token="", secret_key="")
+    check_startup(demo, db)  # base « héritée » d'une démonstration : demo + admin / Salubri2026
+    st = prod(bootstrap_admin_password="Premier-mdp-2026")
+    assert problems(st, db)  # sans amorçage, démarrage refusé
+    assert bootstrap_admin(db, st)
+    admin = db.query(User).filter(User.login == "admin").one()
+    assert verify_password(admin.password_hash, "Premier-mdp-2026") and admin.active
+    assert not db.query(User).filter(User.login == "demo", User.active.is_(True)).count()
+    assert problems(st, db) == []
+    assert not bootstrap_admin(db, st)  # second passage : rien à faire
+    admin.password_hash = hash_password("choisi-par-le-jury")
+    db.commit()
+    assert not bootstrap_admin(db, st)
+    assert verify_password(db.query(User).filter(User.login == "admin").one().password_hash, "choisi-par-le-jury")
+    assert not bootstrap_admin(db, prod(bootstrap_admin_password="court"))

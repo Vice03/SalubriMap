@@ -29,13 +29,17 @@ class Settings(BaseSettings):
     admin_token: str = ""
     # Mode démonstration (jury, répétitions) : compte « demo » et code « ouaga2026 » connus de tous, badge
     # visible dans l'interface. Hors démonstration (false), l'API refuse de démarrer avec un secret par défaut.
-    # Faux par défaut (sûr) ; docker-compose.yml l'active pour que la démo reste « une commande ».
+    # Faux par défaut (sûr), y compris dans docker-compose.yml ; SALUBRI_DEMO_MODE=true l'active pour une démonstration.
     demo_mode: bool = False
     # Compte admin créé au démarrage en mode démonstration s'il n'existe pas (jamais modifié ensuite) : utilisable sur tout
     # clone du dépôt, sans badge « Mode démonstration ». Hors démonstration, il n'est pas créé et l'API refuse de démarrer
     # tant qu'il garde ce mot de passe.
     default_admin_login: str = "admin"
     default_admin_password: str = "Salubri2026"
+    # Hors démonstration : mot de passe du premier admin (login ci-dessus). run/start le génère dans .env au premier
+    # lancement. Au démarrage, si aucun admin actif n'existe, le compte est créé avec lui ; si « admin » a encore le mot
+    # de passe de démonstration, il est remplacé par celui-ci. Sans effet une fois un admin propre en place.
+    bootstrap_admin_password: str = ""
     # « demo » : signalements d'exemple chargés ; « reel » : SDGD 2020 + Salubri Go seulement ; « reference » : aucun signalement chargé (que ceux de Salubri Go) (services/data_mode.py)
     data_mode: Literal["demo", "reel", "reference"] = "demo"
     # Clé de signature des sessions (connexion des comptes mairie). Vide = clé aléatoire tirée au démarrage :

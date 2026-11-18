@@ -33,7 +33,7 @@ parcourt toutes les routes du schéma OpenAPI pour n'en oublier aucune).
 
 ## Ce qui n'est pas protégé (à savoir)
 
-- **Démonstration** : le mode démo est public par construction (code `ouaga2026`, comptes `demo` et `admin` / `Salubri2026`, recréés ou réparés à chaque démarrage en mode démo : réactivés, mot de passe d'origine, blocages levés). Ne jamais l'exposer sur Internet. Hors démonstration, l'API refuse de démarrer tant que `admin` garde son mot de passe par défaut (le changer : `python -m salubri_api.users passwd admin`, ou le désactiver ; login et mot de passe par défaut réglables par `SALUBRI_DEFAULT_ADMIN_LOGIN` et `SALUBRI_DEFAULT_ADMIN_PASSWORD`).
+- **Par défaut** : production. `run/start` génère les secrets et le mot de passe du compte `admin` dans `.env` ; l'API l'applique au démarrage (`SALUBRI_BOOTSTRAP_ADMIN_PASSWORD`) tant qu'aucun admin propre n'existe. **Démonstration** (`SALUBRI_DEMO_MODE=true`) : le mode démo est public par construction (code `ouaga2026`, comptes `demo` et `admin` / `Salubri2026`, recréés ou réparés à chaque démarrage en mode démo : réactivés, mot de passe d'origine, blocages levés). Ne jamais l'exposer sur Internet. Hors démonstration, l'API refuse de démarrer tant que `admin` garde son mot de passe par défaut (le changer : `python -m salubri_api.users passwd admin`, ou le désactiver ; login et mot de passe par défaut réglables par `SALUBRI_DEFAULT_ADMIN_LOGIN` et `SALUBRI_DEFAULT_ADMIN_PASSWORD`).
 - **Certificat local** : en démonstration, le HTTPS de `:8443` est auto-signé ; le téléphone affiche un avertissement. Ce n'est pas une protection contre un attaquant sur le même Wi-Fi.
 - **Plusieurs processus API** : les échecs de connexion sont en base (partagés) ; les compteurs anti-pourriel des signalements restent en mémoire d'un seul processus (voir `docs/HYPOTHESES.md`).
 - **Un téléphone qui change d'identifiant** contourne la limite par appareil ; la limite par adresse et les règles restent.
@@ -45,9 +45,9 @@ parcourt toutes les routes du schéma OpenAPI pour n'en oublier aucune).
 1. Un serveur Linux avec Docker, un nom de domaine (ex. `salubri.mairie-ouaga.bf`) qui pointe vers lui, ports 80 et 443 ouverts.
 2. Secrets et premier admin :
    ```sh
-   cp .env.example .env && sed -i 's/^SALUBRI_DEMO_MODE=.*/SALUBRI_DEMO_MODE=false/' .env
-   ./run/secrets.sh        # complète .env avec des secrets aléatoires et les affiche une seule fois
-   ./run/admin.sh chef     # premier compte admin (mot de passe demandé au clavier)
+   cp .env.example .env
+   ./run/secrets.sh        # complète .env : secrets aléatoires et mot de passe du premier admin (affichés)
+   ./run/admin.sh chef     # (facultatif) compte personnel, mot de passe demandé au clavier
    ./run/start.sh          # l'API vérifie les secrets et l'admin avant de démarrer
    ```
 3. Certificat (certbot, mode webroot ou standalone pendant une minute d'arrêt de nginx) :

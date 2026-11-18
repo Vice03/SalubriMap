@@ -101,6 +101,36 @@ def ensure_demo_account(s: Session) -> bool:
     return True
 
 
+def bootstrap_admin(s: Session, settings: Settings) -> bool:
+    """Hors démo : premier lancement sur un clone. Avec SALUBRI_BOOTSTRAP_ADMIN_PASSWORD (généré par run/start) : crée
+    l'admin s'il n'y en a aucun, remplace le mot de passe de démonstration de « admin », désactive le compte « demo ».
+    Un admin dont le mot de passe a été changé n'est jamais touché. True si quelque chose a changé."""
+    pw = settings.bootstrap_admin_password
+    if len(pw) < 8 or pw == settings.default_admin_password:
+        return False
+    changed = False
+    demo = s.query(User).filter(User.login == DEMO_LOGIN, User.active.is_(True)).first()
+    if demo is not None:
+        demo.active = False
+        demo.session_version = (demo.session_version or 0) + 1
+        changed = True
+    login = settings.default_admin_login.strip().lower()
+    u = s.query(User).filter(User.login == login).first()
+    if u is not None and u.active and verify_password(u.password_hash, settings.default_admin_password):
+        u.password_hash = hash_password(pw)
+        u.session_version = (u.session_version or 0) + 1
+        changed = True
+    if u is None and not s.query(User).filter(User.role == "admin", User.active.is_(True)).count():
+        u = User(login=login, display_name="Administrateur", role="admin", password_hash=hash_password(pw))
+        s.add(u)
+        s.flush()
+        audit(s, "create", "user", u.id, after={"login": login, "role": "admin", "amorce": True}, actor="system")
+        changed = True
+    if changed:
+        s.commit()
+    return changed
+
+
 def check_startup(settings: Settings, s: Session) -> None:
     if settings.demo_mode:
         if ensure_demo_account(s):
@@ -112,6 +142,11 @@ def check_startup(settings: Settings, s: Session) -> None:
             )
         log.warning("MODE DÉMONSTRATION : compte « demo » et code « %s » connus de tous, ne pas exposer", DEMO_TOKEN)
         return
+    if bootstrap_admin(s, settings):
+        log.warning(
+            "Premier lancement : compte « %s » prêt (mot de passe SALUBRI_BOOTSTRAP_ADMIN_PASSWORD)",
+            settings.default_admin_login,
+        )
     found = problems(settings, s)
     if found:
         raise InsecureConfig(

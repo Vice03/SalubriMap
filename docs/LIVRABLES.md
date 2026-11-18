@@ -9,7 +9,7 @@ title: "Salubri — où trouver chaque livrable"
 Dépôt : <https://github.com/Vice03/SalubriMap> · Code sous AGPL-3.0-or-later, données et documents sous licences ouvertes.
 
 > **Pour essayer tout de suite** : installer Docker Desktop, double-cliquer sur `SALUBRI.bat` à la racine du dépôt, taper **1** puis Entrée.
-> Connexion mairie : `admin` / `Salubri2026` (ou `demo` / `ouaga2026`). Guide pas à pas : `GUIDE_JURY.pdf`.
+> Connexion mairie : identifiant `admin`, mot de passe généré au premier lancement et affiché à la fin (relisible dans `.env`). Guide pas à pas : `GUIDE_JURY.pdf`.
 
 ## Vue d'ensemble
 

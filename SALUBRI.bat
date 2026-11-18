@@ -87,8 +87,8 @@ goto menu
 rem ----------------------------------------------------------------- demarrage
 :demo
 echo.
-echo   %W%Version DEMO%N% : comptes admin / Salubri2026 et demo / ouaga2026, modules optionnels eteints.
-call :setenv SALUBRI_DEMO_MODE true
+echo   %W%Version DEMO%N% : donnees d'exemple, modules optionnels eteints. Compte : admin ^(mot de passe affiche a la fin^).
+call :setenv SALUBRI_DEMO_MODE false
 call :setenv SALUBRI_DATA_MODE demo
 call :setenv SALUBRI_SEASONS_ENABLED false
 call :setenv SALUBRI_ASSISTANT_ENABLED false
@@ -99,8 +99,8 @@ goto launch
 echo.
 echo   %W%Version COMPLETE%N% : donnees de reference seulement ^(aucun signalement fictif^), Saisons et Assistant IA.
 echo   Seuls les signalements envoyes par Salubri Go seront enregistres.
-echo   Compte : %W%admin%N% / %W%Salubri2026%N%  ^(administrateur, sans badge demo^).
-call :setenv SALUBRI_DEMO_MODE true
+echo   Compte : %W%admin%N% ^(mot de passe affiche a la fin, garde dans .env^).
+call :setenv SALUBRI_DEMO_MODE false
 call :setenv SALUBRI_DATA_MODE reference
 call :setenv SALUBRI_SEASONS_ENABLED true
 call :setenv SALUBRI_ASSISTANT_ENABLED true
@@ -312,7 +312,6 @@ exit /b %errorlevel%
 :state
 set "MODE=demo"
 findstr /b /c:"SALUBRI_SEASONS_ENABLED=true" ".env" >nul 2>nul && set "MODE=complete, donnees de reference (Saisons + Assistant IA)"
-findstr /b /c:"SALUBRI_DEMO_MODE=false" ".env" >nul 2>nul && set "MODE=production"
 set "DOCKER_TXT=%RD%absent ou arrete%N% %D%- demarre seul aux options 1 et 2%N%"
 docker info >nul 2>nul && set "DOCKER_TXT=%G%pret%N%"
 call :health
@@ -322,15 +321,16 @@ exit /b 0
 
 :ready
 echo.
+set "BP="
+for /f "tokens=2 delims==" %%a in ('findstr /b /c:"SALUBRI_BOOTSTRAP_ADMIN_PASSWORD=" ".env" 2^>nul') do set "BP=%%a"
 call :health
 if errorlevel 1 (
   echo   %Y%Salubri ne repond pas encore%N% : option 6 ^(etat^) ou 7 ^(diagnostic^).
 ) else (
   echo   %G%=================================================================%N%
   echo   %G%Pret.%N%  Salubri Map : %W%%URL%/%N%    Salubri Go : %W%%URL%/go/%N%
-  echo          Connexion mairie, deux comptes au choix ^(sans espace, majuscules comme ci-dessous^) :
-  echo             identifiant %W%admin%N%   mot de passe %W%Salubri2026%N%
-  echo             identifiant %W%demo%N%    mot de passe %W%ouaga2026%N%
+  echo          Connexion mairie :  identifiant %W%admin%N%   mot de passe %W%%BP%%N%
+  echo          ^(mot de passe genere au premier lancement, relisible dans le fichier .env : SALUBRI_BOOTSTRAP_ADMIN_PASSWORD^)
   echo   %G%=================================================================%N%
 )
 rem adresse a saisir dans l'APK (reaffichee ici : la fenetre reste ouverte grace a pause)

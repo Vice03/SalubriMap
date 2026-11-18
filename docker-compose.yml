@@ -17,9 +17,10 @@ x-api-env: &api-env
   SALUBRI_CORS_ORIGINS: ${SALUBRI_CORS_ORIGINS:-}
   # code d'accès mairie (modération, imports, scénarios) : à changer via un fichier .env
   SALUBRI_ADMIN_TOKEN: ${SALUBRI_ADMIN_TOKEN:-}
-  # démonstration par défaut (compte demo / code ouaga2026, badge visible) ; false = production : l'API refuse
-  # de démarrer sans secrets propres (run/start les génère dans .env) ni compte admin (run/admin le crée)
-  SALUBRI_DEMO_MODE: ${SALUBRI_DEMO_MODE:-true}
+  # production par défaut : l'API refuse de démarrer sans secrets propres ni compte admin ; run/start génère les
+  # secrets et le mot de passe du premier admin dans .env. true = démonstration (compte demo / code ouaga2026)
+  SALUBRI_DEMO_MODE: ${SALUBRI_DEMO_MODE:-false}
+  SALUBRI_BOOTSTRAP_ADMIN_PASSWORD: ${SALUBRI_BOOTSTRAP_ADMIN_PASSWORD:-}  # premier admin (généré par run/start dans .env)
   SALUBRI_SECRET_KEY: ${SALUBRI_SECRET_KEY:-}
   SALUBRI_DATA_MODE: ${SALUBRI_DATA_MODE:-demo}  # demo = exemples pour le jury ; reel = SDGD 2020 + Salubri Go ; reference = aucun signalement (Salubri Go seulement)
   # modules optionnels (docs/MODULES.md), éteints par défaut
