@@ -179,10 +179,17 @@ Régénération : `python scripts/figures_rapport.py` puis `scripts/md_pdf.sh do
 Déposer ici la vidéo : **`demo_salubri.mp4`** (1080p, 3 min au plus). Elle suit la fiche : un signalement hors ligne avec masquage →
 vérification → carte → plan → tournée du lendemain ; puis un changement de paramètres (2 camions en panne, saison des pluies) et le plan recalculé.
 
-Plan de tournage minute par minute : [`VIDEO_SCRIPT.md`](VIDEO_SCRIPT.md). Préparation des données : `python scripts/demo_video.py --api http://localhost --arrondissement 9`.
-**État** : plan prêt, vidéo à tourner.
+Format sans voix : la narration est en sous-titres. Plan de tournage (quoi faire, où, combien de temps) :
+[`VIDEO_SCRIPT.md`](VIDEO_SCRIPT.md). Montage automatique des enregistrements d'écran avec les sous-titres :
+`python scripts/video_sous_titres.py video_clips -o livrable/6_video/demo_salubri.mp4`. Préparation des données :
+`python scripts/demo_video.py --api http://localhost --arrondissement 9`.
+**État** : plan et montage prêts, vidéo à tourner.
 """,
 }
+
+
+# déposée à la main par l'équipe : jamais écrasée ni signalée
+AJOUTS = {Path("6_video/demo_salubri.mp4")}
 
 
 def contenu() -> dict[Path, bytes]:
@@ -214,7 +221,11 @@ def main() -> int:
     if args.verifier:
         manque = [str(p) for p, b in voulu.items() if not (OUT / p).is_file() or (OUT / p).read_bytes() != b]
         en_trop = (
-            [str(f.relative_to(OUT)) for f in OUT.rglob("*") if f.is_file() and f.relative_to(OUT) not in voulu]
+            [
+                str(f.relative_to(OUT))
+                for f in OUT.rglob("*")
+                if f.is_file() and f.relative_to(OUT) not in voulu.keys() | AJOUTS
+            ]
             if OUT.exists()
             else []
         )
@@ -227,7 +238,7 @@ def main() -> int:
         return 0
     if OUT.exists():  # fichiers qui ne viennent plus des sources : retirés
         for f in sorted(OUT.rglob("*"), reverse=True):
-            if f.is_file() and f.relative_to(OUT) not in voulu:
+            if f.is_file() and f.relative_to(OUT) not in voulu.keys() | AJOUTS:
                 try:
                     f.unlink()
                 except PermissionError:

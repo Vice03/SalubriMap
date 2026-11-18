@@ -26,3 +26,4 @@ data/eval/masquage/*
 .verify/
 data/open_buildings/*.csv.gz
 data/open_buildings/*.part
+video_clips/
