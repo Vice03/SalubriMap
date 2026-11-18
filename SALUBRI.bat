@@ -105,6 +105,7 @@ goto launch
 echo.
 echo   %W%Version COMPLETE%N% : donnees de reference seulement ^(aucun signalement fictif^), Saisons et Assistant IA.
 echo   Seuls les signalements envoyes par Salubri Go seront enregistres.
+echo   Compte : %W%admin%N% / %W%Salubri2026%N%  ^(administrateur, sans badge demo^).
 call :setenv SALUBRI_DEMO_MODE true
 call :setenv SALUBRI_DATA_MODE reference
 call :setenv SALUBRI_SEASONS_ENABLED true
