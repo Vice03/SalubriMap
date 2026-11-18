@@ -2,49 +2,66 @@
 setlocal EnableExtensions
 rem ==========================================================================
 rem  SALUBRI - lanceur unique (Windows). Double-cliquer ce fichier.
-rem  Tout se fait depuis ce menu : demarrer la demo ou la version complete,
-rem  ouvrir les applications, diagnostiquer, repeter, tester, arreter.
-rem  Guide : docs\GUIDE_JURY.pdf  (option G du menu)
+rem  Tout se fait depuis ce menu. Le lanceur corrige seul les problemes
+rem  courants : Docker arrete (il le demarre), port 80/8443 deja pris (il
+rem  choisit un port libre), .env absent, anciens conteneurs (nettoyage et
+rem  nouvel essai). Guide : docs\GUIDE_JURY.pdf (option G).
 rem ==========================================================================
 cd /d "%~dp0"
 title Salubri - Assainissement de Ouaga
+set "SALUBRI_NOPAUSE=1"
+rem couleurs (Windows 10 et plus) ; sans elles le texte reste lisible
+for /f %%a in ('echo prompt $E^| cmd') do set "E=%%a"
+set "N=%E%[0m"
+set "G=%E%[92m"
+set "Y=%E%[93m"
+set "RD=%E%[91m"
+set "C=%E%[96m"
+set "W=%E%[97m"
+set "D=%E%[90m"
 if not exist ".env" if exist ".env.example" copy /y ".env.example" ".env" >nul
+if not exist ".env" type nul > ".env"
 
 :menu
 call :url
+call :state
 cls
 echo.
-echo   ==============================================================
-echo      SALUBRI  -  cartographier, verifier, planifier, simuler
-echo      Hackathon des Universites 2026 - Assainissement de Ouaga
-echo   ==============================================================
-call :status_line
+echo   %G%=================================================================%N%
+echo   %W%  SALUBRI%N%  -  cartographier, verifier, planifier, simuler
+echo   %D%  Hackathon des Universites 2026 - Assainissement de Ouaga%N%
+echo   %G%=================================================================%N%
+echo     Docker  : %DOCKER_TXT%
+echo     Salubri : %SAL_TXT%
+echo     Version : %MODE%
+echo   %G%-----------------------------------------------------------------%N%
 echo.
-echo    DEMARRER
-echo     1  Version DEMO        (recommandee pour le jury)
-echo     2  Version COMPLETE    (demo + modules Saisons et Assistant)
+echo   %C%DEMARRER%N%
+echo    %Y% 1%N%  Version DEMO         %D%(recommandee pour le jury)%N%
+echo    %Y% 2%N%  Version COMPLETE     %D%(demo + modules Saisons et Assistant IA)%N%
 echo.
-echo    OUVRIR
-echo     3  Salubri Map  - carte, moderation, plan, simulation  (navigateur)
-echo     4  Salubri Go   - appli citoyenne de signalement
-echo     5  Documentation de l'API
-echo     G  Guide d'utilisation (PDF)
+echo   %C%OUVRIR%N%
+echo    %Y% 3%N%  Salubri Map   %D%carte, moderation, plan, simulation%N%
+echo    %Y% 4%N%  Salubri Go    %D%appli citoyenne de signalement%N%
+echo    %Y% 5%N%  Documentation de l'API
+echo    %Y% G%N%  Guide d'utilisation (PDF)
 echo.
-echo    VERIFIER
-echo     6  Etat des services
-echo     7  Diagnostic de la machine (Docker, ports, disque)
-echo     8  Repetition generale (pieges du jury, changements de parametres)
-echo     9  Tests automatiques de l'API
+echo   %C%VERIFIER%N%
+echo    %Y% 6%N%  Etat des services
+echo    %Y% 7%N%  Diagnostic de la machine (Docker, ports, disque)
+echo    %Y% 8%N%  Repetition generale (pieges du jury, changements de parametres)
+echo    %Y% 9%N%  Tests automatiques de l'API
 echo.
-echo    OUTILS
-echo    10  Remettre la demo a zero (efface les donnees, redemarre)
-echo    11  Demo sur telephone Android (cable USB)
-echo    12  Assistant : installer un modele local (telechargement, avec accord)
-echo    13  Journal de l'API en direct (Ctrl+C puis N pour revenir)
-echo    14  Arreter Salubri
-echo    15  Caler le facteur de detour contre OSRM (Salubri doit tourner)
+echo   %C%OUTILS%N%
+echo    %Y%10%N%  Remettre la demo a zero (efface les donnees, recharge)
+echo    %Y%11%N%  Demo sur telephone Android (cable USB)
+echo    %Y%12%N%  Assistant IA : installer un modele local (avec accord)
+echo    %Y%13%N%  Journal de l'API en direct (Ctrl+C puis N pour revenir)
+echo    %Y%14%N%  Arreter Salubri
+echo    %Y%15%N%  Caler le facteur de detour contre OSRM
+echo    %Y% R%N%  Reparer : nettoyer les conteneurs et relancer
 echo.
-echo     0  Quitter (Salubri continue de tourner)
+echo    %Y% 0%N%  Quitter %D%(Salubri continue de tourner)%N%
 echo.
 set "choix="
 set /p "choix=   Votre choix : "
@@ -57,46 +74,103 @@ if /i "%choix%"=="5" ( start "" "%URL%/api/docs" & goto menu )
 if /i "%choix%"=="G" goto guide
 if /i "%choix%"=="6" goto etat
 if /i "%choix%"=="7" ( call run\doctor.bat & echo. & pause & goto menu )
-if /i "%choix%"=="8" ( call run\rehearse.bat & goto menu )
-if /i "%choix%"=="9" ( call run\test.bat & goto menu )
+if /i "%choix%"=="8" goto rehearse
+if /i "%choix%"=="9" goto tests
 if /i "%choix%"=="10" goto reset
-if /i "%choix%"=="11" ( call run\telephone.bat & goto menu )
+if /i "%choix%"=="11" ( call run\telephone.bat & pause & goto menu )
 if /i "%choix%"=="12" goto modele
 if /i "%choix%"=="13" ( docker compose logs -f --tail 50 api & goto menu )
-if /i "%choix%"=="14" ( call run\stop.bat & goto menu )
-if /i "%choix%"=="15" ( call run\detour.bat & echo. & pause & goto menu )
+if /i "%choix%"=="14" goto stop
+if /i "%choix%"=="15" goto detour
+if /i "%choix%"=="R" goto repair
 if /i "%choix%"=="0" goto fin
-echo   Choix inconnu : %choix%
-timeout /t 2 /nobreak >nul
+echo   %RD%Choix inconnu : %choix%%N%
+call :sleep 2
 goto menu
 
+rem ----------------------------------------------------------------- demarrage
 :demo
 echo.
-echo   Version DEMO : compte demo / ouaga2026, modules optionnels eteints.
+echo   %W%Version DEMO%N% : compte demo / ouaga2026, modules optionnels eteints.
 call :setenv SALUBRI_DEMO_MODE true
 call :setenv SALUBRI_SEASONS_ENABLED false
 call :setenv SALUBRI_ASSISTANT_ENABLED false
-call run\start.bat
-call :ready
-goto menu
+set "ARGS="
+goto launch
 
 :complete
 echo.
-echo   Version COMPLETE : compte demo / ouaga2026 + module Saisons (routes coupees en saison des pluies)
-echo   + module Assistant (modele de langue local, lecture seule ; s'il n'y a pas de modele : option 12).
+echo   %W%Version COMPLETE%N% : demo + module Saisons + module Assistant IA ^(modele local ; sinon option 12^).
 call :setenv SALUBRI_DEMO_MODE true
 call :setenv SALUBRI_SEASONS_ENABLED true
 call :setenv SALUBRI_ASSISTANT_ENABLED true
-call run\start.bat --llm=no
+set "ARGS=--llm=no"
+goto launch
+
+:launch
+call :ensure_docker
+if errorlevel 1 goto launch_fail
+call :fix_ports
+if errorlevel 1 goto launch_fail
+call :url
+echo   %D%Demarrage (premiere fois : plusieurs minutes, les images se construisent)...%N%
+call run\start.bat %ARGS%
+if not errorlevel 1 goto launch_ok
+echo.
+echo   %Y%Premier essai en echec : nettoyage des anciens conteneurs et nouvel essai...%N%
+docker compose down --remove-orphans >nul 2>nul
+call :fix_ports
+call :url
+call run\start.bat %ARGS%
+if not errorlevel 1 goto launch_ok
+:launch_fail
+echo.
+echo   %RD%Salubri n'a pas pu demarrer.%N% Dernieres lignes du journal :
+docker compose logs --tail 25 api seed 2>nul
+echo.
+echo   %Y%Pistes%N% : option 7 ^(diagnostic^), option R ^(reparer^), redemarrer Docker Desktop,
+echo   ou dans PowerShell : wsl --update  ^(si Docker signale un probleme WSL^).
+pause
+goto menu
+:launch_ok
 call :ready
+goto menu
+
+rem ----------------------------------------------------------------- actions
+:etat
+echo.
+docker compose ps
+echo.
+call :health
+if errorlevel 1 ( echo   %RD%API : ne repond pas sur %URL%/api/health%N% ) else ( echo   %G%API : OK sur %URL%%N% )
+echo.
+pause
+goto menu
+
+:rehearse
+call :need_running
+if errorlevel 1 goto menu
+call run\rehearse.bat
+pause
+goto menu
+
+:tests
+call :ensure_docker
+if errorlevel 1 ( pause & goto menu )
+call run\test.bat
+pause
 goto menu
 
 :reset
 echo.
-echo   ATTENTION : toutes les donnees (signalements, scenarios, plans) seront effacees.
+echo   %RD%ATTENTION%N% : toutes les donnees ^(signalements, scenarios, plans^) seront effacees et rechargees.
 set "ok="
 set /p "ok=   Taper OUI pour confirmer : "
 if /i not "%ok%"=="OUI" goto menu
+call :ensure_docker
+if errorlevel 1 ( pause & goto menu )
+call :fix_ports
+call :url
 call run\reset.bat
 call :ready
 goto menu
@@ -105,28 +179,44 @@ goto menu
 echo.
 where python >nul 2>nul
 if errorlevel 1 (
-  echo   Python est necessaire pour cette option : https://www.python.org/downloads/ ^(cocher "Add to PATH"^)
+  echo   %Y%Python est necessaire pour cette option%N% : https://www.python.org/downloads/ ^(cocher "Add to PATH"^)
+  start "" "https://www.python.org/downloads/"
   pause & goto menu
 )
-echo   Recherche d'un modele deja installe (Ollama, LM Studio, llama.cpp, Jan...), sinon proposition de
-echo   telechargement adapte a cette machine. La taille et l'espace libre sont affiches avant toute question.
+echo   Recherche d'un modele deja installe ^(Ollama, LM Studio...^), sinon proposition de telechargement
+echo   adapte a cette machine. Taille et espace libre affiches avant toute question.
 call :setenv SALUBRI_ASSISTANT_ENABLED true
 set "SALUBRI_LLM_DURING_DEMO=on"
 python run\llm_detect.py --force
 set "SALUBRI_LLM_DURING_DEMO="
 echo.
-echo   Relancez ensuite la version COMPLETE (option 2) pour utiliser l'assistant.
+echo   Relancez ensuite la version COMPLETE ^(option 2^). Si Ollama est installe, ouvrez-le : l'assistant le trouve seul.
 pause
 goto menu
 
-:etat
-echo.
-docker compose ps
-echo.
-call :health
-if errorlevel 1 ( echo   API : ne repond pas sur %URL%/api/health ) else ( echo   API : OK sur %URL% )
-echo.
+:stop
+call run\stop.bat
+echo   %G%Salubri est arrete%N% ^(donnees conservees^).
+call :sleep 2
+goto menu
+
+:detour
+call :need_running
+if errorlevel 1 goto menu
+call run\detour.bat
 pause
+goto menu
+
+:repair
+echo.
+echo   %W%Reparation%N% : arret propre, suppression des conteneurs orphelins, nouveau demarrage ^(donnees conservees^).
+call :ensure_docker
+if errorlevel 1 ( pause & goto menu )
+docker compose down --remove-orphans
+call :fix_ports
+call :url
+call run\start.bat
+call :ready
 goto menu
 
 :guide
@@ -138,6 +228,76 @@ endlocal
 exit /b 0
 
 rem ----------------------------------------------------------------- outils
+:ensure_docker
+rem Docker installe et demarre ; s'il est arrete, on demarre Docker Desktop et on attend (3 min au plus).
+where docker >nul 2>nul
+if errorlevel 1 goto nodocker
+docker info >nul 2>nul
+if not errorlevel 1 exit /b 0
+echo   %Y%Docker Desktop est arrete : demarrage automatique, patientez...%N%
+set "DD="
+if exist "%ProgramFiles%\Docker\Docker\Docker Desktop.exe" set "DD=%ProgramFiles%\Docker\Docker\Docker Desktop.exe"
+if not defined DD if exist "%LocalAppData%\Programs\Docker\Docker\Docker Desktop.exe" set "DD=%LocalAppData%\Programs\Docker\Docker\Docker Desktop.exe"
+if defined DD start "" "%DD%"
+set /a T=0
+:wait_docker
+call :sleep 3
+docker info >nul 2>nul
+if not errorlevel 1 goto docker_ok
+set /a T+=3
+<nul set /p "=."
+if %T% LSS 180 goto wait_docker
+echo.
+echo   %RD%Docker ne demarre pas.%N% Ouvrez Docker Desktop a la main ; s'il parle de WSL, dans PowerShell : wsl --update
+exit /b 1
+:docker_ok
+echo.
+echo   %G%Docker est pret.%N%
+exit /b 0
+:nodocker
+echo   %RD%Docker Desktop n'est pas installe.%N% La page de telechargement s'ouvre ; installez-le, redemarrez, relancez SALUBRI.bat.
+start "" "https://docs.docker.com/desktop/install/windows-install/"
+exit /b 1
+
+:fix_ports
+rem Port web pris par un autre programme (Skype, IIS, Apache...) : on passe seul sur un port libre (note dans .env).
+set "OURS="
+for /f %%i in ('docker compose ps -q web 2^>nul') do set "OURS=1"
+if defined OURS exit /b 0
+call :fix_port WEB_PORT 80 "8080 8081 8088 8888 8090 3080"
+if errorlevel 1 exit /b 1
+call :fix_port WEB_TLS_PORT 8443 "9443 8444 10443 18443"
+exit /b %errorlevel%
+
+:fix_port
+set "FP_CUR="
+for /f "tokens=2 delims==" %%a in ('findstr /b /c:"%~1=" ".env" 2^>nul') do set "FP_CUR=%%a"
+if not defined FP_CUR set "FP_CUR=%~2"
+call :busy %FP_CUR%
+if errorlevel 1 exit /b 0
+for %%p in (%~3) do (
+  call :busy %%p
+  if errorlevel 1 (
+    call :setenv %~1 %%p
+    echo   %Y%Port %FP_CUR% deja pris par un autre programme : Salubri utilise le port %%p ^(%~1 dans .env^).%N%
+    exit /b 0
+  )
+)
+echo   %RD%Port %FP_CUR% occupe et aucun port de secours libre.%N% Trouver le programme : netstat -ano ^| findstr :%FP_CUR%
+exit /b 1
+
+:busy
+rem errorlevel 0 = port en ecoute (occupe), 1 = libre
+netstat -ano | findstr /r /c:":%~1 .*LISTENING" >nul
+exit /b %errorlevel%
+
+:need_running
+call :health
+if not errorlevel 1 exit /b 0
+echo   %Y%Salubri ne tourne pas : lancez d'abord l'option 1 ou 2.%N%
+pause
+exit /b 1
+
 :setenv
 rem Remplace (ou ajoute) la ligne CLE=valeur de .env, sans toucher aux autres lignes.
 if not exist ".env" type nul > ".env"
@@ -159,22 +319,31 @@ curl.exe -s -f -o nul -m 3 --noproxy "*" "%URL:localhost=127.0.0.1%/api/health" 
 powershell -NoProfile -Command "try { (Invoke-WebRequest -UseBasicParsing '%URL:localhost=127.0.0.1%/api/health' -TimeoutSec 3) | Out-Null; exit 0 } catch { exit 1 }" <nul >nul 2>nul
 exit /b %errorlevel%
 
-:status_line
+:state
 set "MODE=demo"
-findstr /b /c:"SALUBRI_SEASONS_ENABLED=true" ".env" >nul 2>nul && set "MODE=complete"
+findstr /b /c:"SALUBRI_SEASONS_ENABLED=true" ".env" >nul 2>nul && set "MODE=complete (Saisons + Assistant IA)"
 findstr /b /c:"SALUBRI_DEMO_MODE=false" ".env" >nul 2>nul && set "MODE=production"
+set "DOCKER_TXT=%RD%absent ou arrete%N% %D%- demarre seul aux options 1 et 2%N%"
+docker info >nul 2>nul && set "DOCKER_TXT=%G%pret%N%"
 call :health
-if errorlevel 1 ( echo      Etat : arrete ^(ou en demarrage^)          Version choisie : %MODE% ) else ( echo      Etat : EN MARCHE sur %URL%     Version : %MODE% )
+set "SAL_TXT=%G%EN MARCHE%N% sur %URL%"
+if errorlevel 1 set "SAL_TXT=%Y%arrete%N% %D%- ou en demarrage%N%"
 exit /b 0
 
 :ready
 echo.
 call :health
 if errorlevel 1 (
-  echo   Salubri ne repond pas encore : option 6 ^(etat^) ou 7 ^(diagnostic^).
+  echo   %Y%Salubri ne repond pas encore%N% : option 6 ^(etat^) ou 7 ^(diagnostic^).
 ) else (
-  echo   Pret. Salubri Map : %URL%/    Salubri Go : %URL%/go/
-  echo   Connexion mairie : demo / ouaga2026
+  echo   %G%=================================================================%N%
+  echo   %G%Pret.%N%  Salubri Map : %W%%URL%/%N%    Salubri Go : %W%%URL%/go/%N%
+  echo          Connexion mairie : %W%demo%N% / %W%ouaga2026%N%
+  echo   %G%=================================================================%N%
 )
 pause
+exit /b 0
+
+:sleep
+ping -n %~1 127.0.0.1 >nul
 exit /b 0
