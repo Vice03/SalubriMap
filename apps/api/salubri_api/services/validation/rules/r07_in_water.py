@@ -7,7 +7,9 @@ class R07InWater:
     code = "R7"
     title = "Dans l'eau"
     description = (
-        "Le point est dans un plan d'eau ou à moins de 8 m d'un cours d'eau. Plan d'eau de plus d'1 ha : rejet."
+        "Le point est dans un plan d'eau ou à moins de 8 m d'un cours d'eau (rivière, marigot, canal). Plan d'eau de "
+        "plus d'1 ha : rejet. Les caniveaux et fossés n'en font pas partie : un dépôt dans un caniveau est un vrai cas, "
+        "rendu prioritaire."
     )
     penalty = "−45, rejet si plan d'eau > 1 ha"
 

@@ -153,6 +153,7 @@ def build_context(
         s.execute(
             text(f"""
         SELECT EXISTS (SELECT 1 FROM water WHERE commune_id = :cid AND kind = 'waterway'
+          AND coalesce(subkind, '') NOT IN ('drain', 'ditch')  -- un dépôt dans un caniveau est un vrai cas
           AND ST_DWithin(geom, {PT}, :pf)
           AND ST_DWithin(geom::geography, {PT}::geography, :buf))"""),
             {**base, "buf": th.waterway_buffer_m},

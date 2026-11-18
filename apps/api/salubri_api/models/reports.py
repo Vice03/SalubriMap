@@ -67,6 +67,7 @@ class DumpSite(Base, Timestamped):
     last_reported_at: Mapped[datetime] = mapped_column(DateTime(timezone=True))
     cleaned_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     near_water: Mapped[bool] = mapped_column(Boolean, default=False)
+    near_drain: Mapped[bool] = mapped_column(Boolean, default=False)  # dans ou au bord d'un caniveau (OSM drain/ditch)
     priority: Mapped[float] = mapped_column(Float, default=0.0)
     mean_score: Mapped[float] = mapped_column(Float, default=0.0)
     osm_id: Mapped[int | None] = mapped_column(BigInteger, nullable=True)

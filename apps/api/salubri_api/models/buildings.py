@@ -28,6 +28,7 @@ class Water(Base):
     commune_id: Mapped[uuid.UUID] = mapped_column(ForeignKey("communes.id", ondelete="CASCADE"), index=True)
     geom: Mapped[Any] = mapped_column(Geometry("GEOMETRY", srid=4326))
     kind: Mapped[str] = mapped_column(String(16))
+    subkind: Mapped[str | None] = mapped_column(String(16), nullable=True)  # étiquette OSM waterway (drain = caniveau)
     name: Mapped[str | None] = mapped_column(String(128), nullable=True)
     area_m2: Mapped[float] = mapped_column(Float, default=0.0)
     flood_prone: Mapped[bool] = mapped_column(Boolean, default=False)

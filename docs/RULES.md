@@ -10,7 +10,7 @@ Chaque signalement démarre à **100 points**. Les règles retirent des points ;
 | R4 | Photo ancienne | date EXIF à > 30 jours | −20 |
 | R5 | Hors commune | hors des quartiers + 500 m | rejet |
 | R6 | Dans un bâtiment | bâtiment Open Buildings (confiance ≥ 0,7) ≥ 40 m² / ≥ 200 m² | −35 / −50 |
-| R7 | Dans l'eau | plan d'eau / à ≤ 8 m d'un cours d'eau / plan d'eau > 1 ha | −45 / −45 / rejet |
+| R7 | Dans l'eau | plan d'eau / à ≤ 8 m d'un cours d'eau (hors caniveaux et fossés) / plan d'eau > 1 ha | −45 / −45 / rejet |
 | R8 | GPS suspect | (0,0) ou hors plage / même point au mètre qu'un autre appareil / ≤ 3 décimales / précision > 150 m | rejet / −40 / −25 / −15 |
 | R9 | Déplacement impossible | même appareil, > 120 km/h depuis le signalement précédent | −40 |
 | R10 | Rafale | ≥ 10 envois de l'appareil dans l'heure (appareil bridé 1 h) / même commentaire 5 fois en 24 h | −30 |

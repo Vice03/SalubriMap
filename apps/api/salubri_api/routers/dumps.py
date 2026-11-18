@@ -72,11 +72,18 @@ def cleaned(
 def to_laabal(site_id: str, s: Session = Depends(get_session)) -> dict[str, Any]:
     """La brigade Laabal ne ramasse pas : elle contrôle, sensibilise et sanctionne les riverains."""
     d = _get(s, site_id)
-    audit(s, "laabal_alert", "dump_site", d.id, after={"recurring": bool(getattr(d, "recurring", False))})
+    audit(s, "laabal_alert", "dump_site", d.id, after={"recurring": d.status == "recurring", "auto": False})
     s.commit()
     out = dump_feature(d)
     out["properties"]["laabal_alerted"] = True
     return out
+
+
+@router.get("/laabal/alertes", summary="Zones récidivistes transmises à la brigade Laabal (et numéro WhatsApp)")
+def laabal_alerts(s: Session = Depends(get_session), commune: Commune = Depends(get_commune)) -> dict[str, Any]:
+    from salubri_api.services.laabal import zones
+
+    return zones(s, commune.id)
 
 
 class OsmIdIn(BaseModel):

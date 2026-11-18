@@ -27,6 +27,10 @@ x-api-env: &api-env
   SALUBRI_LLM_URL: ${SALUBRI_LLM_URL:-http://ollama:11434/v1}
   SALUBRI_LLM_MODEL: ${SALUBRI_LLM_MODEL:-qwen2.5:7b-instruct}
   SALUBRI_LLM_API_KEY: ${SALUBRI_LLM_API_KEY:-}
+  SALUBRI_LLM_AUTO: ${SALUBRI_LLM_AUTO:-true}
+  # brigade Laabal : transmission automatique des dépotoirs récidivistes et numéro WhatsApp (fictif par défaut)
+  SALUBRI_LAABAL_AUTO: ${SALUBRI_LAABAL_AUTO:-true}
+  SALUBRI_LAABAL_WHATSAPP: ${SALUBRI_LAABAL_WHATSAPP:-+22600000000}
 
 services:
   db:

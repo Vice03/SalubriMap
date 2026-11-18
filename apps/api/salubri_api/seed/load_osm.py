@@ -50,7 +50,7 @@ class _Handler(osmium.SimpleHandler):
         super().__init__()
         self.f = osmium.geom.WKBFactory()
         self.roads: list[tuple[BaseGeometry, str, str | None, bool, int]] = []
-        self.water: list[tuple[BaseGeometry, str, str | None]] = []
+        self.water: list[tuple[BaseGeometry, str, str | None, str | None]] = []
         self.pois: list[tuple[BaseGeometry, str, str | None]] = []
 
     def node(self, n: osmium.osm.Node) -> None:
@@ -66,7 +66,9 @@ class _Handler(osmium.SimpleHandler):
                 self.roads.append((g, hw, w.tags.get("surface"), hw in TRUCK_HIGHWAYS, w.id))
             ww = w.tags.get("waterway")
             if ww in WATERWAYS:
-                self.water.append((wkb.loads(self.f.create_linestring(w), hex=True), "waterway", w.tags.get("name")))
+                self.water.append(
+                    (wkb.loads(self.f.create_linestring(w), hex=True), "waterway", w.tags.get("name"), ww)
+                )
         except Exception:  # broken geometry in the extract: skip it
             pass
 
@@ -78,11 +80,11 @@ class _Handler(osmium.SimpleHandler):
                 g = wkb.loads(self.f.create_multipolygon(a), hex=True)
                 kind = "wetland" if tags.get("natural") == "wetland" else "water"
                 for poly in getattr(g, "geoms", [g]):
-                    self.water.append((poly, kind, tags.get("name")))
+                    self.water.append((poly, kind, tags.get("name"), None))
             elif tags.get("natural") == "wetland":
                 g = wkb.loads(self.f.create_multipolygon(a), hex=True)
                 for poly in getattr(g, "geoms", [g]):
-                    self.water.append((poly, "wetland", tags.get("name")))
+                    self.water.append((poly, "wetland", tags.get("name"), None))
             kind = AMENITY_POI.get(tags.get("amenity", "")) or LANDUSE_POI.get(tags.get("landuse", ""))
             if kind:
                 g = g or wkb.loads(self.f.create_multipolygon(a), hex=True)
@@ -100,13 +102,14 @@ def load_osm(s: Session, commune_id: uuid.UUID, path: Path, bbox: Polygon | None
         if keep(g):
             s.add(Road(commune_id=commune_id, osm_id=oid, geom=to_wkb(g), highway=hw, surface=surf, truck_ok=ok))
             n_r += 1
-    for g, kind, name in h.water:
+    for g, kind, name, sub in h.water:
         if keep(g):
             s.add(
                 Water(
                     commune_id=commune_id,
                     geom=to_wkb(g),
                     kind=kind,
+                    subkind=sub,
                     name=(name or None) and name[:128],
                     flood_prone=kind == "waterway",
                 )

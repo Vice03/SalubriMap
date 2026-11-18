@@ -16,6 +16,7 @@ COLUMNS = [
     "first_reported_at",
     "last_reported_at",
     "near_water",
+    "near_drain",
     "priority",
     "confidence",
 ]
@@ -40,6 +41,7 @@ def dump_sites_csv(sites: list[DumpSite]) -> str:
                 d.first_reported_at.isoformat(),
                 d.last_reported_at.isoformat(),
                 d.near_water,
+                bool(d.near_drain),
                 d.priority,
                 d.mean_score,
             ]

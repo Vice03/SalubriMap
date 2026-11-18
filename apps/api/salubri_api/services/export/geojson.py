@@ -46,6 +46,7 @@ def dump_site_properties(d: DumpSite) -> dict[str, Any]:
         "first_reported_at": d.first_reported_at.isoformat(),
         "last_reported_at": d.last_reported_at.isoformat(),
         "near_water": d.near_water,
+        "near_drain": bool(d.near_drain),
         "priority": d.priority,
         "confidence": d.mean_score,
         "osm_id": d.osm_id,

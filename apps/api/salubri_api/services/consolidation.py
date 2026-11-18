@@ -63,9 +63,16 @@ def cluster_reports(
     return out
 
 
-def priority(volume_m3: float, near_water: bool, first_at: datetime, now: datetime) -> float:
+def priority(volume_m3: float, near_water: bool, first_at: datetime, now: datetime, near_drain: bool = False) -> float:
+    """Volume × eau × ancienneté. Un dépotoir dans ou au bord d'un caniveau le bouche : inondations en saison des
+    pluies, d'où × 2 (au lieu de × 1,5 près d'un autre cours d'eau)."""
     age_days = max((now - first_at).total_seconds() / 86400, 0)
-    return round(volume_m3 * (1.5 if near_water else 1.0) * (1 + age_days / 30), 3)
+    w = 2.0 if near_drain else 1.5 if near_water else 1.0
+    return round(volume_m3 * w * (1 + age_days / 30), 3)
+
+
+DRAIN_KINDS = ("drain", "ditch")  # OSM waterway=drain (caniveau maçonné), ditch (fossé)
+DRAIN_DIST_M = 15
 
 
 def consolidate(s: Session, commune_id: uuid.UUID, eps_m: float = 30.0) -> dict[str, int]:
@@ -101,6 +108,14 @@ def consolidate(s: Session, commune_id: uuid.UUID, eps_m: float = 30.0) -> dict[
                 {"c": commune_id, "lon": c.lon, "lat": c.lat},
             ).scalar()
         )
+        near_drain = bool(
+            s.execute(
+                text("""SELECT EXISTS (SELECT 1 FROM water WHERE commune_id = :c AND subkind IN ('drain', 'ditch')
+            AND ST_DWithin(geom, ST_SetSRID(ST_MakePoint(:lon,:lat),4326), 0.001)
+            AND ST_DWithin(geom::geography, ST_SetSRID(ST_MakePoint(:lon,:lat),4326)::geography, :d))"""),
+                {"c": commune_id, "lon": c.lon, "lat": c.lat, "d": DRAIN_DIST_M},
+            ).scalar()
+        )
         hull = MultiPoint(c.points).convex_hull.buffer(metres_to_deg_lat(6))
         if match is None:
             match = DumpSite(
@@ -125,9 +140,10 @@ def consolidate(s: Session, commune_id: uuid.UUID, eps_m: float = 30.0) -> dict[
         match.n_reports = len(c.report_ids)
         match.first_reported_at = min(match.first_reported_at or c.first_at, c.first_at)
         match.last_reported_at = c.last_at
-        match.near_water = near_water
+        match.near_water = near_water or near_drain
+        match.near_drain = near_drain
         match.mean_score = round(c.mean_score, 1)
-        match.priority = priority(c.volume_m3, near_water, c.first_at, now)
+        match.priority = priority(c.volume_m3, near_water or near_drain, c.first_at, now, near_drain)
         s.flush()
         used.add(match.id)
         s.query(Report).filter(Report.id.in_(c.report_ids)).update(
@@ -142,6 +158,9 @@ def consolidate(s: Session, commune_id: uuid.UUID, eps_m: float = 30.0) -> dict[
             s.delete(d)
             removed += 1
     s.flush()
+    from salubri_api.services.laabal import auto_transmit
+
+    auto_transmit(s, commune_id)  # un dépotoir qui revient après nettoyage part seul à la brigade Laabal
     return {"clusters": len(clusters), "created": created, "updated": updated, "removed": removed}
 
 

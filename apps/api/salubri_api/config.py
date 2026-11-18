@@ -50,7 +50,9 @@ class Settings(BaseSettings):
     llm_model: str = "qwen2.5:7b-instruct"
     llm_api_key: str = ""
     llm_timeout_s: float = 240.0  # un modèle de 14 milliards de paramètres sur processeur est lent
-    llm_auto: bool = True  # chercher un modèle déjà lancé (Ollama, LM Studio) si l'adresse réglée ne répond pas
+    llm_auto: bool = True
+    laabal_auto: bool = True  # transmettre seul à la brigade Laabal chaque dépotoir qui revient après nettoyage
+    laabal_whatsapp: str = "+22600000000"  # numéro WhatsApp de la brigade : à remplacer (celui-ci est fictif)  # chercher un modèle déjà lancé (Ollama, LM Studio) si l'adresse réglée ne répond pas
     llm_during_demo: bool = False  # jamais de téléchargement de modèle au démarrage avant une démonstration
 
 
