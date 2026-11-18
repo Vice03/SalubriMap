@@ -46,7 +46,9 @@ def main() -> int:
     ap.add_argument("--voices", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--voice", default="ff_siwis")
-    ap.add_argument("--speed", type=float, default=0.92, help="un peu plus lent que la normale : public qui découvre l'appli")
+    ap.add_argument(
+        "--speed", type=float, default=0.92, help="un peu plus lent que la normale : public qui découvre l'appli"
+    )
     ap.add_argument("--only", nargs="*", help="ne générer que ces identifiants")
     a = ap.parse_args()
 
@@ -70,7 +72,23 @@ def main() -> int:
         )
         mp3 = out / f"{ident}.mp3"
         r = subprocess.run(
-            ["ffmpeg", "-y", "-loglevel", "error", "-i", str(wav), "-af", filtre, "-ac", "1", "-ar", "24000", "-b:a", "64k", str(mp3)],
+            [
+                "ffmpeg",
+                "-y",
+                "-loglevel",
+                "error",
+                "-i",
+                str(wav),
+                "-af",
+                filtre,
+                "-ac",
+                "1",
+                "-ar",
+                "24000",
+                "-b:a",
+                "64k",
+                str(mp3),
+            ],
             check=False,
         )
         wav.unlink()
