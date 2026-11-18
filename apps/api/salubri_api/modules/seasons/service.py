@@ -237,6 +237,8 @@ def seasonal_variant(
         pad = walk_max / M_PER_DEG * 1.5
         cand = candidates((p.lon - pad, p.lat - pad, p.lon + pad, p.lat + pad)) or []
         best = None
+        if getattr(p, "frozen", False):  # CCT existant : un site bâti ne se déplace pas, il est signalé
+            cand = []
         for lon, lat in sorted(cand, key=lambda c: (c[0] - p.lon) ** 2 + (c[1] - p.lat) ** 2):
             c_xy = np.array(xy(lon, lat))
             if site_zone is not None and site_zone.contains(Point(c_xy)):
@@ -256,8 +258,10 @@ def seasonal_variant(
             moved.append({"point": p.key, "distance_m": round(best[2]), "raison": "route d'accès impraticable",
                           "route": str(access[k]), "menages": hh})  # fmt: skip
         else:
-            inacc.append({"point": p.key, "raison": "inaccessible en saison des pluies" if ctx.period == "rain"
-                          else f"inaccessible ({ctx.period})", "route": str(access[k]), "menages": hh,
+            why = "inaccessible en saison des pluies" if ctx.period == "rain" else f"inaccessible ({ctx.period})"
+            if getattr(p, "frozen", False):
+                why += " (CCT existant, non déplacé)"
+            inacc.append({"point": p.key, "raison": why, "route": str(access[k]), "menages": hh,
                           "population": round(float(ilot_population[il].sum()))})  # fmt: skip
     new = replace(placement, points=pts)
     return new, Variant(moved, inacc)

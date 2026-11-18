@@ -223,3 +223,41 @@ def test_rain_moves_points_off_a_closed_access_road_and_dry_restores_them(sclien
 def test_calendar_falls_back_to_dry_and_rain(sanon) -> None:  # type: ignore[no-untyped-def]
     ids = [p["id"] for p in sanon.get("/api/roads/periodes").json()["periodes"]]
     assert ids == ["dry", "rain"]  # testville n'a pas de calendrier : les deux saisons du paramètre
+
+
+def test_existing_cct_is_never_moved_only_flagged(db) -> None:  # type: ignore[no-untyped-def]
+    from dataclasses import dataclass, field
+
+    from shapely.geometry import LineString
+
+    @dataclass
+    class Pt:
+        key: str
+        lon: float
+        lat: float
+        frozen: bool = False
+        ilots: list[int] = field(default_factory=list)
+
+    @dataclass
+    class Pl:
+        points: list[Pt]
+        assignment: np.ndarray
+
+    road = db.execute(
+        text("SELECT id, ST_X(ST_StartPoint(geom)) x, ST_Y(ST_StartPoint(geom)) y FROM roads LIMIT 1")
+    ).one()
+    cid = db.query(Scenario).first().commune_id
+    service.activate(service.SeasonContext(cid, "rain", [service.Closed(road.id, LineString([(road.x, road.y),
+                     (road.x + 0.001, road.y)]), 0, "manual")], "s"))  # fmt: skip
+    try:
+        pl = Pl([Pt("CCT-1", road.x, road.y, frozen=True)], np.array([0]))
+        out, var = service.seasonal_variant(db, pl, np.array([[road.x, road.y + 0.0005]]), np.array([70.0]),
+                                            lambda bbox: [(road.x, road.y + 0.002)], 300)  # fmt: skip
+        assert (
+            var.moved == []
+            and var.inaccessible[0]["point"] == "CCT-1"
+            and "CCT existant" in var.inaccessible[0]["raison"]
+        )
+        assert (out.points[0].lon, out.points[0].lat) == (road.x, road.y)
+    finally:
+        service.activate(None)

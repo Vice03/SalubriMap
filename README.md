@@ -13,7 +13,7 @@ Salubri est un outil libre d'aide à la décision, du signalement des dépotoirs
 ## Démarrage
 
 1. Installer [Docker](https://docs.docker.com/get-docker/) et le démarrer.
-2. Windows : double-cliquer `run\start.bat`. Linux/macOS : `./run/start.sh` (ou `docker compose up --build`).
+2. Windows : double-cliquer **`SALUBRI.bat`** à la racine (menu : version démo, version complète, ouverture des applis, diagnostic, répétition, tests, remise à zéro, arrêt ; guide illustré : [`docs/GUIDE_JURY.pdf`](docs/GUIDE_JURY.pdf)), ou `run\start.bat`. Linux/macOS : `./run/start.sh` (ou `docker compose up --build`).
 3. Ouvrir **http://localhost** (Salubri Map) et **http://localhost/go/** (Salubri Go, téléphone).
 4. Se connecter en haut à droite : `demo` / `ouaga2026` (mode démonstration).
 5. En cas de souci : `run/doctor` dit ce qui manque (Docker, ports, disque) et quelle carte sera utilisée.
