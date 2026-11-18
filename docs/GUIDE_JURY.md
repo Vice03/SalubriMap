@@ -1,7 +1,7 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
-<style>h2,h3{page-break-after:avoid;break-after:avoid}img,p:has(img){page-break-inside:avoid;break-inside:avoid}h3{margin-top:14pt;color:#2f7d5f}</style>
+<style>h2,h3{page-break-after:avoid;break-after:avoid}img,p:has(img){page-break-inside:avoid;break-inside:avoid}h3{margin-top:14pt;color:#0b6fd3}</style>
 
-<div style="background:linear-gradient(135deg,#1d4e3f 0%,#2f7d5f 60%,#c9a227 100%);color:#fff;padding:28px 30px;border-radius:14px;margin-bottom:14px">
+<div style="background:linear-gradient(135deg,#0b5cb5 0%,#1a8cf0 65%,#f9c623 100%);color:#fff;padding:28px 30px;border-radius:14px;margin-bottom:14px">
 <div style="font-size:30pt;font-weight:bold;letter-spacing:1px">Salubri</div>
 <div style="font-size:15pt;margin-top:4px">Guide de prise en main pour le jury</div>
 <div style="font-size:10.5pt;margin-top:10px;opacity:.9">Hackathon des Universités 2026 · Challenge « Assainissement de Ouaga » · un seul fichier à lancer : <b>SALUBRI.bat</b></div>
@@ -97,9 +97,13 @@ en place autant que possible, et le résumé dit ce qui a changé.
 
 ![Comparer](guide/05_comparer.jpg)
 
-Page « Comparer » : deux scénarios côte à côte (dépôts sauvages simulés, couverture, coût par tonne), avec la
-médiane et l'intervalle de 30 simulations. Les comportements des ménages sont des hypothèses : ces chiffres servent
-à **comparer** des choix, pas à prédire.
+Page « Comparer » : **plusieurs cas côte à côte** (jusqu'à 8). Cliquez les noms pour les ajouter ou les retirer ; le
+premier sert de référence (« réf. » pour en changer). Pour simuler un nouveau cas à partir de la référence : un clic
+sur « 2 camions en panne », « Saison des pluies », « Abonnement +20 pts », « Budget −30 % », ou « Cas sur mesure »
+(nombre de camions en panne, saison, abonnement, budget). Chaque ligne du tableau montre le meilleur cas (coupe) et
+l'écart à la référence ; « En bref » classe les cas. Les comportements des ménages sont des hypothèses : ces chiffres
+servent à **comparer** des choix, pas à prédire. En version complète, « Analyser avec l'IA » demande à l'assistant
+une recommandation chiffrée.
 
 ### Étape 6 — Le journal
 
@@ -119,11 +123,14 @@ place. Dans Salubri Go, l'onglet « Route » permet de signaler une route imprat
 
 ![Module Assistant](guide/08_module_assistant.jpg)
 
-**Assistant.** Bouton « Assistant » en bas à droite (compte de la mairie). Il explique un plan, un point saturé, un
-score de signalement ou un paramètre, en citant ses sources ; **il ne modifie rien** et ne juge jamais un
-signalement. Il lui faut un modèle de langue local : s'il répond « Assistant indisponible », utilisez le choix
+**Assistant IA.** Bulle « Assistant IA » en bas à droite, sur toutes les pages ; il faut être connecté (demo /
+ouaga2026) pour poser une question. « Analyser la situation » et « Comparer tous les cas » lui font lire vos données
+(dépotoirs, signalements, flotte, scénarios simulés) et en tirer une analyse chiffrée. Il explique aussi un plan, un
+point saturé, un score de signalement ou un paramètre, en citant ses sources ; **il ne modifie rien** et ne juge
+jamais un signalement. En haut du panneau, un point vert indique que le modèle de langue répond. Il lui faut un modèle de langue local : s'il répond « Assistant indisponible », utilisez le choix
 **12** (un modèle déjà installé — Ollama, LM Studio… — est utilisé tel quel ; sinon un modèle adapté à la machine
-est proposé, de 1 à 9 Go, **après accord**), puis relancez le choix 2.
+est proposé, de 1 à 9 Go, **après accord**), puis relancez le choix 2. Si Ollama tourne déjà sur le PC, le choix 2
+le trouve tout seul.
 
 ## 5. Si quelque chose ne marche pas
 
