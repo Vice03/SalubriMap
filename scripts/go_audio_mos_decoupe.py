@@ -37,8 +37,8 @@ SEQUENCE: dict[str, tuple[int, ...]] = {
     "type_plastic": (22,),
     "type_organic": (23,),
     "thanks": (24, 25),
-    "thanks_offline": (26, 27),
-    "again": (28, 29),
+    "thanks_offline": (26, 27, 28),
+    "again": (29,),
 }
 
 
