@@ -42,6 +42,17 @@ def test_clone_breakdown_compare(client):
     cmp = client.get("/api/scenarios/compare", params={"a": base["id"], "b": b["id"]}).json()
     assert cmp["a"]["summary"]["vehicles_available"] == 4 and cmp["b"]["summary"]["vehicles_available"] == 3
     assert "km_day" in cmp["delta"] and "sim.wild_dump_t" in cmp["delta"]
+    c = client.post("/api/scenarios", json={"name": "C", "parent_id": base["id"], "params": {"season": "rain"}}).json()
+    wait(client, c["plan_version_id"])
+    many = client.get("/api/scenarios/compare-many", params={"ids": f"{base['id']},{b['id']},{c['id']}"}).json()
+    assert [x["name"] for x in many["scenarios"]][1:] == ["B", "C"]
+    rows = {r["key"]: r for r in many["rows"]}
+    assert len(rows["km_day"]["values"]) == 3 and rows["km_day"]["delta"][0]["value"] == 0
+    assert rows["points"]["best"] is None  # indicateur neutre
+    assert sum(many["wins"]) == sum(1 for r in many["rows"] if r["best"] is not None)
+    assert sorted(many["ranking"]) == sorted([base["id"], b["id"], c["id"]])
+    assert client.get("/api/scenarios/compare-many", params={"ids": base["id"]}).status_code == 422
+    assert client.delete(f"/api/scenarios/{c['id']}").status_code == 204
     assert client.delete(f"/api/scenarios/{b['id']}").status_code == 204
     assert client.delete(f"/api/scenarios/{base['id']}").status_code == 409
 

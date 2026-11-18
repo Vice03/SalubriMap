@@ -35,6 +35,11 @@ def test_every_read_tool_answers(db, world, client) -> None:  # type: ignore[no-
     assert pl["document"] == "PLAN_ARRONDISSEMENT_9.md" and pl["sections"]
     assert "erreur" in tools.run(db, "moderateur", "plan_arrondissement", {"numero": 99})
     assert "info" in tools.points_saison(db)
+    cmp = tools.run(db, "moderateur", "comparer_scenarios", {"scenarios": ["Base"]})
+    assert cmp["reference"] == "Base" and cmp["scenarios"][0]["plan_pret"] and cmp["scenarios"][0]["points"] > 0
+    assert tools.run(db, "moderateur", "comparer_scenarios", {})["scenarios"]
+    eg = tools.run(db, "admin", "etat_general", {})
+    assert eg["signalements"] and eg["plan"]["points"] > 0 and "erreur" not in eg
     assert tools.run(db, "moderateur", "outil_inconnu", {})["erreur"].startswith("outil")
     assert tools.run(db, "visiteur", "resume_plan", {})["erreur"].startswith("outil")
 

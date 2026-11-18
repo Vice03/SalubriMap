@@ -107,57 +107,97 @@ def params_schema() -> dict[str, Any]:
     return schema
 
 
+METRICS = ["points", "routes", "km_day", "cost_day_fcfa", "unserved_points", "demand_t_week"]
+SIM_METRICS = [
+    "collected_t",
+    "wild_dump_t",
+    "wild_dumps_active_final",
+    "wild_dumps_active_mean",
+    "overflow_point_days",
+    "cost_total_fcfa",
+    "cost_per_t",
+    "coverage_rate",
+    "subscription_rate_final",
+    "mean_cleanup_delay_days",
+]
+BETTER_WHEN_LOWER = [
+    "km_day",
+    "cost_day_fcfa",
+    "unserved_points",
+    "sim.wild_dump_t",
+    "sim.wild_dumps_active_final",
+    "sim.wild_dumps_active_mean",
+    "sim.overflow_point_days",
+    "sim.cost_total_fcfa",
+    "sim.cost_per_t",
+    "sim.mean_cleanup_delay_days",
+]
+NEUTRAL = ["points", "routes", "demand_t_week"]
+
+
+def _side(s: Session, sid: str) -> dict[str, Any]:
+    sc = _get(s, sid)
+    pv = latest_ready(s, sc.id)
+    summ = dict(pv.summary) if pv else {}
+    summ.pop("sim_daily", None)
+    return {
+        "scenario_id": str(sc.id),
+        "name": sc.name,
+        "plan_id": str(pv.id) if pv else None,
+        "summary": summ,
+        "wild_dumps_daily": (pv.summary.get("sim_daily", {}) if pv else {}).get("wild_dumps_active", []),
+    }
+
+
+def _values(summ: dict[str, Any]) -> dict[str, float]:
+    out = {m: summ[m] for m in METRICS if summ.get(m) is not None}
+    for m in SIM_METRICS:
+        v = (summ.get("sim") or {}).get(m)
+        if v is not None:
+            out[f"sim.{m}"] = v
+    return out
+
+
 @router.get("/compare", summary="Comparer les derniers plans prêts de deux scénarios")
 def compare(a: str, b: str, s: Session = Depends(get_session)) -> dict[str, Any]:
-    out: dict[str, Any] = {}
-    for tag, sid in (("a", a), ("b", b)):
-        sc = _get(s, sid)
-        pv = latest_ready(s, sc.id)
-        summ = dict(pv.summary) if pv else {}
-        summ.pop("sim_daily", None)
-        out[tag] = {
-            "scenario_id": str(sc.id),
-            "name": sc.name,
-            "plan_id": str(pv.id) if pv else None,
-            "summary": summ,
-            "wild_dumps_daily": (pv.summary.get("sim_daily", {}) if pv else {}).get("wild_dumps_active", []),
-        }
-    metrics = ["points", "routes", "km_day", "cost_day_fcfa", "unserved_points", "demand_t_week"]
-    sim_metrics = [
-        "collected_t",
-        "wild_dump_t",
-        "wild_dumps_active_final",
-        "wild_dumps_active_mean",
-        "overflow_point_days",
-        "cost_total_fcfa",
-        "cost_per_t",
-        "coverage_rate",
-        "subscription_rate_final",
-        "mean_cleanup_delay_days",
-    ]
-    delta: dict[str, Any] = {}
-    sa, sb = out["a"]["summary"], out["b"]["summary"]
-    for m in metrics:
-        if m in sa and m in sb:
-            delta[m] = _d(sa[m], sb[m])
-    for m in sim_metrics:
-        va, vb = sa.get("sim", {}).get(m), sb.get("sim", {}).get(m)
-        if va is not None and vb is not None:
-            delta[f"sim.{m}"] = _d(va, vb)
-    out["delta"] = delta
-    out["better_when_lower"] = [
-        "km_day",
-        "cost_day_fcfa",
-        "unserved_points",
-        "sim.wild_dump_t",
-        "sim.wild_dumps_active_final",
-        "sim.wild_dumps_active_mean",
-        "sim.overflow_point_days",
-        "sim.cost_total_fcfa",
-        "sim.cost_per_t",
-        "sim.mean_cleanup_delay_days",
-    ]
+    out: dict[str, Any] = {"a": _side(s, a), "b": _side(s, b)}
+    va, vb = _values(out["a"]["summary"]), _values(out["b"]["summary"])
+    out["delta"] = {k: _d(va[k], vb[k]) for k in va if k in vb}
+    out["better_when_lower"] = BETTER_WHEN_LOWER
     return out
+
+
+@router.get("/compare-many", summary="Comparer plusieurs scénarios (le premier sert de référence)")
+def compare_many(ids: str, s: Session = Depends(get_session)) -> dict[str, Any]:
+    """`ids` : identifiants séparés par des virgules, 2 à 8. Pour chaque indicateur : la valeur de chaque scénario,
+    l'écart à la référence et le meilleur scénario (aucun pour les indicateurs neutres ou à égalité)."""
+    wanted = [x for x in dict.fromkeys(i.strip() for i in ids.split(",")) if x]
+    if not 2 <= len(wanted) <= 8:
+        raise HTTPException(422, "Choisir de 2 à 8 scénarios")
+    sides = [_side(s, sid) for sid in wanted]
+    vals = [_values(x["summary"]) for x in sides]
+    keys = [k for k in vals[0] if all(k in v for v in vals)]
+    rows: list[dict[str, Any]] = []
+    wins = [0] * len(sides)
+    for k in keys:
+        series = [v[k] for v in vals]
+        best: int | None = None
+        if k not in NEUTRAL and len(set(series)) > 1:
+            target = min(series) if k in BETTER_WHEN_LOWER else max(series)
+            idx = [i for i, x in enumerate(series) if x == target]
+            if len(idx) == 1:
+                best = idx[0]
+                wins[best] += 1
+        rows.append({"key": k, "values": series, "delta": [_d(series[0], x) for x in series], "best": best})
+    ranking = sorted(range(len(sides)), key=lambda i: -wins[i])
+    return {
+        "scenarios": sides,
+        "rows": rows,
+        "wins": wins,
+        "ranking": [sides[i]["scenario_id"] for i in ranking],
+        "better_when_lower": BETTER_WHEN_LOWER,
+        "neutral": NEUTRAL,
+    }
 
 
 def _d(a: float, b: float) -> dict[str, float | None]:

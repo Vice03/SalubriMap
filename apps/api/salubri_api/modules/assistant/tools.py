@@ -205,6 +205,53 @@ def points_saison(s: Session, scenario: str | None = None) -> dict[str, Any]:
     return sa or {"info": "aucun point déplacé ni inaccessible dans le dernier plan"}
 
 
+CMP_KEYS = {"points": "points", "routes": "tournees", "km_day": "km_jour", "cost_day_fcfa": "cout_jour_fcfa",
+            "unserved_points": "points_non_desservis", "vehicles_available": "camions_disponibles"}  # fmt: skip
+CMP_SIM = {"collected_t": "tonnage_collecte_t", "wild_dump_t": "depot_sauvage_t",
+           "wild_dumps_active_final": "depotoirs_actifs_fin", "overflow_point_days": "debordements_points_jours",
+           "cost_total_fcfa": "cout_total_fcfa", "cost_per_t": "cout_par_tonne_fcfa", "coverage_rate": "couverture",
+           "mean_cleanup_delay_days": "delai_nettoyage_j"}  # fmt: skip
+
+
+def comparer_scenarios(s: Session, scenarios: list[str] | None = None) -> dict[str, Any]:
+    """Indicateurs clés de plusieurs scénarios côte à côte (le premier sert de référence)."""
+    if scenarios:
+        found = [sc for sc in (_scenario(s, n) for n in scenarios[:8]) if sc is not None]
+        scs = list(dict.fromkeys(found))
+    else:
+        scs = s.query(Scenario).order_by(Scenario.created_at).limit(8).all()
+    out = []
+    for sc in scs:
+        pvs = _latest(s, sc)
+        sm = (pvs[0].summary or {}) if pvs else {}
+        row: dict[str, Any] = {"scenario": sc.name, "plan_pret": bool(pvs)}
+        row.update({v: sm.get(k) for k, v in CMP_KEYS.items()})
+        row.update({v: (sm.get("sim") or {}).get(k) for k, v in CMP_SIM.items()})
+        row["saison"] = (pvs[0].params_snapshot or {}).get("season") if pvs else None
+        out.append(row)
+    return {"reference": out[0]["scenario"] if out else None, "scenarios": out,
+            "plus_bas_est_mieux": ["km_jour", "cout_jour_fcfa", "points_non_desservis", "depot_sauvage_t",
+                                   "depotoirs_actifs_fin", "debordements_points_jours", "cout_total_fcfa",
+                                   "cout_par_tonne_fcfa", "delai_nettoyage_j"],
+            "avertissement": "simulation non calée : comparer les scénarios entre eux, pas prédire"}  # fmt: skip
+
+
+def etat_general(s: Session) -> dict[str, Any]:
+    """Photographie de la situation : dépotoirs, signalements, flotte et points saturés du scénario de base."""
+    dumps = dict(s.query(DumpSite.status, text("count(*)")).group_by(DumpSite.status).all())
+    reps = dict(s.query(Report.status, text("count(*)")).group_by(Report.status).all())
+    sc = _scenario(s, None)
+    pvs = _latest(s, sc) if sc else []
+    sm = (pvs[0].summary or {}) if pvs else {}
+    cap = sm.get("capacite") or {}
+    return {"depotoirs": dumps, "signalements": reps, "scenario_de_base": sc.name if sc else None,
+            "plan": {k: sm.get(k) for k in ("points", "routes", "km_day", "vehicles_available", "unserved_points")},
+            "capacite": {k: cap.get(k) for k in ("respectee", "enlevements_semaine", "non_collecte_t_semaine")}
+            | {"points_debordants": (cap.get("points_debordants") or [])[:10]} if isinstance(cap, dict) else None,
+            "simulation": {k: (sm.get("sim") or {}).get(k) for k in CMP_SIM},
+            "avertissements": [DEMO] if _demo(s) else []}  # fmt: skip
+
+
 SIM_KEYS = {"season", "subscription_rate", "budget_fcfa_month", "waste_kg_per_person_day", "pickup_frequency_per_week",
             "collection_point_capacity_t", "walk_distance_max_m", "population_factor", "laabal_operations_per_week"}  # fmt: skip
 
@@ -238,6 +285,11 @@ TOOLS: dict[str, tuple[Tool, str, dict[str, Any]]] = {
                              {"scenario": {"type": "string"}}),
     "plan_arrondissement": (plan_arrondissement, "Tableaux du plan de gestion d'un arrondissement",
                             {"numero": {"type": "integer"}, "section": {"type": "string"}}),
+    "comparer_scenarios": (comparer_scenarios, "Comparer plusieurs scénarios côte à côte (indicateurs du plan et "
+                           "de la simulation) ; liste de noms, le premier est la référence",
+                           {"scenarios": {"type": "array", "items": {"type": "string"}}}),
+    "etat_general": (etat_general, "Situation actuelle : dépotoirs, signalements par statut, flotte, points saturés",
+                     {}),
     "proposer_simulation": (proposer_simulation, "Proposer (sans l'appliquer) une simulation « et si… »",
                             {"changements": {"type": "object"}, "camions_en_panne": {"type": "integer"},
                              "scenario": {"type": "string"}}),
