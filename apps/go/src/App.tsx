@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { Camera, Construction, Inbox, Languages, MapPin, Wifi, WifiOff } from 'lucide-react'
+import { Camera, Construction, Inbox, Languages, MapPin, Server, Wifi, WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { outbox } from './db'
 import { PwaBars } from './components/PwaBars'
@@ -47,9 +47,10 @@ function Main({ onChangeServer }: { onChangeServer?: () => void }) {
     <div className="app">
       <header>
         <div className="brand"><img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" /><div><b>Salubri <span>Go</span></b><small>Signalez un dépotoir, la mairie planifie</small></div></div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <button className="icon" aria-label="Changer de langue" onClick={() => { setLang(null); setLangState(null) }}><Languages size={20} /></button>
-          <span className={`net ${online ? 'on' : 'off'}`}>{online ? <Wifi size={14} /> : <WifiOff size={14} />}{online ? 'En ligne' : 'Hors ligne'}</span>
+        <div className="hdr-actions">
+          {onChangeServer && <button className="icon" aria-label="Changer de serveur" title="Changer de serveur" onClick={onChangeServer}><Server size={20} /></button>}
+          <button className="icon" aria-label="Changer de langue" title="Changer de langue" onClick={() => { setLang(null); setLangState(null) }}><Languages size={20} /></button>
+          <span className={`net ${online ? 'on' : 'off'}`}>{online ? <Wifi size={14} /> : <WifiOff size={14} />}<span className="net-txt">{online ? 'En ligne' : 'Hors ligne'}</span></span>
         </div>
       </header>
       <main>
@@ -61,7 +62,6 @@ function Main({ onChangeServer }: { onChangeServer?: () => void }) {
         {seasons && tab === 'road' && <RoadReportPage />}
       </main>
       <PwaBars />
-      {onChangeServer && <p style={{ textAlign: 'center', margin: '0 0 96px', fontSize: 13 }}><a href="#" onClick={(e) => { e.preventDefault(); onChangeServer() }}>Changer de serveur</a></p>}
       <nav aria-label="Navigation principale">
         <button className={tab === 'report' ? 'on' : ''} onClick={() => setTab('report')}><Camera size={22} />Signaler</button>
         <button className={tab === 'outbox' ? 'on' : ''} onClick={() => setTab('outbox')}><Inbox size={22} />Mes envois{pending > 0 && <i>{pending}</i>}</button>

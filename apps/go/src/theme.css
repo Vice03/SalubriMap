@@ -117,3 +117,10 @@ nav i { position: absolute; top: 4px; left: calc(50% + 6px); background: #dc2626
 .vg-unlock { display: flex; align-items: center; justify-content: center; gap: 8px; background: #fff7ed; border: 2px solid var(--orange); border-radius: 14px; padding: 10px; color: #9a3412; font-weight: 700; margin: 0 0 10px; animation: vg-glow 1.6s ease-in-out infinite; }
 .vg-replay { position: absolute; top: 0; right: 0; }
 @media (prefers-reduced-motion: reduce) { .glow, .glow.glow-on, .vg-unlock { animation: none; } .glow.glow-on { outline: 5px solid var(--orange); } }
+
+/* en-tête sur petits écrans : rien ne passe à la ligne, les boutons gardent leur taille (lot guide vocal) */
+.hdr-actions { display: flex; align-items: center; gap: 8px; flex: none; }
+.brand { min-width: 0; } .brand > div { min-width: 0; } .brand b, .net { white-space: nowrap; }
+header .icon { width: 40px; height: 40px; min-height: 40px; background: rgba(255,255,255,.15); color: #fff; }
+@media (max-width: 440px) { .brand small { display: none; } }
+@media (max-width: 360px) { .net .net-txt { display: none; } .net { padding: 6px; } header { padding-left: 10px; padding-right: 10px; } .brand img { width: 32px; height: 32px; } }
