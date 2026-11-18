@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableExtensions
 REM Demo telephone par cable USB : le telephone ouvre http://localhost/go/ qui est relaye vers ce PC.
 REM "localhost" compte comme connexion securisee : GPS, installation de l'appli et mode hors ligne fonctionnent.
 where adb >nul 2>nul

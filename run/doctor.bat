@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableExtensions
 REM Salubri - diagnostic avant demarrage (Windows) : Docker, ports, disque, carte utilisee.
 cd /d "%~dp0\.."
 set ok=0

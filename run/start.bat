@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableExtensions
 REM Salubri - demarrage (Windows). Double-cliquer.
 cd /d "%~dp0\.."
 where docker >nul 2>nul
@@ -39,21 +40,20 @@ rem On ne reconstruit que nos images (API, interfaces) : celles d'OSRM et de Pos
 rem (ghcr.io, Docker Hub) parfois injoignables ; deja presentes, elles servent telles quelles.
 docker compose build seed api web
 if errorlevel 1 echo Attention : reconstruction impossible (reseau ?) - demarrage avec les images deja presentes.
-docker compose %PROFILES% up -d
-if errorlevel 1 ( call :pauser & exit /b 1 )
 if exist "data\osm\ouaga.osm.pbf" if not exist "data\osm\.seeded_osm" (
   echo Premier chargement des vraies rues OpenStreetMap ^(1 a 2 minutes^)...
   docker compose run --rm seed python -m salubri_api.seed.run --force
   if not errorlevel 1 echo charge> "data\osm\.seeded_osm"
-  rem jeu de pieges de la repetition propre a cette carte
-  docker compose run --rm -v "%CD%\scripts:/app/scripts:ro" -v "%CD%\data\rehearsal:/app/data/rehearsal" seed python scripts/gen_traps.py
 )
+docker compose %PROFILES% up -d
+if errorlevel 1 ( call :pauser & exit /b 1 )
+if exist "data\osm\.seeded_osm" docker compose run --rm -v "%CD%\scripts:/app/scripts:ro" -v "%CD%\data\rehearsal:/app/data/rehearsal" seed python /app/scripts/gen_traps.py
 echo Attente de l'API...
-set /a n=0
+set /a WAITN=0
 :wait
-set /a n+=1
-if %n% equ 15 echo (si %URL% s ouvre deja dans le navigateur, Salubri tourne : vous pouvez fermer cette fenetre)
-if %n% gtr 120 (
+set /a WAITN+=1
+if %WAITN% equ 15 echo (si %URL% s ouvre deja dans le navigateur, Salubri tourne : vous pouvez fermer cette fenetre)
+if %WAITN% gtr 120 (
   echo L'API ne repond pas : docker compose logs api seed
   call :pauser & exit /b 1
 )
