@@ -2,6 +2,7 @@
 
 ## Non publié
 
+- Compte administrateur par défaut `admin` / `Salubri2026`, créé au démarrage (mode démonstration, sans badge) sur toute copie du dépôt ; jamais réécrit ; hors démonstration l'API refuse de démarrer tant qu'il garde ce mot de passe.
 - Salubri Go : guide vocal pour les non-lecteurs (langue français/mooré au lancement, signalement pas à pas à la voix, boutons qui brillent, voix françaises générées, voix mooré enregistrées et découpées, à faire valider ; détail dans `docs/AUDIO_GO.md`).
 - Dossier `livrable/` : les six livrables du défi, reconstruits par `scripts/livrable.py` (vérifié en CI) ; choix G du lanceur et `run/livrable` l'ouvrent.
 

@@ -33,7 +33,7 @@ parcourt toutes les routes du schéma OpenAPI pour n'en oublier aucune).
 
 ## Ce qui n'est pas protégé (à savoir)
 
-- **Démonstration** : le mode démo est public par construction (code `ouaga2026`, compte `demo`). Ne jamais l'exposer sur Internet.
+- **Démonstration** : le mode démo est public par construction (code `ouaga2026`, comptes `demo` et `admin` / `Salubri2026`, créés au démarrage s'ils manquent, jamais réécrits). Ne jamais l'exposer sur Internet. Hors démonstration, l'API refuse de démarrer tant que `admin` garde son mot de passe par défaut (le changer : `python -m salubri_api.users passwd admin`, ou le désactiver ; login et mot de passe par défaut réglables par `SALUBRI_DEFAULT_ADMIN_LOGIN` et `SALUBRI_DEFAULT_ADMIN_PASSWORD`).
 - **Certificat local** : en démonstration, le HTTPS de `:8443` est auto-signé ; le téléphone affiche un avertissement. Ce n'est pas une protection contre un attaquant sur le même Wi-Fi.
 - **Plusieurs processus API** : les échecs de connexion sont en base (partagés) ; les compteurs anti-pourriel des signalements restent en mémoire d'un seul processus (voir `docs/HYPOTHESES.md`).
 - **Un téléphone qui change d'identifiant** contourne la limite par appareil ; la limite par adresse et les règles restent.

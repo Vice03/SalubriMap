@@ -35,7 +35,7 @@ else
     say "" "→ vraies rues possibles : scripts/prepare_osm_extract.sh (Internet et osmium présents)"
   fi
 fi
-[ -f .env ] && grep -Eq '^SALUBRI_DEMO_MODE=false' .env && say "Mode" "production (.env)" || say "Mode" "démonstration (compte demo / ouaga2026)"
+[ -f .env ] && grep -Eq '^SALUBRI_DEMO_MODE=false' .env && say "Mode" "production (.env)" || say "Mode" "démonstration (comptes admin / demo)"
 # module « Assistant » (optionnel) : moteur, modèle et palier de la machine ; jamais bloquant
 command -v python3 >/dev/null 2>&1 && python3 run/llm_detect.py --doctor 2>/dev/null
 exit $ok

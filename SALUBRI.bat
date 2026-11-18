@@ -93,7 +93,7 @@ goto menu
 rem ----------------------------------------------------------------- demarrage
 :demo
 echo.
-echo   %W%Version DEMO%N% : compte demo / ouaga2026, modules optionnels eteints.
+echo   %W%Version DEMO%N% : comptes admin / Salubri2026 et demo / ouaga2026, modules optionnels eteints.
 call :setenv SALUBRI_DEMO_MODE true
 call :setenv SALUBRI_DATA_MODE demo
 call :setenv SALUBRI_SEASONS_ENABLED false
@@ -354,7 +354,7 @@ if errorlevel 1 (
 ) else (
   echo   %G%=================================================================%N%
   echo   %G%Pret.%N%  Salubri Map : %W%%URL%/%N%    Salubri Go : %W%%URL%/go/%N%
-  echo          Connexion mairie : %W%demo%N% / %W%ouaga2026%N%
+  echo          Connexion mairie : %W%admin%N% / %W%Salubri2026%N%   %D%(ou demo / ouaga2026)%N%
   echo   %G%=================================================================%N%
 )
 pause

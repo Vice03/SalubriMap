@@ -54,6 +54,30 @@ def test_demo_mode_creates_demo_account_once_and_keeps_the_demo_code(db):  # typ
     assert db.query(User).filter(User.login == "demo").count() == 1
 
 
+def test_default_admin_is_created_in_demo_mode_never_overwritten_and_blocks_production(db):  # type: ignore[no-untyped-def]
+    from salubri_api.services.auth import verify_password
+
+    demo = Settings(demo_mode=True, admin_token="", secret_key="")
+    check_startup(demo, db)
+    check_startup(demo, db)
+    admin = db.query(User).filter(User.login == "admin").one()
+    assert admin.role == "admin" and verify_password(admin.password_hash, "Salubri2026")
+    assert any("mot de passe par défaut" in p for p in problems(prod(), db))
+    admin.password_hash = hash_password("un-autre-mot-de-passe")  # changé : jamais réécrit, plus de blocage
+    db.commit()
+    check_startup(demo, db)
+    assert verify_password(db.query(User).filter(User.login == "admin").one().password_hash, "un-autre-mot-de-passe")
+    assert not any("par défaut" in p for p in problems(prod(), db))
+
+
+def test_default_admin_logs_in(db):  # type: ignore[no-untyped-def]
+    from salubri_api.main import app
+
+    with TestClient(app) as c:
+        r = c.post("/api/auth/login", json={"login": "admin", "password": "Salubri2026"})
+        assert r.status_code == 200 and r.json()["user"]["role"] == "admin"
+
+
 def test_demo_account_logs_in_and_health_shows_demo_mode(db):  # type: ignore[no-untyped-def]
     from salubri_api.main import app
 

@@ -12,7 +12,7 @@ signalement (12 règles, photos masquées), à **planifier** les points de regro
 à **simuler** l'effet d'un changement (panne, saison des pluies, budget) avant de le décider.
 
 > **En une phrase** : double-cliquez sur **`SALUBRI.bat`** à la racine du dossier, tapez **1** puis Entrée,
-> attendez « Pret », et le navigateur s'ouvre sur Salubri. Compte de la mairie : **demo** / **ouaga2026**.
+> attendez « Pret », et le navigateur s'ouvre sur Salubri. Compte de la mairie : **admin** / **Salubri2026** (ou **demo** / **ouaga2026**).
 
 ## 1. Ce qu'il faut sur l'ordinateur
 
@@ -81,7 +81,7 @@ cerclés ; la liste par retenue est sous la carte. Les données sont réelles : 
 eau OpenStreetMap, populations du recensement INSD 2019.
 
 Le public ne voit que les signalements **vérifiés**, photos masquées (ligne de licence sous la carte). Cliquez
-« Se connecter » en haut à droite : **demo** / **ouaga2026**.
+« Se connecter » en haut à droite : **admin** / **Salubri2026** (administrateur, sur n'importe quel ordinateur) ou **demo** / **ouaga2026**.
 
 ![Signalements](guide/03_signalements.jpg)
 
@@ -161,7 +161,7 @@ le trouve tout seul.
 
 ## 6. Repères
 
-- Comptes : **demo** / **ouaga2026** (administrateur, mode démonstration seulement ; c'est lui qui affiche le badge « Mode démonstration »). Compte personnel : `docker compose exec api python -m salubri_api.users add <login> --role admin`.
+- Comptes : **admin** / **Salubri2026** (administrateur, créé au démarrage sur toute copie du dépôt ; mot de passe à changer hors démonstration : `docker compose exec api python -m salubri_api.users passwd admin`) et **demo** / **ouaga2026** (mode démonstration seulement ; c'est lui qui affiche le badge « Mode démonstration »). Un compte créé à la main reste dans la base de cette machine. Compte personnel : `docker compose exec api python -m salubri_api.users add <login> --role admin`.
 - Application Android : l'APK de Salubri Go se télécharge dans GitHub (Actions, artefact `salubri-go-apk`) ; au premier lancement, taper l'adresse du serveur affichée par `run/start` (même Wi-Fi). Détails : `apps/go/README.md`. Hors démonstration
   (`SALUBRI_DEMO_MODE=false`), des secrets aléatoires sont créés au premier démarrage et un admin se crée avec
   `run\admin <login>`.

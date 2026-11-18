@@ -31,6 +31,11 @@ class Settings(BaseSettings):
     # visible dans l'interface. Hors démonstration (false), l'API refuse de démarrer avec un secret par défaut.
     # Faux par défaut (sûr) ; docker-compose.yml l'active pour que la démo reste « une commande ».
     demo_mode: bool = False
+    # Compte admin créé au démarrage en mode démonstration s'il n'existe pas (jamais modifié ensuite) : utilisable sur tout
+    # clone du dépôt, sans badge « Mode démonstration ». Hors démonstration, il n'est pas créé et l'API refuse de démarrer
+    # tant qu'il garde ce mot de passe.
+    default_admin_login: str = "admin"
+    default_admin_password: str = "Salubri2026"
     # « demo » : signalements d'exemple chargés ; « reel » : SDGD 2020 + Salubri Go seulement ; « reference » : aucun signalement chargé (que ceux de Salubri Go) (services/data_mode.py)
     data_mode: Literal["demo", "reel", "reference"] = "demo"
     # Clé de signature des sessions (connexion des comptes mairie). Vide = clé aléatoire tirée au démarrage :

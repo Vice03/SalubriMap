@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 from salubri_api.config import DEMO_TOKEN, Settings
 from salubri_api.models import User
 from salubri_api.models.audit import audit
-from salubri_api.services.auth import hash_password
+from salubri_api.services.auth import hash_password, verify_password
 
 log = logging.getLogger(__name__)
 DEMO_LOGIN = "demo"
@@ -52,7 +52,31 @@ def problems(settings: Settings, s: Session) -> list[str]:
         out.append(
             "le compte de démonstration « demo » est actif : désactivez-le (python -m salubri_api.users disable demo)"
         )
+    default = s.query(User).filter(User.login == settings.default_admin_login, User.active.is_(True)).first()
+    if default is not None and verify_password(default.password_hash, settings.default_admin_password):
+        out.append(
+            f"le compte « {default.login} » a encore le mot de passe par défaut : "
+            "changez-le (python -m salubri_api.users passwd) ou désactivez-le"
+        )
     return out
+
+
+def ensure_default_admin(s: Session, settings: Settings) -> bool:
+    """Mode démo : crée l'admin par défaut (admin / Salubri2026) s'il manque ; un compte existant n'est jamais touché."""
+    login = settings.default_admin_login.strip().lower()
+    if not login or s.query(User).filter(User.login == login).first() is not None:
+        return False
+    u = User(
+        login=login,
+        display_name="Administrateur",
+        role="admin",
+        password_hash=hash_password(settings.default_admin_password),
+    )
+    s.add(u)
+    s.flush()
+    audit(s, "create", "user", u.id, after={"login": login, "role": "admin", "defaut": True}, actor="system")
+    s.commit()
+    return True
 
 
 def ensure_demo_account(s: Session) -> bool:
@@ -71,6 +95,11 @@ def check_startup(settings: Settings, s: Session) -> None:
     if settings.demo_mode:
         if ensure_demo_account(s):
             log.warning("Mode démonstration : compte « demo » créé (mot de passe %s)", DEMO_PASSWORD)
+        if ensure_default_admin(s, settings):
+            log.warning(
+                "Compte admin par défaut « %s » créé : changez son mot de passe hors démonstration",
+                settings.default_admin_login,
+            )
         log.warning("MODE DÉMONSTRATION : compte « demo » et code « %s » connus de tous, ne pas exposer", DEMO_TOKEN)
         return
     found = problems(settings, s)
