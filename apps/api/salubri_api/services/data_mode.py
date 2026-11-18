@@ -3,7 +3,8 @@
 
 - « demo » : les signalements d'exemple (reports_demo.geojson) sont chargés, pour le jury.
 - « reel » : on les retire, avec les signalements d'appareils « demo-… » ; restent les décharges et CCT officiels du
-  SDGD 2020 (enquête 2019), les signalements envoyés par Salubri Go et les imports faits par la mairie. Rien de réel
+  SDGD 2020 (enquête 2019), les signalements envoyés par Salubri Go et les imports faits par la mairie ; les pièges de
+  la répétition (« trap-… », de fausses alertes) partent aussi. Rien de réel
   n'est jamais effacé : passer de « reel » à « demo » recharge seulement les exemples.
 
 Appliqué au démarrage de l'API et à la fin du seed ; idempotent et protégé par un verrou PostgreSQL."""
@@ -21,6 +22,7 @@ from salubri_api.services.consolidation import consolidate
 
 log = logging.getLogger(__name__)
 DEMO_FILES = ("reports_demo.geojson",)
+TRAP_FILES = ("traps.zip",)  # signalements pièges de la répétition (scripts/rehearse.py) : de fausses alertes
 LOCK = 815_2026
 
 
@@ -36,20 +38,29 @@ def _demo_batches(s: Session) -> list[ImportBatch]:
 
 def to_reel(s: Session, commune: Commune) -> int:
     n = 0
-    for b in _demo_batches(s):
+    traps = s.query(ImportBatch).filter(ImportBatch.filename.in_(TRAP_FILES), ImportBatch.rolled_back.is_(False)).all()
+    for b in [*_demo_batches(s), *traps]:
         n += s.query(Report).filter(Report.import_batch_id == b.id).delete(synchronize_session=False)
         b.rolled_back = True
     n += (
         s.query(Report)
         .filter(Report.commune_id == commune.id)
-        .filter((Report.device_id.like("demo-%")) | (Report.external_id.like("demo-%")))
+        .filter(Report.device_id.like("demo-%") | Report.external_id.like("demo-%") | Report.external_id.like("trap-%"))
         .delete(synchronize_session=False)
     )
     return n
 
 
 def to_demo(s: Session, commune: Commune) -> int:
-    if _demo_batches(s):
+    """Recharge les exemples seulement s'ils ont été retirés par le mode « reel » (le seed s'occupe du premier chargement)."""
+    removed = (
+        s.query(ImportBatch)
+        .filter(
+            ImportBatch.filename.in_(DEMO_FILES), ImportBatch.uploaded_by == "seed", ImportBatch.rolled_back.is_(True)
+        )
+        .count()
+    )
+    if _demo_batches(s) or not removed:
         return 0
     from salubri_api.seed.run import demo_photos
     from salubri_api.services.importers.run import run_import

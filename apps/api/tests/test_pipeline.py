@@ -106,7 +106,7 @@ def test_failure_keeps_previous_ready(db, monkeypatch):
     def boom(*a, **k):  # type: ignore[no-untyped-def]
         raise RuntimeError("panne simulée")
 
-    monkeypatch.setattr(pipeline, "solve_vrp", boom)
+    monkeypatch.setattr(pipeline, "solve_by_days", boom)
     sc = scenario(db)
     sc.params = {**sc.params, "vrp_time_limit_s": 0.6}
     db.commit()

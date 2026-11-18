@@ -2,6 +2,11 @@
 
 ## 0.5.0 — 18 novembre 2026
 
+- Comparer des implantations de la ville entière : six variantes prêtes (base, bacs à 200 m / 400 m, gros bacs, 3 enlèvements, équipes 6 h – 14 h) calculées en arrière-plan avec la flotte choisie ; cas personnalisé avec ville entière, flotte et réglages d'implantation ; lignes de coûts dans le tableau ; mini-carte de chaque cas.
+- Secteurs de collecte : avec 6 jours travaillés et 2 enlèvements, la ville est coupée en 3 secteurs (lundi/jeudi, mardi/vendredi, mercredi/samedi) ; chaque jour la flotte sert un secteur, la simulation aussi. Flotte nécessaire et coûts réalistes sur la ville entière.
+- Tournées : une matrice de coûts par type de camion (et non par camion × rotation) et construction pas à pas sur les très grandes instances : la ville entière à 30 camions ne sature plus la mémoire.
+- Mode réel : les pièges de la répétition (« trap-… ») sont retirés ; la répétition annule elle-même son import de pièges après contrôle.
+
 - Horaires des équipes réglables : début 8 h, fin 18 h, pause 1 h, 6 jours par semaine par défaut. Les tournées tiennent dans ces horaires, les enlèvements se répartissent sur les jours travaillés (jamais plus d'enlèvements que de jours).
 - Estimation des coûts de chaque plan (`summary.couts`, carte « Estimation des coûts ») : gasoil (750 FCFA/L depuis le 10 août 2026 × consommation), entretien, équipages (chauffeur + ripeurs, charges sociales), amortissement et assurance des camions, amortissement des bacs ; total par mois et par an, coût par tonne, comparaison au budget. Douze nouveaux paramètres, tous réglables et sourcés (docs/PARAMETRES.md). La simulation paie désormais le km au prix calculé (gasoil + entretien).
 

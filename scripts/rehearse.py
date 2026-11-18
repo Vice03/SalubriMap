@@ -104,6 +104,9 @@ def run_traps(c: httpx.Client) -> tuple[bool, list[str]]:
     all_ok &= stable
     print(f"\nDépotoirs consolidés avant/après les pièges : {before} → {after}  {ok(stable)}")
     lines.append(f"\nDépotoirs consolidés avant/après : {before} → {after} {'✅' if stable else '❌'}")
+    batch = r.json().get("batch_id")
+    if batch:  # les pièges ne restent pas dans la base : ce seraient de fausses alertes au tableau de bord
+        c.post(f"/api/imports/{batch}/rollback")
     return all_ok, lines
 
 

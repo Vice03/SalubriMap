@@ -20,6 +20,7 @@ class TruckRoute:
     distance_km: float
     capacity_kg: float
     fixed_cost: float
+    days: frozenset[int] | None = None  # jours de passage (0 = lundi) ; None = jours d'enlèvement du plan
 
 
 @dataclass

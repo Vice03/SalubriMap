@@ -31,6 +31,7 @@ class RouteOut:
     distance_km: float
     duration_min: float
     cost: float
+    day: int = 0  # groupe de jours de collecte (secteur), voir solve_by_days
 
 
 @dataclass
@@ -106,14 +107,19 @@ def solve_vrp(
     dem_i = np.ceil(np.round(demand_t * SCALE, 6)).astype(int)
     svc = int(service_min)
 
+    # une matrice de coûts par coût kilométrique distinct (et non par camion × rotation : 60 copies de 2 000² entiers
+    # faisaient tomber la ville entière en mémoire)
+    cost_cbs: dict[float, int] = {}
     for v, (vi, rot) in enumerate(fleet):
-        per_m = vehicles[vi].cost_per_km / SCALE
-        mat = np.rint(dist_i * per_m).astype(int)
+        per_km = float(vehicles[vi].cost_per_km)
+        if per_km not in cost_cbs:
+            mat = np.rint(dist_i * (per_km / SCALE)).astype(np.int64)
 
-        def cost_cb(a: int, b: int, mat: np.ndarray = mat) -> int:
-            return int(mat[manager.IndexToNode(a), manager.IndexToNode(b)])
+            def cost_cb(a: int, b: int, mat: np.ndarray = mat) -> int:
+                return int(mat[manager.IndexToNode(a), manager.IndexToNode(b)])
 
-        cb = routing.RegisterTransitCallback(cost_cb)
+            cost_cbs[per_km] = routing.RegisterTransitCallback(cost_cb)
+        cb = cost_cbs[per_km]
         routing.SetArcCostEvaluatorOfVehicle(cb, v)
         routing.SetFixedCostOfVehicle(int(vehicles[vi].fixed_cost) if rot == 0 else 0, v)
 
@@ -150,6 +156,10 @@ def solve_vrp(
         routing.AddVariableMinimizedByFinalizer(tdim.CumulVar(end))
 
     params = pywrapcp.DefaultRoutingSearchParameters()
+    # Très grande instance (points × camions) : l'insertion parallèle pré-calcule toutes les insertions et sature la
+    # mémoire ; l'arc le moins cher construit pas à pas.
+    if n * m > LARGE_INSTANCE:
+        first_solution = "PATH_CHEAPEST_ARC"
     params.first_solution_strategy = getattr(routing_enums_pb2.FirstSolutionStrategy, first_solution)
     params.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
     # Large instances (whole city: 1,000+ points) need more than the default second to get past the first
@@ -201,6 +211,67 @@ def solve_vrp(
             fb.duration_ms = int((time.perf_counter() - t0) * 1000)
             return fb
     return best
+
+
+LARGE_INSTANCE = 40_000
+
+
+def day_groups(n_groups: int, lonlat: np.ndarray, depot: tuple[float, float], weight: np.ndarray) -> list[list[int]]:
+    """Découpe les points en `n_groups` secteurs autour du dépôt (par angle), de tonnage à peu près égal : chaque
+    secteur est collecté ses propres jours (lundi/jeudi, mardi/vendredi…). Renvoie des indices de points (0…)."""
+    k = len(lonlat)
+    if n_groups <= 1 or k == 0:
+        return [list(range(k))]
+    ang = np.arctan2(lonlat[:, 1] - depot[1], lonlat[:, 0] - depot[0])
+    order = np.argsort(ang)
+    cum = np.cumsum(np.maximum(weight[order], 1e-9))
+    cut = np.minimum((cum / cum[-1] * n_groups).astype(int), n_groups - 1)
+    return [order[cut == g].tolist() for g in range(n_groups)]
+
+
+def group_days(group: int, n_groups: int, per_week: int, work_days: int) -> frozenset[int]:
+    """Jours de collecte d'un secteur : groupe 0 → lundi et jeudi, groupe 1 → mardi et vendredi… (0 = lundi)."""
+    return frozenset(d for d in (group + j * n_groups for j in range(max(1, per_week))) if d < max(1, work_days))
+
+
+def solve_by_days(
+    dist_km: np.ndarray,
+    dur_min: np.ndarray,
+    demand_t: np.ndarray,
+    vehicles: list[VehicleSpec],
+    time_windows: list[tuple[int, int]],
+    service_min: float,
+    groups: list[list[int]],
+    time_limit_s: float = 2.0,
+) -> VrpSolution:
+    """Une tournée par secteur et par jour de collecte : toute la flotte sert un secteur à la fois. Les indices
+    renvoyés (arrêts, non desservis) sont ceux de la matrice complète (0 = dépôt)."""
+    if len(groups) <= 1:
+        return solve_vrp(dist_km, dur_min, demand_t, vehicles, time_windows, service_min, time_limit_s=time_limit_s)
+    t0 = time.perf_counter()
+    routes: list[RouteOut] = []
+    unserved: list[int] = []
+    notes: list[str] = []
+    objective = 0.0
+    solvers: set[str] = set()
+    for g, members in enumerate(groups):
+        nodes = np.array([0, *[i + 1 for i in members]], dtype=int)
+        sub = np.ix_(nodes, nodes)
+        sol = solve_vrp(
+            dist_km[sub], dur_min[sub], demand_t[nodes], vehicles, [time_windows[i] for i in nodes], service_min,
+            time_limit_s=time_limit_s,
+        )  # fmt: skip
+        for r in sol.routes:
+            r.stops = [int(nodes[i]) for i in r.stops]
+            r.day = g
+            routes.append(r)
+        unserved += [int(nodes[i]) for i in sol.unserved]
+        objective += sol.objective
+        solvers.add(sol.solver)
+        notes += [f"Secteur {g + 1} : {x}" for x in sol.notes]
+    return VrpSolution(
+        routes, sorted(unserved), objective, "+".join(sorted(solvers)), int((time.perf_counter() - t0) * 1000), notes
+    )
 
 
 def effective_time_limit(time_limit_s: float, n_nodes: int) -> float:

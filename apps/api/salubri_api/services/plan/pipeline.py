@@ -54,7 +54,14 @@ from salubri_api.services.planning.collection_points import (
     place_points,
 )
 from salubri_api.services.planning.distance import Matrix, build_matrix, route_geometry
-from salubri_api.services.planning.vrp import VehicleSpec, VrpSolution, lower_bound_km, solve_vrp
+from salubri_api.services.planning.vrp import (
+    VehicleSpec,
+    VrpSolution,
+    day_groups,
+    group_days,
+    lower_bound_km,
+    solve_by_days,
+)
 from salubri_api.services.reference import existing_cct
 from salubri_api.services.simulation.agents import PlanSnapshot, TruckRoute
 from salubri_api.services.simulation.engine import SimResult
@@ -100,6 +107,7 @@ class Vrp:
     vehicles: list[Vehicle]
     loads_t: np.ndarray
     geometries: list[list[tuple[float, float]]]
+    days: list[frozenset[int]] | None = None  # jours de collecte de chaque secteur (route.day → days[route.day])
 
 
 @dataclass
@@ -572,6 +580,12 @@ def _execute(pv_id: str) -> None:
             tws = [(0, 1440)] + points.time_windows
             shift = params.shift_minutes  # horaires des équipes (réglables) : 8 h – 18 h, pause déduite par défaut
             specs = [VehicleSpec(v.capacity_t, v.cost_per_km, v.fixed_cost_day, *shift, v.label) for v in vehicles]
+            # Secteurs de collecte : avec 6 jours travaillés et 2 enlèvements par semaine, la ville est coupée en
+            # 3 secteurs (lundi/jeudi, mardi/vendredi, mercredi/samedi) ; chaque jour, toute la flotte sert un secteur.
+            f_int = max(1, round(params.pickup_frequency_per_week))
+            n_groups = max(1, params.work_days_per_week // f_int)
+            groups = day_groups(n_groups, np.array(nodes[1:], dtype=float).reshape(-1, 2), nodes[0], per_pickup)
+            days = [group_days(g, n_groups, f_int, params.work_days_per_week) for g in range(len(groups))]
             e5_key = _h(
                 e4_key,
                 np.round(demand_nodes, 3).tolist(),
@@ -579,16 +593,18 @@ def _execute(pv_id: str) -> None:
                 shift,
                 params.vrp_time_limit_s,
                 tws,
+                groups,
             )
 
             def run_e5() -> Vrp:
-                sol = solve_vrp(
+                sol = solve_by_days(
                     matrix.distance_km,
                     matrix.duration_min,
                     demand_nodes,
                     specs,
                     tws,
                     SERVICE_MIN,
+                    groups,
                     time_limit_s=params.vrp_time_limit_s,
                 )
                 geoms = []
@@ -597,10 +613,11 @@ def _execute(pv_id: str) -> None:
                     geoms.append(
                         route_geometry(seq, url or None, settings.osrm_timeout_s) if matrix.mode == "osrm" else seq
                     )
-                return Vrp(sol, vehicles, per_pickup, geoms)
+                return Vrp(sol, vehicles, per_pickup, geoms, days)
 
             vrp: Vrp = _stage(pv_id, st, cache, "E5", e5_key, forced_all, run_e5)
             vrp.vehicles = vehicles  # rows of this session
+            vrp.days = days
 
             # E6 quick simulation
             sp = SimParams.from_scenario(params)
@@ -649,8 +666,10 @@ def _execute(pv_id: str) -> None:
                 "coverage_walk": coverage_walk,
                 "routes": len(vrp.solution.routes),
                 "vehicles_available": len(vehicles),
-                "km_day": round(sum(r.distance_km for r in vrp.solution.routes), 1),
-                "cost_day_fcfa": round(sum(r.cost for r in vrp.solution.routes)),
+                # par journée de collecte : chaque jour travaillé, la flotte sert un secteur
+                "km_day": round(sum(r.distance_km for r in vrp.solution.routes) / len(groups), 1),
+                "cost_day_fcfa": round(sum(r.cost for r in vrp.solution.routes) / len(groups)),
+                "secteurs": [{"jours": sorted(d), "points": len(g)} for d, g in zip(days, groups, strict=True)],
                 "unserved_points": len(unserved_idx),
                 "couts": costs.estimate(
                     params,
@@ -661,7 +680,18 @@ def _execute(pv_id: str) -> None:
                     float(w_week.sum()),
                 ),
                 "unserved_t_per_pickup": round(float(sum(demand_nodes[i] for i in unserved_idx)), 2),
-                "trucks_needed": _trucks_needed(demand_nodes, unserved_idx, vehicles),
+                "trucks_needed": max(
+                    (
+                        _trucks_needed(
+                            demand_nodes[[0, *[i + 1 for i in g]]],
+                            [k for k, i in enumerate([0, *[i + 1 for i in g]]) if i in set(unserved_idx)],
+                            vehicles,
+                        )
+                        or 0
+                    )
+                    for g in groups
+                )
+                or None,  # fmt: skip
                 "distance_mode": matrix.mode,
                 "solver": vrp.solution.solver,
                 "notes": vrp.solution.notes,
@@ -737,6 +767,7 @@ def _snapshot(ilots: Ilots, placement: PlacementResult, vrp: Vrp, params: Scenar
             vrp.vehicles[r.vehicle_idx].fixed_cost_day
             if r.rotation == 1 and r.vehicle_idx < len(vrp.vehicles)
             else 0.0,
+            vrp.days[r.day] if vrp.days and len(vrp.days) > 1 and r.day < len(vrp.days) else None,
         )
         for r in vrp.solution.routes
     ]

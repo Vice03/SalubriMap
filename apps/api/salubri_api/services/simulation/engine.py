@@ -163,9 +163,10 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
 
         # 4. municipal trucks
         km_today = cost_today = trucked = 0.0
-        if dow in pickup_days:
-            broken = {r.vehicle_idx for r in plan.routes if rng.random() < sp.breakdown_rate}
-            for r in plan.routes:
+        todays = [r for r in plan.routes if dow in (pickup_days if r.days is None else r.days)]  # secteur du jour
+        if todays:
+            broken = {r.vehicle_idx for r in todays if rng.random() < sp.breakdown_rate}
+            for r in todays:
                 if r.vehicle_idx in broken or budget_left <= 0:
                     continue
                 room = r.capacity_kg

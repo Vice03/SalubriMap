@@ -18,6 +18,8 @@ class ScenarioCreate(BaseModel):
     name: str = Field(min_length=1, max_length=128)
     parent_id: str | None = None
     params: dict[str, Any] = {}
+    # taille de flotte voulue : des bennes 8 t sont ajoutées si le parent en a moins (implantations ville entière)
+    trucks: int | None = Field(None, ge=1, le=200)
 
 
 class ScenarioPatch(BaseModel):

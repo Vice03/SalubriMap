@@ -110,8 +110,8 @@ export const api = {
   paramsSchema: () => get<ParamsSchema>('/scenarios/params-schema'),
   patchScenario: (id: string, body: { params?: Record<string, unknown>; vehicles?: { id: string; out_of_service: boolean }[] }) =>
     request<{ plan_version_id: string | null; event: string | null }>('PATCH', `/scenarios/${id}`, { json: body }),
-  createScenario: (name: string, parentId: string, params: Record<string, unknown> = {}) =>
-    request<Scenario & { plan_version_id: string }>('POST', '/scenarios', { json: { name, parent_id: parentId, params } }),
+  createScenario: (name: string, parentId: string, params: Record<string, unknown> = {}, trucks?: number) =>
+    request<Scenario & { plan_version_id: string }>('POST', '/scenarios', { json: { name, parent_id: parentId, params, ...(trucks ? { trucks } : {}) } }),
   deleteScenario: (id: string) => request<void>('DELETE', `/scenarios/${id}`),
   breakdown: (sid: string, vid: string, out: boolean) =>
     request<{ plan_version_id: string }>('POST', `/scenarios/${sid}/vehicles/${vid}/breakdown`, { json: { out_of_service: out } }),

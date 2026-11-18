@@ -137,6 +137,12 @@ SIM_METRICS = [
     "mean_cleanup_delay_days",
 ]
 BETTER_WHEN_LOWER = [
+    "couts.total_mois_fcfa",
+    "couts.cout_par_tonne_fcfa",
+    "couts.carburant",
+    "couts.equipages",
+    "couts.km_mois",
+    "couts.camions_flotte",
     "km_day",
     "cost_day_fcfa",
     "unserved_points",
@@ -165,8 +171,16 @@ def _side(s: Session, sid: str) -> dict[str, Any]:
     }
 
 
+COST_METRICS = ["total_mois_fcfa", "cout_par_tonne_fcfa", "carburant", "equipages", "km_mois", "camions_flotte"]
+
+
 def _values(summ: dict[str, Any]) -> dict[str, float]:
     out = {m: summ[m] for m in METRICS if summ.get(m) is not None}
+    c = summ.get("couts") or {}
+    for m in COST_METRICS:  # estimation des coûts (services/costs.py)
+        v = c.get(m, (c.get("mois_fcfa") or {}).get(m))
+        if v is not None:
+            out[f"couts.{m}"] = v
     for m in SIM_METRICS:
         v = (summ.get("sim") or {}).get(m)
         if v is not None:
@@ -263,7 +277,14 @@ def create_scenario(
                 shift_end=v.shift_end,
             )
         )
-    audit(s, "create", "scenario", sc.id, after={"name": sc.name, "parent": body.parent_id})
+    if body.trucks and body.trucks > len(src):
+        s.flush()
+        kind = VEHICLE_KINDS["truck_8t"]
+        for _ in range(body.trucks - len(src)):
+            s.add(Vehicle(scenario_id=sc.id, label=_next_label(s, sc), kind="truck_8t", capacity_t=kind["capacity_t"],
+                          cost_per_km=kind["cost_per_km"], fixed_cost_day=kind["fixed_cost_day"]))  # fmt: skip
+            s.flush()
+    audit(s, "create", "scenario", sc.id, after={"name": sc.name, "parent": body.parent_id, "camions": body.trucks})
     s.commit()
     pv = request_recompute(s, sc, "manual", {"reason": "création"})
     out = scenario_out(s, sc)

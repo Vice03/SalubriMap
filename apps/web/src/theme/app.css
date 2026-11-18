@@ -404,3 +404,16 @@ a { color: var(--primary-2); }
 .cost-facts { display: flex; flex-wrap: wrap; gap: 8px 18px; font-size: 13.5px; color: #334155; }
 .cost-facts span { display: inline-flex; align-items: center; gap: 6px; }
 @media (max-width: 820px) { .cost-total { grid-template-columns: 1fr; } .cost-line { grid-template-columns: 1fr; gap: 4px; } }
+
+/* ---------- implantations de la ville entière et mini-cartes ---------- */
+.layouts { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: linear-gradient(135deg, #eef4ff, #f8fafd); border: 1px solid #dbe6f7; display: flex; flex-direction: column; gap: 10px; }
+.layouts .sim-title { display: flex; align-items: center; gap: 6px; }
+.layout-picks { display: flex; flex-wrap: wrap; gap: 8px; }
+.layout-pick { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; border: 1px solid #c7d6ee; background: #fff; cursor: pointer; font-size: 13.5px; }
+.layout-pick.on { background: var(--navy); color: #fff; border-color: var(--navy); }
+.layout-pick input { accent-color: #fff; margin: 0; }
+.layout-go { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.layout-go label { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.layout-go input { width: 80px; border: 1px solid var(--line); border-radius: 8px; padding: 6px 8px; font: inherit; }
+.mini-maps { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; }
+.mini-map-title { display: flex; align-items: center; gap: 6px; font-weight: 600; margin-bottom: 6px; font-size: 14px; }

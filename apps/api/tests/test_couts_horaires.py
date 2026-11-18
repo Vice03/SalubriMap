@@ -44,3 +44,21 @@ def test_plan_donne_les_couts(client):  # type: ignore[no-untyped-def]
     assert plan["status"] == "ready", plan.get("error")
     c = plan["summary"]["couts"]
     assert c["total_mois_fcfa"] > 0 and c["camions_flotte"] >= 1 and c["cout_km_fcfa"] == 420
+
+
+def test_implantation_ville_entiere_avec_flotte(client):  # type: ignore[no-untyped-def]
+    from tests.test_scenarios_api import wait
+
+    base = client.get("/api/scenarios").json()[0]
+    r = client.post("/api/scenarios", json={"name": "Ville · bacs à 200 m", "parent_id": base["id"], "trucks": 6,
+                                            "params": {"active_quartier_ids": None, "walk_distance_max_m": 200}})  # fmt: skip
+    assert r.status_code == 201, r.text
+    sc = r.json()
+    assert len(sc["vehicles"]) == 6 and sc["params"]["active_quartier_ids"] is None
+    p = wait(client, sc["plan_version_id"], 120)
+    assert p["status"] == "ready", p.get("error")
+    rb = client.patch(f"/api/scenarios/{base['id']}", json={"params": {"budget_fcfa_month": 24_000_000}}).json()
+    assert wait(client, rb["plan_version_id"], 120)["status"] == "ready"
+    cmp = client.get("/api/scenarios/compare-many", params={"ids": f"{base['id']},{sc['id']}"}).json()
+    keys = {row["key"] for row in cmp["rows"]}
+    assert {"couts.total_mois_fcfa", "couts.cout_par_tonne_fcfa", "couts.camions_flotte"} <= keys

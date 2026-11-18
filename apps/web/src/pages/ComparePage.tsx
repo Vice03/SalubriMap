@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { ArrowLeftRight, FlaskConical, Plus, Sparkles, Trophy, X } from 'lucide-react'
+import { ArrowLeftRight, FlaskConical, Map as MapIcon, Plus, Sparkles, Trophy, X } from 'lucide-react'
 import { useEffect, useMemo, useState } from 'react'
 import { api } from '../api/client'
 import { can, useSession } from '../api/session'
 import type { CompareMany } from '../api/types'
+import { MapView, type Layers } from '../components/map/MapView'
 import { LineChart } from '../components/ui/Charts'
 import { RoleButton } from '../components/ui/RoleButton'
 import { num } from '../lib/format'
@@ -19,11 +20,26 @@ export const LABELS: Record<string, string> = {
   'sim.overflow_point_days': 'Débordements (points × jours)', 'sim.cost_total_fcfa': 'Coût total (FCFA)',
   'sim.cost_per_t': 'Coût par tonne (FCFA)', 'sim.coverage_rate': 'Couverture', 'sim.subscription_rate_final': 'Taux d\'abonnement final',
   'sim.mean_cleanup_delay_days': 'Délai moyen de nettoyage (j)',
+  'couts.total_mois_fcfa': 'Coût estimé par mois (FCFA)', 'couts.cout_par_tonne_fcfa': 'Coût estimé par tonne (FCFA)',
+  'couts.carburant': 'Gasoil par mois (FCFA)', 'couts.equipages': 'Équipages par mois (FCFA)', 'couts.km_mois': 'km par mois',
+  'couts.camions_flotte': 'Camions dans la flotte',
 }
+
+/** Implantations de la ville entière : chaque variante change la façon de couvrir la ville (marche, bacs, rythme,
+ *  horaires). Toutes partent de la référence, sur toute la ville, avec la flotte choisie. */
+interface Layout { name: string; params: Record<string, unknown> }
+const LAYOUTS: Layout[] = [
+  { name: 'Ville · implantation de base', params: {} },
+  { name: 'Ville · bacs à 200 m', params: { walk_distance_max_m: 200 } },
+  { name: 'Ville · bacs à 400 m', params: { walk_distance_max_m: 400 } },
+  { name: 'Ville · gros bacs (5 t)', params: { collection_point_capacity_t: 5 } },
+  { name: 'Ville · 3 enlèvements/semaine', params: { pickup_frequency_per_week: 3, pickup_frequency_max_per_week: 3 } },
+  { name: 'Ville · équipes 6 h – 14 h', params: { work_start_h: 6, work_end_h: 14, break_min: 30 } },
+]
 /** Couleurs des cas, toujours dans cet ordre (le cas n garde sa couleur quand on en ajoute un autre). */
 export const CASE_COLORS = ['#1565c0', '#ef6c00', '#2e7d32', '#8e24aa', '#c62828', '#00838f', '#6d4c41', '#546e7a']
 
-interface Recipe { name: string; breakdown: number; season: '' | 'dry' | 'rain'; subscriptionPts: number; budgetPct: number }
+interface Recipe { name: string; breakdown: number; season: '' | 'dry' | 'rain'; subscriptionPts: number; budgetPct: number; params?: Record<string, unknown>; city?: boolean; trucks?: number }
 const PRESETS: Recipe[] = [
   { name: '2 camions en panne', breakdown: 2, season: '', subscriptionPts: 0, budgetPct: 0 },
   { name: 'Saison des pluies', breakdown: 0, season: 'rain', subscriptionPts: 0, budgetPct: 0 },
@@ -39,7 +55,10 @@ export function ComparePage() {
   const session = useSession()
   const modules = useModules()
   const [ids, setIds] = useState<string[]>([])
-  const [custom, setCustom] = useState<Recipe>({ name: 'Mon cas', breakdown: 1, season: '', subscriptionPts: 0, budgetPct: 0 })
+  const [custom, setCustom] = useState<Recipe>({ name: 'Mon cas', breakdown: 0, season: '', subscriptionPts: 0, budgetPct: 0, params: {}, city: false })
+  const [layoutPick, setLayoutPick] = useState<string[]>(LAYOUTS.slice(0, 4).map((l) => l.name))
+  const [fleet, setFleet] = useState<number>(0)
+  const [launching, setLaunching] = useState(false)
   const [showCustom, setShowCustom] = useState(false)
   const [tick, setTick] = useState(0)
 
@@ -67,11 +86,12 @@ export function ComparePage() {
     const base = scenarios.find((s) => s.id === ids[0]) ?? scenario
     if (!base) return
     try {
-      const params: Record<string, unknown> = {}
+      const params: Record<string, unknown> = { ...(r.params ?? {}) }
+      if (r.city) params.active_quartier_ids = null  // toute la ville
       if (r.season) params.season = r.season
       if (r.subscriptionPts) params.subscription_rate = Math.max(0, Math.min(1, Number(base.params.subscription_rate) + r.subscriptionPts / 100))
       if (r.budgetPct) params.budget_fcfa_month = Math.round(Number(base.params.budget_fcfa_month) * (1 + r.budgetPct / 100))
-      const sc = await api.createScenario(`${base.name} — ${r.name}`, base.id, params)
+      const sc = await api.createScenario(r.city ? r.name : `${base.name} — ${r.name}`, base.id, params, r.trucks || undefined)
       let planId = sc.plan_version_id
       if (r.breakdown > 0) {
         const vs = sc.vehicles.filter((v) => !v.out_of_service).slice(-r.breakdown)
@@ -82,6 +102,16 @@ export function ComparePage() {
       setIds((x) => (x.length >= 8 ? x : [...x, sc.id]))
       track(planId, r.name)
     } catch (e) { toast('error', (e as Error).message) }
+  }
+  // Flotte proposée pour la ville entière : celle qu'estime le plan de la référence, sinon 30 camions
+  const ref = scenarios.find((s) => s.id === ids[0]) ?? scenario
+  const suggested = 30
+  const launchLayouts = async () => {
+    setLaunching(true)
+    for (const l of LAYOUTS.filter((x) => layoutPick.includes(x.name))) {
+      await simulate({ name: l.name, breakdown: 0, season: '', subscriptionPts: 0, budgetPct: 0, params: l.params, city: true, trucks: fleet || suggested })
+    }
+    setLaunching(false)
   }
   const remove = async (id: string) => {
     try { await api.deleteScenario(id); await reloadScenarios() } catch (e) { toast('error', (e as Error).message) }
@@ -127,6 +157,24 @@ export function ComparePage() {
           {PRESETS.map((p) => <RoleButton need="admin" key={p.name} className="pill-btn" onClick={() => void simulate(p)}>{p.name}</RoleButton>)}
           <RoleButton need="admin" className="pill-btn accent" onClick={() => setShowCustom((x) => !x)}><Plus size={14} /> Cas sur mesure</RoleButton>
         </div>
+        <div className="layouts">
+          <div className="sim-title"><MapIcon size={16} /> Comparer des implantations de la <b>ville entière</b> :</div>
+          <div className="layout-picks">
+            {LAYOUTS.map((l) => (
+              <label key={l.name} className={`layout-pick${layoutPick.includes(l.name) ? ' on' : ''}`}>
+                <input type="checkbox" checked={layoutPick.includes(l.name)} onChange={(e) => setLayoutPick((x) => e.target.checked ? [...x, l.name] : x.filter((y) => y !== l.name))} />
+                {l.name.replace('Ville · ', '')}
+              </label>
+            ))}
+          </div>
+          <div className="layout-go">
+            <label>Camions<input type="number" min={1} max={200} value={fleet || suggested} onChange={(e) => setFleet(Math.max(1, Number(e.target.value) || 1))} /></label>
+            <RoleButton need="admin" className="btn-primary" disabled={!layoutPick.length || launching || !ref} onClick={() => void launchLayouts()}>
+              {launching ? 'Lancement…' : `Calculer ${layoutPick.length} implantation(s)`}
+            </RoleButton>
+            <span className="muted">Chaque implantation se calcule en arrière-plan (environ 1 min sur la ville entière) ; ses résultats arrivent ici tout seuls.</span>
+          </div>
+        </div>
         {showCustom && (
           <div className="custom-case">
             <label>Nom<input value={custom.name} onChange={(e) => setCustom({ ...custom, name: e.target.value })} /></label>
@@ -135,6 +183,12 @@ export function ComparePage() {
               <option value="">comme la référence</option><option value="dry">sèche</option><option value="rain">des pluies</option></select></label>
             <label>Abonnement (± points)<input type="number" min={-50} max={50} value={custom.subscriptionPts} onChange={(e) => setCustom({ ...custom, subscriptionPts: Number(e.target.value) || 0 })} /></label>
             <label>Budget (± %)<input type="number" min={-80} max={200} value={custom.budgetPct} onChange={(e) => setCustom({ ...custom, budgetPct: Number(e.target.value) || 0 })} /></label>
+            <label>Ville entière<select value={custom.city ? '1' : ''} onChange={(e) => setCustom({ ...custom, city: !!e.target.value })}><option value="">non (zone de la référence)</option><option value="1">oui</option></select></label>
+            <label>Camions (flotte)<input type="number" min={0} max={200} placeholder="comme la référence" value={custom.trucks || ''} onChange={(e) => setCustom({ ...custom, trucks: Number(e.target.value) || undefined })} /></label>
+            {CUSTOM_PARAMS.map(([k, label, step]) => (
+              <label key={k}>{label}<input type="number" step={step} placeholder={String(ref?.params[k] ?? '')} value={custom.params?.[k] == null ? '' : String(custom.params[k])}
+                onChange={(e) => setCustom({ ...custom, params: { ...(custom.params ?? {}), [k]: e.target.value === '' ? undefined : Number(e.target.value) } })} /></label>
+            ))}
             <button className="btn-primary" onClick={() => { void simulate(custom); setShowCustom(false) }}>Simuler ce cas</button>
           </div>
         )}
@@ -178,6 +232,12 @@ export function ComparePage() {
             <div className="muted" style={{ marginTop: 8 }}><Trophy size={12} /> meilleur cas sur la ligne · écarts en vert : mieux que la référence, en rouge : moins bien.</div>
           </div>
           <div className="card">
+            <div className="card-head"><h2>Carte de chaque cas</h2><span className="spacer" /><span className="muted">points de regroupement et tournées</span></div>
+            <div className="mini-maps">
+              {data.scenarios.map((s, i) => <MiniMap key={s.scenario_id} planId={s.plan_id} title={`${i === 0 ? 'Réf. · ' : ''}${s.name}`} color={colorOf(s.scenario_id)} />)}
+            </div>
+          </div>
+          <div className="card">
             <div className="card-head"><h2>Dépotoirs actifs (simulation)</h2></div>
             <div style={{ maxWidth: 860 }}><LineChart yLabel="dépotoirs actifs" labels={(data.scenarios[0]?.wild_dumps_daily ?? []).map((_, i) => `J${i + 1}`)}
               series={data.scenarios.map((s, i) => ({ name: `${i === 0 ? 'Réf. · ' : ''}${s.name}`, color: colorOf(s.scenario_id), values: s.wild_dumps_daily }))} /></div>
@@ -189,6 +249,28 @@ export function ComparePage() {
     </div>
   )
 }
+
+const CUSTOM_PARAMS: [string, string, number][] = [
+  ['walk_distance_max_m', 'Marche max jusqu\'au bac (m)', 50], ['collection_point_capacity_t', 'Capacité d\'un bac (t)', 0.5],
+  ['pickup_frequency_per_week', 'Enlèvements par semaine', 1], ['work_start_h', 'Début des équipes (h)', 0.5],
+  ['work_end_h', 'Fin des équipes (h)', 0.5], ['work_days_per_week', 'Jours travaillés', 1], ['fuel_price_fcfa_l', 'Gasoil (FCFA/L)', 25],
+]
+
+/** Petite carte d'un cas : ses points de regroupement et ses tournées. */
+function MiniMap({ planId, title, color }: { planId: string | null; title: string; color: string }) {
+  const { data: commune } = useApi(() => api.commune(), [])
+  const { data: points } = useApi(() => (planId ? api.points(planId) : Promise.resolve(null)), [planId])
+  const { data: routes } = useApi(() => (planId ? api.routes(planId) : Promise.resolve(null)), [planId])
+  return (
+    <div className="mini-map">
+      <div className="mini-map-title"><span className="case-dot" style={{ background: color }} />{title}{points && <span className="muted"> · {points.features.length} points</span>}</div>
+      <div className="map-wrap" style={{ height: 260 }}>
+        {planId ? <MapView commune={commune} points={points} routes={routes} layers={MINI_LAYERS} fitPlan /> : <div className="empty">en calcul…</div>}
+      </div>
+    </div>
+  )
+}
+const MINI_LAYERS: Layers = { quartiers: false, dumps: false, reports: false, points: true, routes: true, trucks: false }
 
 /** Classement : quel cas gagne sur le plus d'indicateurs, en une phrase, puis l'analyse par l'IA. */
 function Ranking({ data, onAnalyse, assistant }: { data: CompareMany; onAnalyse: () => void; assistant: boolean }) {

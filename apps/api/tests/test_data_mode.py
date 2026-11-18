@@ -34,3 +34,8 @@ def test_reel_garde_go_et_sdgd(db, monkeypatch):  # type: ignore[no-untyped-def]
     assert left == {("sdgd2020:sdgd-001", None), (None, "go-telephone-1")}
     assert s.get(ImportBatch, b.id).rolled_back is True
     assert "testville" not in data_mode.apply(s, recompute=False)  # deuxième passage : rien à faire
+
+
+def test_retour_demo_seulement_apres_reel(db, monkeypatch):  # type: ignore[no-untyped-def]
+    monkeypatch.setattr(get_settings(), "data_mode", "demo")
+    assert data_mode.apply(db, recompute=False) == {"mode": "demo"}  # jamais retirés : rien à recharger
