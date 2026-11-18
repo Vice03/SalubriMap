@@ -195,7 +195,7 @@
    "libelle": "Coût du carburant",
    "unite": "FCFA/km",
    "defaut": 450.0,
-   "source": "hypothèse : ≈ 0,6 L/km à ~750 FCFA/L",
+   "source": "hypothèse : ≈ 0,6 L/km à ~750 FCFA/L ; ancien réglage, remplacé par prix du gasoil × consommation + entretien",
    "modeles": [
     "simulation",
     "coût des tournées"
@@ -337,6 +337,187 @@
    "modeles": [
     "tournées (repli sans OSRM)"
    ]
+  },
+  "work_start_h": {
+   "libelle": "Début de journée des équipes",
+   "unite": "h",
+   "defaut": 8.0,
+   "source": "demande de l'équipe : équipes de 8 h à 18 h ; réglable",
+   "modeles": [
+    "tournées"
+   ],
+   "min": 0,
+   "max": 23
+  },
+  "work_end_h": {
+   "libelle": "Fin de journée des équipes",
+   "unite": "h",
+   "defaut": 18.0,
+   "source": "demande de l'équipe : équipes de 8 h à 18 h ; réglable",
+   "modeles": [
+    "tournées"
+   ],
+   "min": 1,
+   "max": 24
+  },
+  "break_min": {
+   "libelle": "Pause",
+   "unite": "min",
+   "defaut": 60,
+   "source": "hypothèse : 1 h de pause déduite de la journée",
+   "modeles": [
+    "tournées"
+   ],
+   "min": 0,
+   "max": 240
+  },
+  "work_days_per_week": {
+   "libelle": "Jours travaillés par semaine",
+   "unite": "jours",
+   "defaut": 6,
+   "source": "hypothèse : lundi à samedi",
+   "modeles": [
+    "tournées",
+    "simulation",
+    "coûts"
+   ],
+   "min": 1,
+   "max": 7
+  },
+  "fuel_price_fcfa_l": {
+   "libelle": "Prix du gasoil",
+   "unite": "FCFA/L",
+   "defaut": 750.0,
+   "source": "prix à la pompe au Burkina depuis le 10 août 2026 (675 → 750 FCFA/L, CIDPH ; Sidwaya, Burkina24)",
+   "modeles": [
+    "coûts",
+    "simulation"
+   ],
+   "min": 300,
+   "max": 1500
+  },
+  "fuel_l_per_100km": {
+   "libelle": "Consommation d'un camion benne",
+   "unite": "L/100 km",
+   "defaut": 40.0,
+   "source": "[HYPOTHÈSE] camion benne 8 t en ville (arrêts fréquents) ; à mesurer sur la flotte",
+   "modeles": [
+    "coûts",
+    "simulation"
+   ],
+   "min": 15,
+   "max": 100
+  },
+  "maintenance_fcfa_per_km": {
+   "libelle": "Entretien et pneus",
+   "unite": "FCFA/km",
+   "defaut": 120.0,
+   "source": "[HYPOTHÈSE] à remplacer par les factures du garage municipal",
+   "modeles": [
+    "coûts",
+    "simulation"
+   ],
+   "min": 0,
+   "max": 600
+  },
+  "driver_salary_fcfa_month": {
+   "libelle": "Salaire d'un chauffeur",
+   "unite": "FCFA/mois",
+   "defaut": 120000.0,
+   "source": "[HYPOTHÈSE] chauffeur poids lourd ; SMIG 45 000 FCFA/mois (décret de janvier 2024)",
+   "modeles": [
+    "coûts"
+   ],
+   "min": 45000,
+   "max": 500000
+  },
+  "loader_salary_fcfa_month": {
+   "libelle": "Salaire d'un ripeur",
+   "unite": "FCFA/mois",
+   "defaut": 60000.0,
+   "source": "[HYPOTHÈSE] au-dessus du SMIG (45 000 FCFA/mois)",
+   "modeles": [
+    "coûts"
+   ],
+   "min": 45000,
+   "max": 300000
+  },
+  "loaders_per_truck": {
+   "libelle": "Ripeurs par camion",
+   "unite": "personnes",
+   "defaut": 3,
+   "source": "[HYPOTHÈSE] 1 chauffeur + 3 ripeurs",
+   "modeles": [
+    "coûts"
+   ],
+   "min": 0,
+   "max": 8
+  },
+  "social_charges_rate": {
+   "libelle": "Charges sociales patronales",
+   "unite": "part",
+   "defaut": 0.16,
+   "source": "[HYPOTHÈSE] ≈ 16 % (CNSS employeur) ; à confirmer",
+   "modeles": [
+    "coûts"
+   ],
+   "min": 0,
+   "max": 0.4
+  },
+  "truck_price_fcfa": {
+   "libelle": "Prix d'un camion benne",
+   "unite": "FCFA",
+   "defaut": 55000000.0,
+   "source": "[HYPOTHÈSE] benne 8 t neuve ; à remplacer par un devis",
+   "modeles": [
+    "coûts"
+   ],
+   "min": 10000000,
+   "max": 200000000
+  },
+  "truck_life_years": {
+   "libelle": "Durée de vie d'un camion",
+   "unite": "ans",
+   "defaut": 8.0,
+   "source": "[HYPOTHÈSE] amortissement linéaire",
+   "modeles": [
+    "coûts"
+   ],
+   "min": 2,
+   "max": 20
+  },
+  "truck_insurance_fcfa_year": {
+   "libelle": "Assurance et visite technique",
+   "unite": "FCFA/an",
+   "defaut": 1200000.0,
+   "source": "[HYPOTHÈSE]",
+   "modeles": [
+    "coûts"
+   ],
+   "min": 0,
+   "max": 10000000
+  },
+  "bin_price_fcfa": {
+   "libelle": "Prix d'un bac de regroupement",
+   "unite": "FCFA",
+   "defaut": 1200000.0,
+   "source": "[HYPOTHÈSE] bac métallique 6 m³ ; à remplacer par un devis",
+   "modeles": [
+    "coûts"
+   ],
+   "min": 100000,
+   "max": 10000000
+  },
+  "bin_life_years": {
+   "libelle": "Durée de vie d'un bac",
+   "unite": "ans",
+   "defaut": 5.0,
+   "source": "[HYPOTHÈSE]",
+   "modeles": [
+    "coûts"
+   ],
+   "min": 1,
+   "max": 20
   }
  },
  "validation": {

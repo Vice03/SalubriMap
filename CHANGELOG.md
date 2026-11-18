@@ -2,6 +2,9 @@
 
 ## 0.5.0 — 18 novembre 2026
 
+- Horaires des équipes réglables : début 8 h, fin 18 h, pause 1 h, 6 jours par semaine par défaut. Les tournées tiennent dans ces horaires, les enlèvements se répartissent sur les jours travaillés (jamais plus d'enlèvements que de jours).
+- Estimation des coûts de chaque plan (`summary.couts`, carte « Estimation des coûts ») : gasoil (750 FCFA/L depuis le 10 août 2026 × consommation), entretien, équipages (chauffeur + ripeurs, charges sociales), amortissement et assurance des camions, amortissement des bacs ; total par mois et par an, coût par tonne, comparaison au budget. Douze nouveaux paramètres, tous réglables et sourcés (docs/PARAMETRES.md). La simulation paie désormais le km au prix calculé (gasoil + entretien).
+
 - Version complète (choix 2 du lanceur) = données réelles : `SALUBRI_DATA_MODE=reel` retire les signalements d'exemple ; restent les décharges et CCT du SDGD 2020, les signalements envoyés par Salubri Go (enregistrés en base) et les imports de la mairie. Les alertes viennent donc de vrais signalements. Retour au choix 1 : les exemples reviennent, rien de réel n'est effacé. Badge « Données réelles ».
 - Carte : légende repliable avec une flèche (repliée par défaut sur petit écran, choix retenu), elle ne cache plus les points.
 - nginx : `Cache-Control: no-cache` sur les pages, le navigateur ne garde plus un ancien écran après une mise à jour.

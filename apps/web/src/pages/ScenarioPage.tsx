@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { CloudRain, Copy, PenLine, RefreshCw, SlidersHorizontal, Sun } from 'lucide-react'
+import { CloudRain, Coins, Copy, PenLine, RefreshCw, SlidersHorizontal, Sun } from 'lucide-react'
 import { RoleButton } from '../components/ui/RoleButton'
 import { useEffect, useMemo, useState } from 'react'
 import { api } from '../api/client'
 import type { ParamSchemaProp } from '../api/types'
+import { CostCard } from '../components/dashboard/CostCard'
 import { FleetPanel } from '../components/dashboard/FleetPanel'
 import { MapView, type Layers } from '../components/map/MapView'
 import { LineChart } from '../components/ui/Charts'
@@ -12,13 +13,19 @@ import { useApi, useApp } from '../state/app'
 
 const MAIN = ['budget_fcfa_month', 'subscription_rate', 'pickup_frequency_per_week', 'precollector_frequency_per_week',
   'collection_point_capacity_t', 'cleanup_capacity_t_day', 'laabal_operations_per_week', 'laabal_deterrence', 'waste_kg_per_person_day', 'population_factor', 'walk_distance_max_m']
-const HIDDEN = ['season', 'active_quartier_ids', 'comportement'] // comportement : fichier documenté (docs/PARAMETRES.md)
+const GROUPS: [string, string[]][] = [
+  ['Horaires des équipes', ['work_start_h', 'work_end_h', 'break_min', 'work_days_per_week']],
+  ['Coûts (estimation, réglables)', ['fuel_price_fcfa_l', 'fuel_l_per_100km', 'maintenance_fcfa_per_km', 'driver_salary_fcfa_month',
+    'loader_salary_fcfa_month', 'loaders_per_truck', 'social_charges_rate', 'truck_price_fcfa', 'truck_life_years',
+    'truck_insurance_fcfa_year', 'bin_price_fcfa', 'bin_life_years']],
+]
+const HIDDEN = ['season', 'active_quartier_ids', 'comportement', 'fuel_cost_fcfa_per_km', ...GROUPS.flatMap(([, k]) => k)] // comportement : fichier documenté (docs/PARAMETRES.md)
 const ENUM_LABELS: Record<string, string> = { agents: 'Agents (un par ménage)', agrege: 'Agrégé (rapide)', dry: 'Saison sèche', rain: 'Saison des pluies' }
 const LAYERS: Layers = { quartiers: true, dumps: false, reports: false, points: true, routes: true, trucks: true }
 
 function Field({ name, prop, value, onChange }: { name: string; prop: ParamSchemaProp; value: unknown; onChange: (v: unknown) => void }) {
   const isInt = prop.type === 'integer'
-  const isPct = name === 'subscription_rate' || name === 'truck_breakdown_rate_per_day'
+  const isPct = name === 'subscription_rate' || name === 'truck_breakdown_rate_per_day' || name === 'social_charges_rate'
   const shown = typeof value === 'number' ? (isPct ? Math.round(value * 1000) / 10 : value) : value
   if (prop.enum) {
     return (
@@ -108,6 +115,12 @@ export function ScenarioPage() {
           <div className="form-grid">
             {MAIN.filter((k) => props[k]).map((k) => <Field key={k} name={k} prop={props[k]} value={params[k]} onChange={(v) => setDraft({ ...draft, [k]: v })} />)}
           </div>
+          {GROUPS.map(([title, keys]) => (
+            <details key={title} className="param-group" open>
+              <summary>{title}</summary>
+              <div className="form-grid">{keys.filter((k) => props[k]).map((k) => <Field key={k} name={k} prop={props[k]} value={params[k]} onChange={(v) => setDraft({ ...draft, [k]: v })} />)}</div>
+            </details>
+          ))}
           <button className="link" style={{ margin: '12px 0' }} onClick={() => setAdvanced(!advanced)}>{advanced ? 'Masquer' : 'Afficher'} les paramètres avancés</button>
           {advanced && <div className="form-grid">{others.map((k) => <Field key={k} name={k} prop={props[k]} value={params[k]} onChange={(v) => setDraft({ ...draft, [k]: v })} />)}</div>}
           <div style={{ display: 'flex', gap: 10, marginTop: 14 }}>
@@ -176,6 +189,12 @@ export function ScenarioPage() {
             ['Déchets à collecter', `${tonnes(s?.demand_t_week)}/semaine`],
           ].map(([l, v]) => <div key={l} className="card" style={{ boxShadow: 'none', background: '#f8fafd' }}><div className="muted">{l}</div><div className="kpi-value" style={{ fontSize: 24 }}>{v}</div></div>)}
         </div>
+      </div>
+
+      <div className="card">
+        <div className="card-head"><span className="head-icon" style={{ background: 'var(--grad-orange)' }}><Coins size={18} color="#fff" /></span>
+          <h2>Estimation des coûts</h2><span className="spacer" /><span className="muted">carburant, entretien, équipages, camions, bacs</span></div>
+        <CostCard c={s?.couts} />
       </div>
 
       <div className="grid row-3">

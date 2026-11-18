@@ -71,7 +71,26 @@ class ScenarioParams(BaseModel):
     fallback_detour_rain: float = Field(1.5, ge=1, le=3)
     truck_breakdown_rate_per_day: float = Field(0.02, ge=0, le=1)
     budget_fcfa_month: float = Field(25_000_000, ge=0)
-    fuel_cost_fcfa_per_km: float = Field(450, ge=0)
+    fuel_cost_fcfa_per_km: float = Field(450, ge=0)  # ancien réglage, remplacé par le calcul ci-dessous (cost_per_km)
+    # Horaires des équipes : les tournées tiennent entre l'heure de début et l'heure de fin, moins la pause ;
+    # les enlèvements se répartissent sur les jours travaillés de la semaine.
+    work_start_h: float = Field(8, ge=0, le=23)
+    work_end_h: float = Field(18, ge=1, le=24)
+    break_min: int = Field(60, ge=0, le=240)
+    work_days_per_week: int = Field(6, ge=1, le=7)
+    # Coûts (estimation, docs/HYPOTHESES.md) : carburant, entretien, équipages, camions et bacs
+    fuel_price_fcfa_l: float = Field(750, ge=0)  # gasoil à la pompe, Burkina, depuis le 10 août 2026
+    fuel_l_per_100km: float = Field(40, gt=0, le=150)
+    maintenance_fcfa_per_km: float = Field(120, ge=0)
+    driver_salary_fcfa_month: float = Field(120_000, ge=0)
+    loader_salary_fcfa_month: float = Field(60_000, ge=0)
+    loaders_per_truck: int = Field(3, ge=0, le=8)
+    social_charges_rate: float = Field(0.16, ge=0, le=1)
+    truck_price_fcfa: float = Field(55_000_000, ge=0)
+    truck_life_years: float = Field(8, gt=0, le=30)
+    truck_insurance_fcfa_year: float = Field(1_200_000, ge=0)
+    bin_price_fcfa: float = Field(1_200_000, ge=0)
+    bin_life_years: float = Field(5, gt=0, le=30)
     # Nettoyage des dépotoirs : services techniques de la mairie (la brigade Laabal ne ramasse pas).
     cleanup_capacity_t_day: float = Field(12, ge=0)
     # Brigade Laabal (police civique) : contrôles, sensibilisation, sanctions -> dissuasion.
@@ -93,6 +112,22 @@ class ScenarioParams(BaseModel):
     placement_stability_m: float = Field(300.0, ge=0, le=2000)
     ilot_size_buildings: int = Field(30, ge=5, le=500)
 
+    @model_validator(mode="after")
+    def _horaires(self) -> "ScenarioParams":
+        if self.work_end_h * 60 - self.break_min < self.work_start_h * 60 + 60:
+            raise ValueError("Horaires : il faut au moins 1 h de travail entre le début et la fin, pause déduite")
+        return self
+
+    @property
+    def cost_per_km(self) -> float:
+        """Coût d'un kilomètre de camion : gasoil (prix × consommation) + entretien."""
+        return self.fuel_price_fcfa_l * self.fuel_l_per_100km / 100 + self.maintenance_fcfa_per_km
+
+    @property
+    def shift_minutes(self) -> tuple[int, int]:
+        """Début et fin de la journée de tournée (minutes depuis minuit), pause déduite de la fin."""
+        return round(self.work_start_h * 60), round(self.work_end_h * 60 - self.break_min)
+
 
 # Which event a parameter change triggers (pipeline invalidation, see services/plan/events.py).
 PARAM_EVENT: dict[str, str] = {
@@ -112,6 +147,27 @@ PARAM_EVENT: dict[str, str] = {
     "fallback_detour_rain": "fleet_changed",
     "budget_fcfa_month": "budget_changed",
     "fuel_cost_fcfa_per_km": "budget_changed",
+    "work_start_h": "fleet_changed",
+    "work_end_h": "fleet_changed",
+    "break_min": "fleet_changed",
+    "work_days_per_week": "frequency_changed",
+    **{
+        k: "budget_changed"
+        for k in (
+            "fuel_price_fcfa_l",
+            "fuel_l_per_100km",
+            "maintenance_fcfa_per_km",
+            "driver_salary_fcfa_month",
+            "loader_salary_fcfa_month",
+            "loaders_per_truck",
+            "social_charges_rate",
+            "truck_price_fcfa",
+            "truck_life_years",
+            "truck_insurance_fcfa_year",
+            "bin_price_fcfa",
+            "bin_life_years",
+        )
+    },  # fmt: skip
     "cleanup_capacity_t_day": "budget_changed",
     "laabal_operations_per_week": "budget_changed",
     "laabal_deterrence": "budget_changed",

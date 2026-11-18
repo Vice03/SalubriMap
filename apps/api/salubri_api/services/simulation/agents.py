@@ -6,10 +6,11 @@ from dataclasses import dataclass, field
 import numpy as np
 
 
-def schedule_days(per_week: float) -> set[int]:
-    """Evenly spread `per_week` visits over a 7-day week (0 = Monday)."""
-    k = max(0, min(7, round(per_week)))
-    return {int(i * 7 / k) for i in range(k)} if k else set()
+def schedule_days(per_week: float, work_days: int = 7) -> set[int]:
+    """Répartit `per_week` passages sur les `work_days` premiers jours de la semaine (0 = lundi), au plus un par jour."""
+    w = max(1, min(7, work_days))
+    k = max(0, min(w, round(per_week)))
+    return {int(i * w / k) for i in range(k)} if k else set()
 
 
 @dataclass

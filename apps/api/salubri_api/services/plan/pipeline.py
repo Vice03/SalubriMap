@@ -39,7 +39,7 @@ from salubri_api.models import (
     Vehicle,
     utcnow,
 )
-from salubri_api.services import background
+from salubri_api.services import background, costs
 from salubri_api.services.consolidation import consolidate
 from salubri_api.services.demand import demand_kg_day
 from salubri_api.services.geo import haversine_m, shape, to_wkb
@@ -508,7 +508,12 @@ def _execute(pv_id: str) -> None:
             f_base = float((placement.optimisation or {}).get("capacite", {}).get("enlevements_semaine")
                            or params.pickup_frequency_per_week)  # fmt: skip
             f_eff, over_idx = effective_frequency(
-                loads_week, caps, max(f_base, params.pickup_frequency_per_week), params.pickup_frequency_max_per_week
+                loads_week,
+                caps,
+                max(f_base, params.pickup_frequency_per_week),
+                min(
+                    params.pickup_frequency_max_per_week, params.work_days_per_week
+                ),  # jamais plus que les jours travaillés
             )
             capacite = {
                 "enlevements_semaine_demandes": params.pickup_frequency_per_week,
@@ -565,14 +570,13 @@ def _execute(pv_id: str) -> None:
             )
             demand_nodes = np.concatenate([[0.0], per_pickup])
             tws = [(0, 1440)] + points.time_windows
-            specs = [
-                VehicleSpec(v.capacity_t, v.cost_per_km, v.fixed_cost_day, v.shift_start, v.shift_end, v.label)
-                for v in vehicles
-            ]
+            shift = params.shift_minutes  # horaires des équipes (réglables) : 8 h – 18 h, pause déduite par défaut
+            specs = [VehicleSpec(v.capacity_t, v.cost_per_km, v.fixed_cost_day, *shift, v.label) for v in vehicles]
             e5_key = _h(
                 e4_key,
                 np.round(demand_nodes, 3).tolist(),
                 [(v.label, v.capacity_t, v.cost_per_km) for v in vehicles],
+                shift,
                 params.vrp_time_limit_s,
                 tws,
             )
@@ -648,6 +652,14 @@ def _execute(pv_id: str) -> None:
                 "km_day": round(sum(r.distance_km for r in vrp.solution.routes), 1),
                 "cost_day_fcfa": round(sum(r.cost for r in vrp.solution.routes)),
                 "unserved_points": len(unserved_idx),
+                "couts": costs.estimate(
+                    params,
+                    sum(r.distance_km for r in vrp.solution.routes),
+                    len(vehicles),
+                    len({r.vehicle_idx for r in vrp.solution.routes}),
+                    len(placement.points),
+                    float(w_week.sum()),
+                ),
                 "unserved_t_per_pickup": round(float(sum(demand_nodes[i] for i in unserved_idx)), 2),
                 "trucks_needed": _trucks_needed(demand_nodes, unserved_idx, vehicles),
                 "distance_mode": matrix.mode,

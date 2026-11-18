@@ -33,7 +33,7 @@ Sources : **mairie** (donnée à obtenir ou obtenue), **littérature** (référe
 | `flood_speed_factor` | Vitesse en saison des pluies | facteur | 0,3 – 1 | 0,7 | hypothèse : × 0,7 sur les vitesses, voies en terre presque impraticables | E4 distances |
 | `truck_breakdown_rate_per_day` | Taux de panne des camions | par camion et par jour | 0 – 0,2 | 0,02 | hypothèse : 2 % ; à remplacer par l'historique du parc (SIMULATION_SENSIBILITE.md : 2ᵉ paramètre le plus influent sur le tonnage collecté) | simulation |
 | `budget_fcfa_month` | Budget mensuel de la collecte | FCFA/mois | 1 000 000 – 500 000 000 | 2,5e+07 | hypothèse : 25 M FCFA, à remplacer par le budget fourni par la mairie | simulation |
-| `fuel_cost_fcfa_per_km` | Coût du carburant | FCFA/km | 150 – 1 500 | 450 | hypothèse : ≈ 0,6 L/km à ~750 FCFA/L | simulation, coût des tournées |
+| `fuel_cost_fcfa_per_km` | Coût du carburant | FCFA/km | 150 – 1 500 | 450 | hypothèse : ≈ 0,6 L/km à ~750 FCFA/L ; ancien réglage, remplacé par prix du gasoil × consommation + entretien | simulation, coût des tournées |
 | `cleanup_capacity_t_day` | Nettoyage des dépotoirs | t/jour | 0 – 100 | 12 | hypothèse : services techniques de la mairie, 12 t/jour | simulation |
 | `laabal_operations_per_week` | Opérations de la brigade Laabal | par semaine | 0 – 14 | 3 | hypothèse : 3 descentes par semaine ; aucun chiffre publié | simulation |
 | `laabal_deterrence` | Effet dissuasif d'un contrôle Laabal | 0 à 1 | 0 – 1 | 0,5 | hypothèse : −50 % de dépôts pendant 21 jours ; aucun chiffre publié | simulation |
@@ -46,6 +46,22 @@ Sources : **mairie** (donnée à obtenir ou obtenue), **littérature** (référe
 | `placement_stability_m` | Stabilité des points | m de marche équivalents | 0 – 2 000 | 300 | hypothèse : déplacer un point coûte comme faire marcher sa charge 300 m de plus | E3 placement |
 | `fallback_detour_dry` | Détour routier sans OSRM, saison sèche | × vol d'oiseau | 1 – 3 | 1,35 | hypothèse (valeurs usuelles 1,2–1,4 en ville) ; à caler sur OSRM avec scripts/calibrer_detour.py (docs/DETOUR_CALIBRATION.md) | tournées (repli sans OSRM) |
 | `fallback_detour_rain` | Détour routier sans OSRM, saison des pluies | × vol d'oiseau | 1 – 3 | 1,5 | hypothèse (voies inondables évitées) ; à caler sur le graphe OSRM « pluie » avec scripts/calibrer_detour.py | tournées (repli sans OSRM) |
+| `work_start_h` | Début de journée des équipes | h | 0 – 23 | 8 | demande de l'équipe : équipes de 8 h à 18 h ; réglable | tournées |
+| `work_end_h` | Fin de journée des équipes | h | 1 – 24 | 18 | demande de l'équipe : équipes de 8 h à 18 h ; réglable | tournées |
+| `break_min` | Pause | min | 0 – 240 | 60 | hypothèse : 1 h de pause déduite de la journée | tournées |
+| `work_days_per_week` | Jours travaillés par semaine | jours | 1 – 7 | 6 | hypothèse : lundi à samedi | tournées, simulation, coûts |
+| `fuel_price_fcfa_l` | Prix du gasoil | FCFA/L | 300 – 1 500 | 750 | prix à la pompe au Burkina depuis le 10 août 2026 (675 → 750 FCFA/L, CIDPH ; Sidwaya, Burkina24) | coûts, simulation |
+| `fuel_l_per_100km` | Consommation d'un camion benne | L/100 km | 15 – 100 | 40 | [HYPOTHÈSE] camion benne 8 t en ville (arrêts fréquents) ; à mesurer sur la flotte | coûts, simulation |
+| `maintenance_fcfa_per_km` | Entretien et pneus | FCFA/km | 0 – 600 | 120 | [HYPOTHÈSE] à remplacer par les factures du garage municipal | coûts, simulation |
+| `driver_salary_fcfa_month` | Salaire d'un chauffeur | FCFA/mois | 45 000 – 500 000 | 120 000 | [HYPOTHÈSE] chauffeur poids lourd ; SMIG 45 000 FCFA/mois (décret de janvier 2024) | coûts |
+| `loader_salary_fcfa_month` | Salaire d'un ripeur | FCFA/mois | 45 000 – 300 000 | 60 000 | [HYPOTHÈSE] au-dessus du SMIG (45 000 FCFA/mois) | coûts |
+| `loaders_per_truck` | Ripeurs par camion | personnes | 0 – 8 | 3 | [HYPOTHÈSE] 1 chauffeur + 3 ripeurs | coûts |
+| `social_charges_rate` | Charges sociales patronales | part | 0 – 0,4 | 0,16 | [HYPOTHÈSE] ≈ 16 % (CNSS employeur) ; à confirmer | coûts |
+| `truck_price_fcfa` | Prix d'un camion benne | FCFA | 10 000 000 – 200 000 000 | 5,5e+07 | [HYPOTHÈSE] benne 8 t neuve ; à remplacer par un devis | coûts |
+| `truck_life_years` | Durée de vie d'un camion | ans | 2 – 20 | 8 | [HYPOTHÈSE] amortissement linéaire | coûts |
+| `truck_insurance_fcfa_year` | Assurance et visite technique | FCFA/an | 0 – 10 000 000 | 1,2e+06 | [HYPOTHÈSE] | coûts |
+| `bin_price_fcfa` | Prix d'un bac de regroupement | FCFA | 100 000 – 10 000 000 | 1,2e+06 | [HYPOTHÈSE] bac métallique 6 m³ ; à remplacer par un devis | coûts |
+| `bin_life_years` | Durée de vie d'un bac | ans | 1 – 20 | 5 | [HYPOTHÈSE] | coûts |
 
 ## Comportements simulés (ménages, pré-collecteurs, brigade Laabal)
 

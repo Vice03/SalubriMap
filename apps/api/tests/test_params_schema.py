@@ -38,7 +38,7 @@ def test_every_behaviour_parameter_of_both_models_is_in_the_file() -> None:
     from salubri_api.services.simulation.params import SimParams
 
     beh = DEFAULTS["comportement"]
-    code = [f.name for f in fields(SimParams) if f.default is not MISSING and f.name != "abm"]
+    code = [f.name for f in fields(SimParams) if f.default is not MISSING and f.name not in ("abm", "work_days_per_week")]
     code += [f.name for f in fields(AbmParams)]
     assert sorted(code) == sorted(beh)
     sp = SimParams.from_scenario(ScenarioParams(comportement={**beh, "p0": -0.9, "beta_norme": 3.5}))

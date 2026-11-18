@@ -62,11 +62,19 @@ export interface PlanDiff {
   } | null
 }
 export interface SimSummary { [k: string]: number }
+/** Estimation des coûts mensuels (services/costs.py) */
+export interface Couts {
+  mois_fcfa: Record<string, number>; total_mois_fcfa: number; total_an_fcfa: number; cout_par_tonne_fcfa: number | null
+  km_mois: number; gasoil_litres_mois: number; cout_km_fcfa: number; journees_collecte_semaine: number
+  camions_flotte: number; camions_utilises: number; agents: number
+  horaires: { debut: string; fin: string; pause_min: number; jours_semaine: number }
+  budget_mois_fcfa: number; dans_le_budget: boolean
+}
 export interface PlanSummary {
   ilots?: number; population?: number; demand_t_week?: number; points?: number; routes?: number
   vehicles_available?: number; km_day?: number; cost_day_fcfa?: number; unserved_points?: number; trucks_needed?: number | null
   unserved_t_per_pickup?: number; distance_mode?: string; solver?: string; duration_ms?: number
-  diff?: PlanDiff; sim?: SimSummary; sim_daily?: Record<string, number[]>
+  diff?: PlanDiff; sim?: SimSummary; sim_daily?: Record<string, number[]>; couts?: Couts
 }
 export interface Plan {
   id: string; scenario_id: string; version: number; status: PlanStatus; event: string

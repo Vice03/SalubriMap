@@ -45,6 +45,7 @@ class SimParams:
     laabal_ilots_per_operation: int = 6  # îlots inspectés par opération (descente de quartier)
     laabal_watch_days: int = 21  # durée de l'effet dissuasif après un contrôle
     laabal_sub_boost: float = 0.05  # ménages contraints de s'abonner à la pré-collecte après contrôle
+    work_days_per_week: int = 7  # enlèvements répartis sur les jours travaillés (0 = lundi)
     abm: tuple[tuple[str, float], ...] = ()  # paramètres du modèle à agents (AbmParams) venus du fichier
 
     @staticmethod
@@ -56,7 +57,10 @@ class SimParams:
         from salubri_api.services.simulation.abm.params import AbmParams
 
         beh = dict(p.comportement or {})
-        own = {f.name for f in fields(SimParams) if f.default is not MISSING} - {"abm"}  # comportement seulement
+        own = {f.name for f in fields(SimParams) if f.default is not MISSING} - {
+            "abm",
+            "work_days_per_week",
+        }  # comportement seulement
         abm_names = {f.name for f in fields(AbmParams)}
         sim_kw = {k: (int(v) if k in INT_FIELDS else float(v)) for k, v in beh.items() if k in own}
         abm_kw = tuple(sorted((k, tuple(v) if isinstance(v, list) else v) for k, v in beh.items() if k in abm_names))
@@ -77,7 +81,8 @@ class SimParams:
             walk_distance_max_m=p.walk_distance_max_m,
             breakdown_rate=p.truck_breakdown_rate_per_day,
             budget_month=p.budget_fcfa_month,
-            fuel_cost_per_km=p.fuel_cost_fcfa_per_km,
+            fuel_cost_per_km=p.cost_per_km,  # gasoil × consommation + entretien
+            work_days_per_week=p.work_days_per_week,
             cleanup_capacity_kg_day=p.cleanup_capacity_t_day * 1000,
             laabal_operations_per_week=p.laabal_operations_per_week,
             laabal_deterrence=p.laabal_deterrence,

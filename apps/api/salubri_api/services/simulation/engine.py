@@ -62,7 +62,7 @@ def simulate(plan: PlanSnapshot, sp: SimParams, seed: int = 42) -> SimResult:
     ]
     level = np.zeros(n_pts)
     cap = plan.point_capacity_kg.astype(float)
-    pickup_days = schedule_days(sp.pickup_frequency_per_week)
+    pickup_days = schedule_days(sp.pickup_frequency_per_week, sp.work_days_per_week)
     # wild dump locations: 0..n-1 near ilots, n..n+n_pts-1 next to collection points
     wild = WildDumps(
         kg=np.zeros(n + n_pts),
