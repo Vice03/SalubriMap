@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""Module « Assistant » dans Salubri Map : bouton pour un compte connecté si le module est allumé, absent sinon,
-et jamais pour un visiteur."""
+"""Module « Assistant » dans Salubri Map : bulle visible de tous si le module est allumé (le visiteur est invité à se
+connecter et ne peut rien demander), absente sinon."""
 
 import httpx
 
@@ -13,7 +13,15 @@ def test_assistant_button_follows_flag_and_role(browser, base):  # type: ignore[
     page = browser.new_context(viewport={"width": 1440, "height": 860}, locale="fr-FR").new_page()
     page.goto(f"{base}/journal")
     page.wait_for_timeout(1500)
-    assert page.get_by_test_id("assistant-open").count() == 0  # visiteur : jamais
+    if _on(base):  # visiteur : il voit la bulle mais ne peut pas poser de question
+        page.get_by_test_id("assistant-open").click()
+        panel = page.get_by_test_id("assistant-panel")
+        panel.wait_for(timeout=5000)
+        assert "demo / ouaga2026" in panel.inner_text()
+        assert page.locator("[aria-label=\"Question à l'assistant\"]").is_disabled()
+        panel.locator("button[aria-label=Fermer]").click()
+    else:
+        assert page.get_by_test_id("assistant-open").count() == 0
     page.locator(".topbar button:has-text('Se connecter')").click()
     page.fill("input[autocomplete=username]", "demo")
     page.fill("input[autocomplete=current-password]", "ouaga2026")

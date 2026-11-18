@@ -118,5 +118,11 @@ export interface CompareResult {
   better_when_lower: string[]
 }
 
+export interface CompareMany {
+  scenarios: CompareSide[]
+  rows: { key: string; values: number[]; delta: { a: number; b: number; value: number; pct: number | null }[]; best: number | null }[]
+  wins: number[]; ranking: string[]; better_when_lower: string[]; neutral: string[]
+}
+
 export interface Health { status: string; db: string; osrm: string; version: string; demo_mode?: boolean }
 export interface ValidationRules { rules: { code: string; title: string; description: string; penalty: string }[] }

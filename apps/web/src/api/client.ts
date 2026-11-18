@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import type {
-  AuditEntry, Commune, CompareResult, DumpProps, FC, Feature, Health, ImportResult, LineGeom, ParamsSchema,
+  AuditEntry, Commune, CompareMany, CompareResult, DumpProps, FC, Feature, Health, ImportResult, LineGeom, ParamsSchema,
   Plan, PointGeom, PointProps, PolyGeom, QuartierProps, ReportProps, ReportStatus, RouteProps, Scenario, Stats,
   ValidationRules, Vehicle,
 } from './types'
@@ -119,6 +119,7 @@ export const api = {
   toLaabal: (id: string) => request<Feature<PointGeom, DumpProps>>('POST', `/dump-sites/${id}/laabal`),
   recompute: (sid: string) => request<{ plan_version_id: string }>('POST', `/scenarios/${sid}/recompute`, { json: { reason: 'tableau de bord' } }),
   compare: (a: string, b: string) => get<CompareResult>('/scenarios/compare', { a, b }),
+  compareMany: (ids: string[]) => get<CompareMany>('/scenarios/compare-many', { ids: ids.join(',') }),
   plan: (id: string, daily = false) => get<Plan>(`/plans/${id}`, { daily }),
   points: (id: string) => get<FC<PointGeom, PointProps>>(`/plans/${id}/points`),
   routes: (id: string) => get<FC<LineGeom, RouteProps>>(`/plans/${id}/routes`),

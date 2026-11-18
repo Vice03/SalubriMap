@@ -18,7 +18,7 @@ import { inPolygon } from '../lib/geo'
 import { DUMP_STATUS, WASTE } from '../lib/labels'
 import { useApi, useApp } from '../state/app'
 
-const LEVEL = { red: '#dc2626', orange: '#f28c28', blue: '#2563eb', green: '#16a34a' }
+const LEVEL = { red: '#e53935', orange: '#f9a825', blue: '#1e88e5', green: '#2e9e44' }
 
 const K = MAP_KEY
 const Dot = ({ fill, stroke, r = 6, w = 2 }: { fill: string; stroke: string; r?: number; w?: number }) => (
@@ -139,15 +139,15 @@ export function Dashboard() {
   }, [quartiers, dumps])
 
   const kpis = [
-    { icon: <Trash2 size={28} />, bg: '#0f2b55', value: num((stats?.dump_sites.active ?? 0) + (stats?.dump_sites.recurring ?? 0)), label: 'Dépotoirs actifs',
-      sub: <><ArrowUp size={14} />{newDumps} nouveau{newDumps > 1 ? 'x' : ''} cette semaine</>, subColor: '#0f2b55', spark: perDay, sc: '#3b82f6' },
-    { icon: <Truck size={28} />, bg: '#16a34a', value: `${v.length - broken}/${v.length}`, label: 'Camions disponibles',
+    { icon: <Trash2 size={28} />, bg: 'linear-gradient(135deg, #2f80ed 0%, #0a4f9c 100%)', value: num((stats?.dump_sites.active ?? 0) + (stats?.dump_sites.recurring ?? 0)), label: 'Dépotoirs actifs',
+      sub: <><ArrowUp size={14} />{newDumps} nouveau{newDumps > 1 ? 'x' : ''} cette semaine</>, subColor: '#0a4f9c', spark: perDay, sc: '#1a8cf0' },
+    { icon: <Truck size={28} />, bg: 'var(--grad-sky)', value: `${v.length - broken}/${v.length}`, label: 'Camions disponibles',
       sub: broken ? <><ArrowDown size={14} />{broken} en panne</> : <><ArrowUp size={14} />100 % opérationnels</>, subColor: broken ? '#dc2626' : '#16a34a',
-      spark: weekly(daily.truck_km), sc: '#22c55e' },
-    { icon: <MapPin size={28} />, bg: '#f28c28', value: num(pts.length), label: 'Points de regroupement',
+      spark: weekly(daily.truck_km), sc: '#14b8c4' },
+    { icon: <MapPin size={28} />, bg: 'var(--grad-orange)', value: num(pts.length), label: 'Points de regroupement',
       sub: unserved ? <><ArrowUp size={14} />{unserved} non desservi(s){plan?.summary.trucks_needed ? ` · ≈ ${plan.summary.trucks_needed} camions nécessaires` : ''}</> : <><ArrowUp size={14} />{saturated} saturé(s)</>, subColor: unserved || saturated ? '#dc2626' : '#16a34a',
       spark: weekly(daily.overflow_points), sc: '#f59e0b' },
-    { icon: <Recycle size={28} />, bg: '#16a34a', value: tonnes(sim.collected_t, 0), label: 'Déchets collectés (90 j simulés)',
+    { icon: <Recycle size={28} />, bg: 'var(--grad-green)', value: tonnes(sim.collected_t, 0), label: 'Déchets collectés (90 j simulés)',
       sub: <><TrendingUp size={14} />couverture {pct(sim.coverage_rate)}</>, subColor: '#16a34a',
       spark: weekly(daily.truck_collected_t), sc: '#22c55e' },
   ]
@@ -171,7 +171,7 @@ export function Dashboard() {
       <div className="grid row-map">
         <div className="card">
           <div className="card-head">
-            <MapIcon color="#0f2b55" /><h2>Carte de Ouagadougou</h2><span className="spacer" />
+            <span className="head-icon" style={{ background: 'var(--grad-blue)' }}><MapIcon size={18} color="#fff" /></span><h2>Carte de Ouagadougou</h2><span className="spacer" />
             {plan && <span className="muted">Plan v{plan.version} · {num(plan.summary.km_day, 0)} km/jour · {plan.summary.routes} tournées</span>}
             <button className="pill-btn" onClick={() => nav('/carte')}>Plein écran <ArrowRight size={14} /></button>
           </div>
@@ -190,21 +190,21 @@ export function Dashboard() {
       <div className="grid row-3">
         <div className="card">
           <div className="card-head">
-            <TrendingUp color="#0f2b55" /><h2>Indicateurs clés</h2><span className="spacer" />
+            <span className="head-icon" style={{ background: 'var(--grad-blue)' }}><TrendingUp size={18} color="#fff" /></span><h2>Indicateurs clés</h2><span className="spacer" />
             <select className="select" value={weeks} onChange={(e) => setWeeks(Number(e.target.value))} aria-label="Période">
               <option value={4}>4 semaines</option><option value={8}>8 semaines</option><option value={13}>13 semaines</option>
             </select>
           </div>
           <LineChart yLabel="tonnes par semaine" labels={Array.from({ length: weeks }, (_, i) => `S${i + 1}`)} series={[
-            { name: 'Collecté par les camions', color: '#2563eb', values: weekly(daily.truck_collected_t).slice(0, weeks), unit: ' t' },
-            { name: 'Parti en dépôt sauvage', color: '#f28c28', values: weekly(daily.wild_new_t).slice(0, weeks), unit: ' t' },
+            { name: 'Collecté par les camions', color: '#1a8cf0', values: weekly(daily.truck_collected_t).slice(0, weeks), unit: ' t' },
+            { name: 'Parti en dépôt sauvage', color: '#22a447', values: weekly(daily.wild_new_t).slice(0, weeks), unit: ' t' },
           ]} />
           <div className="muted">Simulation sur 90 jours du scénario « {scenario?.name ?? '—'} ». S1 plus basse : démarrage, les points se remplissent avant le premier enlèvement.</div>
         </div>
 
         <div className="card">
           <div className="card-head">
-            <MapPin color="#dc2626" /><h2>Zones critiques</h2><span className="spacer" />
+            <span className="head-icon" style={{ background: 'linear-gradient(135deg,#ff6b6b,#d62828)' }}><MapPin size={18} color="#fff" /></span><h2>Zones critiques</h2><span className="spacer" />
             <span className="badge" style={{ background: '#fef3c7', color: '#92400e' }}>{zones.length} zone(s) sensible(s)</span>
           </div>
           {zones.map((z, i) => {
@@ -225,7 +225,7 @@ export function Dashboard() {
 
         <div className="card">
           <div className="card-head">
-            <Bell color="#0f2b55" /><h2>Alertes récentes</h2><span className="spacer" />
+            <span className="head-icon" style={{ background: 'var(--grad-orange)' }}><Bell size={18} color="#fff" /></span><h2>Alertes récentes</h2><span className="spacer" />
             <button className="link" onClick={() => nav('/journal')}>Voir tout <ArrowRight size={14} /></button>
           </div>
           {(alerts ?? []).slice(0, 5).map((a) => (

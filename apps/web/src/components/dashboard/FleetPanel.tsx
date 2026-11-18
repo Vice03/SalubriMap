@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+import { TRUCK_COLORS, TruckArt } from '../ui/TruckArt'
 import { AlertTriangle, ArrowRight, Plus, Trash2, Truck } from 'lucide-react'
 import { RoleButton } from '../ui/RoleButton'
 import { useState } from 'react'
@@ -41,20 +42,19 @@ export function FleetPanel({ scenario, routes, compact = false }: { scenario: Sc
   return (
     <div className="card">
       <div className="card-head">
-        <Truck color="#0f2b55" /><h2>État de la flotte</h2>
+        <span className="head-icon" style={{ background: 'var(--grad-blue)' }}><Truck size={18} color="#fff" /></span><h2>État de la flotte</h2>
         <span className="muted" style={{ marginLeft: 8 }}>{active}/{scenario.vehicles.length} en service</span><span className="spacer" />
         {!compact && <button className="link" onClick={() => nav('/scenario')}>Voir tout <ArrowRight size={14} /></button>}
       </div>
-      {scenario.vehicles.map((v) => {
+      {scenario.vehicles.map((v, idx) => {
         const rs = byLabel.get(v.label) ?? []
         const load = rs.reduce((s, r) => s + r.load_t, 0)
         const ratio = rs.length ? Math.min(1, load / (v.capacity_t * rs.length)) : 0
         const state = v.out_of_service ? { t: 'En panne', c: '#dc2626' } : rs.length ? { t: `En tournée · ${rs.length} rotation${rs.length > 1 ? 's' : ''}`, c: '#16a34a' } : { t: 'Disponible', c: '#2563eb' }
-        const color = v.out_of_service ? '#dc2626' : '#1e3a8a'
         return (
           <div key={v.id} className="truck">
-            <div className="truck-icon" style={{ background: v.out_of_service ? '#fee2e2' : `${color}1f` }}>
-              {v.out_of_service ? <AlertTriangle color="#dc2626" /> : <Truck color={color} size={26} />}
+            <div className="truck-icon">
+              {v.out_of_service ? <AlertTriangle color="#e53935" fill="#ffebee" size={34} /> : <TruckArt body={TRUCK_COLORS[idx % TRUCK_COLORS.length]} />}
             </div>
             <div className="truck-body">
               <div className="truck-name">{v.label} <span className="muted">· {v.capacity_t} t</span></div>

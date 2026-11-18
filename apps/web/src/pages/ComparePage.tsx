@@ -1,14 +1,17 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { ArrowDownRight, ArrowLeftRight, ArrowUpRight } from 'lucide-react'
-import { RoleButton } from '../components/ui/RoleButton'
-import { useEffect, useState } from 'react'
+import { ArrowLeftRight, FlaskConical, Plus, Sparkles, Trophy, X } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 import { api } from '../api/client'
-import type { CompareResult } from '../api/types'
+import { can, useSession } from '../api/session'
+import type { CompareMany } from '../api/types'
 import { LineChart } from '../components/ui/Charts'
+import { RoleButton } from '../components/ui/RoleButton'
 import { num } from '../lib/format'
+import { askAssistant } from '../modules/assistant/bus'
+import { useModules } from '../modules/useModules'
 import { useApi, useApp } from '../state/app'
 
-const LABELS: Record<string, string> = {
+export const LABELS: Record<string, string> = {
   points: 'Points de regroupement', routes: 'Tournées', km_day: 'km par jour de collecte', cost_day_fcfa: 'Coût d\'une journée (FCFA)',
   unserved_points: 'Points non desservis', demand_t_week: 'Déchets à collecter (t/semaine)',
   'sim.collected_t': 'Tonnage collecté (t)', 'sim.wild_dump_t': 'Parti en dépôt sauvage (t)',
@@ -17,113 +20,206 @@ const LABELS: Record<string, string> = {
   'sim.cost_per_t': 'Coût par tonne (FCFA)', 'sim.coverage_rate': 'Couverture', 'sim.subscription_rate_final': 'Taux d\'abonnement final',
   'sim.mean_cleanup_delay_days': 'Délai moyen de nettoyage (j)',
 }
-const PRESETS: { name: string; params?: Record<string, unknown>; breakdown?: number }[] = [
-  { name: '2 camions en panne', breakdown: 2 },
-  { name: 'Saison des pluies', params: { season: 'rain' } },
-  { name: 'Abonnement +20 pts', params: { subscription_rate_delta: 0.2 } },
-  { name: 'Budget −30 %', params: { budget_factor: 0.7 } },
+/** Couleurs des cas, toujours dans cet ordre (le cas n garde sa couleur quand on en ajoute un autre). */
+export const CASE_COLORS = ['#1565c0', '#ef6c00', '#2e7d32', '#8e24aa', '#c62828', '#00838f', '#6d4c41', '#546e7a']
+
+interface Recipe { name: string; breakdown: number; season: '' | 'dry' | 'rain'; subscriptionPts: number; budgetPct: number }
+const PRESETS: Recipe[] = [
+  { name: '2 camions en panne', breakdown: 2, season: '', subscriptionPts: 0, budgetPct: 0 },
+  { name: 'Saison des pluies', breakdown: 0, season: 'rain', subscriptionPts: 0, budgetPct: 0 },
+  { name: 'Abonnement +20 pts', breakdown: 0, season: '', subscriptionPts: 20, budgetPct: 0 },
+  { name: 'Budget −30 %', breakdown: 0, season: '', subscriptionPts: 0, budgetPct: -30 },
 ]
 
-export function ComparePage() {
-  const { scenarios, scenario, reloadScenarios, track, toast } = useApp()
-  const [a, setA] = useState<string>('')
-  const [b, setB] = useState<string>('')
-  useEffect(() => {
-    if (!a && scenario) setA(scenario.id)
-    if (!b && scenarios.length > 1) setB(scenarios.find((s) => s.id !== (a || scenario?.id))?.id ?? '')
-  }, [scenarios, scenario, a, b])
-  const { data, loading } = useApi(() => (a && b ? api.compare(a, b) : Promise.resolve(null)), [a, b])
+const isRate = (k: string) => k.endsWith('rate') || k.endsWith('rate_final')
+const fmt = (k: string, x: number) => (isRate(k) ? `${num(x * 100, 1)} %` : num(x, Math.abs(x) < 10 ? 1 : 0))
 
-  const preset = async (p: typeof PRESETS[number]) => {
-    const base = scenarios.find((s) => s.id === a)
+export function ComparePage() {
+  const { scenarios, scenario, reloadScenarios, track, toast, refreshKey } = useApp()
+  const session = useSession()
+  const modules = useModules()
+  const [ids, setIds] = useState<string[]>([])
+  const [custom, setCustom] = useState<Recipe>({ name: 'Mon cas', breakdown: 1, season: '', subscriptionPts: 0, budgetPct: 0 })
+  const [showCustom, setShowCustom] = useState(false)
+  const [tick, setTick] = useState(0)
+
+  // Par défaut : le scénario affiché et les cas simulés à partir de lui (même zone, donc comparables)
+  useEffect(() => {
+    if (ids.length || !scenario) return
+    setIds([scenario.id, ...scenarios.filter((s) => s.parent_id === scenario.id).map((s) => s.id)].slice(0, 8))
+  }, [scenarios, scenario, ids.length])
+  // Un cas supprimé disparaît de la sélection
+  useEffect(() => { setIds((x) => x.filter((id) => scenarios.some((s) => s.id === id))) }, [scenarios])
+
+  const { data, loading } = useApi(() => (ids.length >= 2 ? api.compareMany(ids) : Promise.resolve(null)), [ids.join(','), refreshKey, tick])
+  // Un cas encore en calcul : on relit toutes les 4 s
+  const pending = useMemo(() => ids.some((id) => !scenarios.find((s) => s.id === id)?.latest_ready_plan_id || scenarios.find((s) => s.id === id)?.latest_plan_status === 'running' || scenarios.find((s) => s.id === id)?.latest_plan_status === 'pending'), [ids, scenarios])
+  useEffect(() => {
+    if (!pending) return
+    const t = setInterval(() => { void reloadScenarios(); setTick((x) => x + 1) }, 4000)
+    return () => clearInterval(t)
+  }, [pending, reloadScenarios])
+
+  const toggle = (id: string) => setIds((x) => (x.includes(id) ? x.filter((y) => y !== id) : x.length >= 8 ? x : [...x, id]))
+  const makeRef = (id: string) => setIds((x) => [id, ...x.filter((y) => y !== id)])
+
+  const simulate = async (r: Recipe) => {
+    const base = scenarios.find((s) => s.id === ids[0]) ?? scenario
     if (!base) return
     try {
       const params: Record<string, unknown> = {}
-      if (p.params?.season) params.season = p.params.season
-      if (p.params?.subscription_rate_delta) params.subscription_rate = Math.min(1, Number(base.params.subscription_rate) + 0.2)
-      if (p.params?.budget_factor) params.budget_fcfa_month = Number(base.params.budget_fcfa_month) * 0.7
-      const sc = await api.createScenario(`${base.name} — ${p.name}`, base.id, params)
+      if (r.season) params.season = r.season
+      if (r.subscriptionPts) params.subscription_rate = Math.max(0, Math.min(1, Number(base.params.subscription_rate) + r.subscriptionPts / 100))
+      if (r.budgetPct) params.budget_fcfa_month = Math.round(Number(base.params.budget_fcfa_month) * (1 + r.budgetPct / 100))
+      const sc = await api.createScenario(`${base.name} — ${r.name}`, base.id, params)
       let planId = sc.plan_version_id
-      if (p.breakdown) {
-        const vs = sc.vehicles.filter((v) => !v.out_of_service).slice(-p.breakdown)
-        const r = await api.patchScenario(sc.id, { vehicles: vs.map((v) => ({ id: v.id, out_of_service: true })) })
-        if (r.plan_version_id) planId = r.plan_version_id
+      if (r.breakdown > 0) {
+        const vs = sc.vehicles.filter((v) => !v.out_of_service).slice(-r.breakdown)
+        const res = await api.patchScenario(sc.id, { vehicles: vs.map((v) => ({ id: v.id, out_of_service: true })) })
+        if (res.plan_version_id) planId = res.plan_version_id
       }
       await reloadScenarios()
-      setB(sc.id)
-      track(planId, p.name)
+      setIds((x) => (x.length >= 8 ? x : [...x, sc.id]))
+      track(planId, r.name)
     } catch (e) { toast('error', (e as Error).message) }
   }
+  const remove = async (id: string) => {
+    try { await api.deleteScenario(id); await reloadScenarios() } catch (e) { toast('error', (e as Error).message) }
+  }
+
+  const analyse = () => {
+    if (!data) return
+    const names = data.scenarios.map((s) => `« ${s.name} »`).join(', ')
+    askAssistant(`Analyse la comparaison des scénarios ${names} (le premier est la référence). Lequel recommandes-tu à la mairie, pour quelles raisons chiffrées, et quels sont les risques ?`)
+  }
+
+  const colorOf = (id: string) => CASE_COLORS[Math.max(0, scenarios.findIndex((s) => s.id === id)) % CASE_COLORS.length]
+  const admin = !!session && can('admin', session)
 
   return (
     <div className="content">
       <div className="card">
-        <div className="card-head"><ArrowLeftRight color="#0f2b55" /><h2>Comparer deux scénarios</h2></div>
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-          <select className="select" value={a} onChange={(e) => setA(e.target.value)} aria-label="Scénario A">
-            {scenarios.map((s) => <option key={s.id} value={s.id}>A — {s.name}</option>)}
-          </select>
-          <select className="select" value={b} onChange={(e) => setB(e.target.value)} aria-label="Scénario B">
-            <option value="">B — choisir…</option>
-            {scenarios.map((s) => <option key={s.id} value={s.id}>B — {s.name}</option>)}
-          </select>
-          <span className="muted">ou créer B à partir de A :</span>
-          {PRESETS.map((p) => <RoleButton need="admin" key={p.name} className="pill-btn" onClick={() => void preset(p)}>{p.name}</RoleButton>)}
+        <div className="card-head">
+          <span className="head-icon" style={{ background: 'var(--grad-blue)' }}><ArrowLeftRight size={18} color="#fff" /></span>
+          <h2>Comparer plusieurs cas</h2>
+          <span className="spacer" />
+          <span className="muted">{ids.length} cas sélectionné(s) · le premier sert de référence</span>
         </div>
+        <div className="case-chips">
+          {scenarios.map((s) => {
+            const on = ids.includes(s.id)
+            const ref = ids[0] === s.id
+            return (
+              <span key={s.id} className={`case-chip${on ? ' on' : ''}`} style={{ ['--c' as string]: colorOf(s.id) }}>
+                <button className="case-main" onClick={() => toggle(s.id)} aria-pressed={on} title={on ? 'Retirer de la comparaison' : 'Ajouter à la comparaison'}>
+                  <span className="case-dot" />{s.name}
+                  {s.latest_plan_status && s.latest_plan_status !== 'ready' && s.latest_plan_status !== 'failed' && <em> · calcul…</em>}
+                </button>
+                {on && !ref && <button className="case-ref" onClick={() => makeRef(s.id)} title="En faire la référence">réf.</button>}
+                {ref && <span className="case-badge">référence</span>}
+                {admin && !s.is_baseline && <button className="case-x" onClick={() => void remove(s.id)} aria-label={`Supprimer ${s.name}`}><X size={13} /></button>}
+              </span>
+            )
+          })}
+        </div>
+        <div className="sim-row">
+          <span className="sim-title"><FlaskConical size={16} /> Simuler un nouveau cas à partir de la référence :</span>
+          {PRESETS.map((p) => <RoleButton need="admin" key={p.name} className="pill-btn" onClick={() => void simulate(p)}>{p.name}</RoleButton>)}
+          <RoleButton need="admin" className="pill-btn accent" onClick={() => setShowCustom((x) => !x)}><Plus size={14} /> Cas sur mesure</RoleButton>
+        </div>
+        {showCustom && (
+          <div className="custom-case">
+            <label>Nom<input value={custom.name} onChange={(e) => setCustom({ ...custom, name: e.target.value })} /></label>
+            <label>Camions en panne<input type="number" min={0} max={8} value={custom.breakdown} onChange={(e) => setCustom({ ...custom, breakdown: Math.max(0, Number(e.target.value) || 0) })} /></label>
+            <label>Saison<select value={custom.season} onChange={(e) => setCustom({ ...custom, season: e.target.value as Recipe['season'] })}>
+              <option value="">comme la référence</option><option value="dry">sèche</option><option value="rain">des pluies</option></select></label>
+            <label>Abonnement (± points)<input type="number" min={-50} max={50} value={custom.subscriptionPts} onChange={(e) => setCustom({ ...custom, subscriptionPts: Number(e.target.value) || 0 })} /></label>
+            <label>Budget (± %)<input type="number" min={-80} max={200} value={custom.budgetPct} onChange={(e) => setCustom({ ...custom, budgetPct: Number(e.target.value) || 0 })} /></label>
+            <button className="btn-primary" onClick={() => { void simulate(custom); setShowCustom(false) }}>Simuler ce cas</button>
+          </div>
+        )}
       </div>
-      {data && <Verdict data={data} />}
+
+      {data && <Ranking data={data} onAnalyse={analyse} assistant={modules.assistant} />}
+
       {data && (
-        <div className="grid row-map">
+        <>
           <div className="card" style={{ overflowX: 'auto' }}>
-            <table className="table">
-              <thead><tr><th>Indicateur</th><th>A · {data.a.name}</th><th>B · {data.b.name}</th><th>Écart</th></tr></thead>
+            <table className="table compare-table">
+              <thead>
+                <tr><th>Indicateur</th>{data.scenarios.map((s, i) => (
+                  <th key={s.scenario_id}><span className="case-dot" style={{ background: colorOf(s.scenario_id) }} /> {i === 0 ? 'Réf. · ' : ''}{s.name}{!s.plan_id && <em className="muted"> (en calcul)</em>}</th>
+                ))}</tr>
+              </thead>
               <tbody>
-                {Object.entries(data.delta).map(([k, d]) => {
-                  const lower = data.better_when_lower.includes(k)
-                  const neutral = ['points', 'routes', 'demand_t_week'].includes(k)
-                  const better = d.value === 0 || neutral ? null : (d.value < 0) === lower
-                  const isRate = k.endsWith('rate') || k.endsWith('rate_final')
-                  const f = (x: number) => (isRate ? `${num(x * 100, 1)} %` : num(x, Math.abs(x) < 10 ? 1 : 0))
-                  return (
-                    <tr key={k}>
-                      <td>{LABELS[k] ?? k}</td><td>{f(d.a)}</td><td>{f(d.b)}</td>
-                      <td className={better == null ? '' : better ? 'delta-down' : 'delta-up'}>
-                        {better != null && (d.value > 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />)}
-                        {' '}{d.pct != null && Math.abs(d.a) >= 1 && Math.abs(d.pct) < 1000 ? `${d.pct > 0 ? '+' : ''}${num(d.pct, 1)} %` : `${d.value > 0 ? '+' : ''}${f(d.value)}`}
-                      </td>
-                    </tr>
-                  )
-                })}
+                {data.rows.map((r) => (
+                  <tr key={r.key}>
+                    <td>{LABELS[r.key] ?? r.key}</td>
+                    {r.values.map((v, i) => {
+                      const d = r.delta[i]
+                      const lower = data.better_when_lower.includes(r.key)
+                      const neutral = data.neutral.includes(r.key)
+                      const good = i === 0 || neutral || d.value === 0 ? null : (d.value < 0) === lower
+                      return (
+                        <td key={i} className={r.best === i ? 'best' : ''}>
+                          {r.best === i && <Trophy size={13} className="trophy" />} {fmt(r.key, v)}
+                          {i > 0 && d.value !== 0 && (
+                            <span className={`dlt ${good == null ? '' : good ? 'delta-down' : 'delta-up'}`}>
+                              {d.pct != null && Math.abs(d.a) >= 1 && Math.abs(d.pct) < 1000 ? `${d.pct > 0 ? '+' : ''}${num(d.pct, 1)} %` : `${d.value > 0 ? '+' : ''}${fmt(r.key, d.value)}`}
+                            </span>
+                          )}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                ))}
               </tbody>
             </table>
+            <div className="muted" style={{ marginTop: 8 }}><Trophy size={12} /> meilleur cas sur la ligne · écarts en vert : mieux que la référence, en rouge : moins bien.</div>
           </div>
           <div className="card">
             <div className="card-head"><h2>Dépotoirs actifs (simulation)</h2></div>
-            <LineChart yLabel="dépotoirs actifs" labels={data.a.wild_dumps_daily.map((_, i) => `J${i + 1}`)} series={[
-              { name: `A · ${data.a.name}`, color: '#2563eb', values: data.a.wild_dumps_daily },
-              { name: `B · ${data.b.name}`, color: '#dc2626', values: data.b.wild_dumps_daily },
-            ]} />
-            <div className="muted">Vert : le scénario B fait mieux · rouge : il fait moins bien.</div>
+            <div style={{ maxWidth: 860 }}><LineChart yLabel="dépotoirs actifs" labels={(data.scenarios[0]?.wild_dumps_daily ?? []).map((_, i) => `J${i + 1}`)}
+              series={data.scenarios.map((s, i) => ({ name: `${i === 0 ? 'Réf. · ' : ''}${s.name}`, color: colorOf(s.scenario_id), values: s.wild_dumps_daily }))} /></div>
+            <div className="muted">Comparer des cas de la même zone : la ville entière et la zone pilote n'ont pas la même échelle.</div>
           </div>
-        </div>
+        </>
       )}
-      {!data && !loading && <div className="card"><div className="empty">Choisir deux scénarios</div></div>}
+      {!data && !loading && <div className="card"><div className="empty">Choisir au moins deux cas (cliquer sur leurs noms), ou simuler un nouveau cas ci-dessus</div></div>}
     </div>
   )
 }
 
-/** Lot E : une phrase de conclusion, en français, avant les chiffres. */
-function Verdict({ data }: { data: CompareResult }) {
-  const scored = Object.entries(data.delta).filter(([k, d]) => !['points', 'routes', 'demand_t_week'].includes(k) && d.value !== 0)
-  const better = scored.filter(([k, d]) => (d.value < 0) === data.better_when_lower.includes(k))
-  const worse = scored.length - better.length
-  const top = [...better].sort((x, y) => Math.abs(y[1].pct ?? 0) - Math.abs(x[1].pct ?? 0))[0]
-  const text = !scored.length
-    ? `« ${data.b.name} » donne les mêmes résultats que « ${data.a.name} ».`
-    : better.length > worse
-      ? `« ${data.b.name} » fait mieux que « ${data.a.name} » sur ${better.length} indicateur(s) sur ${scored.length}${top ? `, surtout ${(LABELS[top[0]] ?? top[0]).toLowerCase()}` : ''}.`
-      : better.length < worse
-        ? `« ${data.b.name} » fait moins bien que « ${data.a.name} » sur ${worse} indicateur(s) sur ${scored.length}.`
-        : `« ${data.b.name} » et « ${data.a.name} » s'équilibrent : ${better.length} indicateur(s) meilleur(s), ${worse} moins bon(s).`
-  return <div className="card verdict" role="status"><b>En bref :</b> {text}</div>
+/** Classement : quel cas gagne sur le plus d'indicateurs, en une phrase, puis l'analyse par l'IA. */
+function Ranking({ data, onAnalyse, assistant }: { data: CompareMany; onAnalyse: () => void; assistant: boolean }) {
+  const scored = data.rows.filter((r) => r.best != null).length
+  const order = data.ranking.map((id) => data.scenarios.findIndex((s) => s.scenario_id === id))
+  const top = order[0]
+  const tie = order.length > 1 && data.wins[order[0]] === data.wins[order[1]]
+  const text = !scored
+    ? 'Tous les cas donnent les mêmes résultats.'
+    : tie
+      ? `Pas de vainqueur net : « ${data.scenarios[order[0]].name} » et « ${data.scenarios[order[1]].name} » gagnent chacun sur ${data.wins[order[0]]} indicateur(s) sur ${scored}.`
+      : `« ${data.scenarios[top].name} » est le meilleur cas sur ${data.wins[top]} indicateur(s) sur ${scored}.`
+  return (
+    <div className="card verdict" role="status">
+      <div className="verdict-row">
+        <div style={{ flex: 1 }}>
+          <b>En bref :</b> {text}
+          <div className="podium">
+            {order.map((i, rank) => (
+              <span key={data.scenarios[i].scenario_id} className="podium-item">
+                <b>{rank + 1}.</b> {data.scenarios[i].name} <span className="muted">· {data.wins[i]} victoire(s)</span>
+              </span>
+            ))}
+          </div>
+        </div>
+        {assistant && (
+          <button className="btn-ai" data-testid="compare-ai" onClick={onAnalyse} title="Demander à l'assistant IA d'analyser ces chiffres">
+            <Sparkles size={16} /> Analyser avec l'IA
+          </button>
+        )}
+      </div>
+    </div>
+  )
 }

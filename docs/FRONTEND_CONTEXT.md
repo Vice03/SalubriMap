@@ -517,7 +517,7 @@ Autres : `GET /api/plans/{id}/unserved` → `[{"point_id", "point_key", "demand_
 
 **Réplications (bande d'incertitude)** — `POST /api/plans/{id}/simulate` `{"replications": 5}` → 202 `{"sim_run_id", "status": "pending"}`, puis interroger `GET /api/sim-runs/{sim_run_id}` jusqu'à `status: "ready"` : `metrics_summary[indicateur] = {median, p10, p90}` et `metrics_daily[série] = {median: [...], p10: [...], p90: [...]}`.
 
-### 6.9 Comparer deux scénarios
+### 6.9 Comparer plusieurs cas
 
 `GET /api/scenarios/compare?a=<id>&b=<id>` :
 

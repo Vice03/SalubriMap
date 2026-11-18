@@ -8,7 +8,7 @@ PAGES = {
     "/carte": "Points de regroupement",
     "/signalements": "Signalements",
     "/scenario": "Saison sèche",
-    "/comparer": "Comparer deux scénarios",
+    "/comparer": "Comparer plusieurs cas",
     "/journal": "Journal des actions",
 }
 
