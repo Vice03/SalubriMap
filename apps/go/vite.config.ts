@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
 import react from '@vitejs/plugin-react'
+import { readdirSync } from 'node:fs'
 import { defineConfig, type Plugin } from 'vite'
 
 const env = (globalThis as { process?: { env: Record<string, string | undefined> } }).process?.env ?? {}
@@ -13,13 +14,21 @@ const SW_TEMPLATE = "// SPDX-License-Identifier: AGPL-3.0-or-later\n// Coquille 
  *  par Vite dans assets/ et entre donc dans la liste du service worker tout seul. */
 const MODELS = ['/go/models/visages-yunet-2023mar.onnx', '/go/models/plaques-yolov9t-384.onnx']
 
+/** Voix du guide (public/audio/<langue>/*.mp3) : seuls les fichiers présents sont mis en cache, les voix manquantes ne bloquent pas l'installation. */
+function audios(): string[] {
+  try {
+    return readdirSync('public/audio', { withFileTypes: true }).filter((d) => d.isDirectory())
+      .flatMap((d) => readdirSync(`public/audio/${d.name}`).filter((f) => f.endsWith('.mp3')).map((f) => `/go/audio/${d.name}/${f}`))
+  } catch { return [] }
+}
+
 /** Génère /go/sw.js avec la liste de TOUS les fichiers du build (JS/CSS hachés, polices) à mettre en cache. */
 function serviceWorker(): Plugin {
   return {
     name: 'salubri-go-sw',
     apply: 'build',
     generateBundle(_, bundle) {
-      const files = ['/go/', '/go/index.html', '/go/manifest.webmanifest', '/go/icon.svg', '/go/icon-192.png', '/go/icon-512.png', '/go/icon-512-maskable.png', ...MODELS,
+      const files = ['/go/', '/go/index.html', '/go/manifest.webmanifest', '/go/icon.svg', '/go/icon-192.png', '/go/icon-512.png', '/go/icon-512-maskable.png', ...MODELS, ...audios(),
         ...Object.keys(bundle).filter((f) => f !== 'index.html').map((f) => `/go/${f}`)]
       const version = Date.now().toString(36)
       const src = SW_TEMPLATE.replace('__PRECACHE__', JSON.stringify(files)).replace('__VERSION__', version)

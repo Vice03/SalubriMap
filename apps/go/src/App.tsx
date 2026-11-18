@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { Camera, Construction, Inbox, MapPin, Wifi, WifiOff } from 'lucide-react'
+import { Camera, Construction, Inbox, Languages, MapPin, Wifi, WifiOff } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { outbox } from './db'
 import { PwaBars } from './components/PwaBars'
@@ -11,6 +11,9 @@ import { RoadReportPage } from './modules/seasons/RoadReportPage'
 import { useSeasonsEnabled } from './modules/seasons/useSeasons'
 import { ServerSetup } from './components/ServerSetup'
 import { getServer, isNative } from './server'
+import { LangPicker } from './voice/LangPicker'
+import { getLang, setLang, type LangChoice } from './voice/script'
+import { VoiceFlow } from './voice/VoiceFlow'
 
 type Tab = 'report' | 'outbox' | 'nearby' | 'road'
 
@@ -27,6 +30,8 @@ function Main({ onChangeServer }: { onChangeServer?: () => void }) {
   const [online, setOnline] = useState(navigator.onLine)
   const [pending, setPending] = useState(0)
   const [key, setKey] = useState(0)
+  const [lang, setLangState] = useState<LangChoice | null>(getLang()) // guide vocal : langue choisie au lancement
+  const [classic, setClassic] = useState(false) // formulaire classique pour ce signalement seulement
   const seasons = useSeasonsEnabled() // module « Saisons » : onglet « Route » seulement s'il est allumé
   useEffect(() => {
     const up = () => setOnline(navigator.onLine)
@@ -37,14 +42,20 @@ function Main({ onChangeServer }: { onChangeServer?: () => void }) {
     const off = onOutboxChange(count)
     return () => { window.removeEventListener('online', up); window.removeEventListener('offline', up); stop(); off() }
   }, [])
+  if (lang === null) return <LangPicker onPick={(l) => { setLang(l); setLangState(l) }} />
   return (
     <div className="app">
       <header>
         <div className="brand"><img src={`${import.meta.env.BASE_URL}icon.svg`} alt="" /><div><b>Salubri <span>Go</span></b><small>Signalez un dépotoir, la mairie planifie</small></div></div>
-        <span className={`net ${online ? 'on' : 'off'}`}>{online ? <Wifi size={14} /> : <WifiOff size={14} />}{online ? 'En ligne' : 'Hors ligne'}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button className="icon" aria-label="Changer de langue" onClick={() => { setLang(null); setLangState(null) }}><Languages size={20} /></button>
+          <span className={`net ${online ? 'on' : 'off'}`}>{online ? <Wifi size={14} /> : <WifiOff size={14} />}{online ? 'En ligne' : 'Hors ligne'}</span>
+        </div>
       </header>
       <main>
-        {tab === 'report' && <ReportPage key={key} onSent={() => { setTab('outbox'); setKey(key + 1) }} />}
+        {tab === 'report' && (lang !== 'off' && !classic
+          ? <VoiceFlow key={key} lang={lang} onSent={() => { setTab('outbox'); setKey(key + 1) }} onAgain={() => setKey(key + 1)} onClassic={() => setClassic(true)} />
+          : <ReportPage key={key} onSent={() => { setTab('outbox'); setKey(key + 1); setClassic(false) }} />)}
         {tab === 'outbox' && <OutboxPage />}
         {tab === 'nearby' && <NearbyPage />}
         {seasons && tab === 'road' && <RoadReportPage />}
