@@ -12,7 +12,7 @@ Salubri est un outil libre d'aide à la décision, du signalement des dépotoirs
 
 ## Livrables du défi
 
-Les six livrables de la fiche sont réunis dans le dossier [`livrable/`](livrable/README.md), un sous-dossier par livrable avec son `README.md` : application de signalement hors connexion avec masquage, moteur d'optimisation et simulateur multi-agents avec leurs paramètres documentés, tableau de bord et plan de gestion de l'arrondissement 9, jeu de signalements en GeoJSON sous licence ouverte, rapport, vidéo de démonstration. Menu `SALUBRI.bat`, choix **G** : ouvre ce dossier et le guide. `python scripts/livrable.py` le reconstruit depuis les sources (la CI vérifie qu'il est à jour). Ce qui reste à apporter par l'équipe (jeu de terrain, vidéo, voix mooré) est écrit dans [`docs/CHECKLIST_FINALE.md`](docs/CHECKLIST_FINALE.md).
+Le bilan « où trouver chaque livrable » (vidéo comprise) est dans [`LIVRABLES.pdf`](LIVRABLES.pdf) à la racine. Cinq des six livrables sont réunis dans le dossier [`livrable/`](livrable/README.md), un sous-dossier par livrable avec son `README.md` : application de signalement hors connexion avec masquage, moteur d'optimisation et simulateur multi-agents avec leurs paramètres documentés, tableau de bord et plan de gestion de l'arrondissement 9, jeu de signalements en GeoJSON sous licence ouverte, rapport, vidéo de démonstration. Menu `SALUBRI.bat`, choix **G** : ouvre ce dossier et le guide. `python scripts/livrable.py` le reconstruit depuis les sources (la CI vérifie qu'il est à jour). Ce qui reste à apporter par l'équipe (jeu de terrain, vidéo, voix mooré) est écrit dans [`docs/CHECKLIST_FINALE.md`](docs/CHECKLIST_FINALE.md).
 
 ## Démarrage
 

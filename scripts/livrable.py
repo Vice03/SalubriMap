@@ -78,7 +78,7 @@ Il est **généré** par `python scripts/livrable.py` : les sources restent dans
 | 3 | Tableau de bord des scénarios et plan de gestion d'un arrondissement | [`3_tableau_de_bord/`](3_tableau_de_bord/README.md) | fait (arrondissement 9, quartiers de démonstration) |
 | 4 | Jeu de signalements en GeoJSON, sous licence ouverte | [`4_signalements_geojson/`](4_signalements_geojson/README.md) | jeu de démonstration fourni (CC0) ; jeu de terrain de l'équipe à ajouter |
 | 5 | Rapport : démarche, paramètres, scénarios simulés, résultats, plan de gestion | [`5_rapport/`](5_rapport/README.md) | fait (PDF + sources) |
-| 6 | Vidéo de démonstration (3 min) | [`6_video/`](6_video/) | vidéo `demo_salubri.mp4` à déposer dans ce dossier (ou lien Drive) |
+| 6 | Vidéo de démonstration (3 min) | voir [`LIVRABLES.pdf`](../LIVRABLES.pdf) à la racine du dépôt | vidéo hébergée sur Drive (lien dans `LIVRABLES.pdf`) |
 
 **Pour essayer tout de suite** : Docker, puis double-clic sur `SALUBRI.bat` à la racine du dépôt (choix 1).
 **Guide pas à pas** : [`GUIDE_JURY.pdf`](GUIDE_JURY.pdf). Code sous AGPL-3.0-or-later, données et documents sous licences ouvertes (détail au `README.md` racine).
@@ -175,8 +175,8 @@ Régénération : `python scripts/figures_rapport.py` puis `scripts/md_pdf.sh do
 }
 
 
-# déposée à la main par l'équipe : jamais écrasée ni signalée
-AJOUTS = {Path("6_video/demo_salubri.mp4")}
+# fichiers ajoutés à la main dans livrable/ : jamais écrasés ni signalés (aucun pour l'instant)
+AJOUTS: set[Path] = set()
 
 
 def contenu() -> dict[Path, bytes]:
@@ -193,7 +193,6 @@ def contenu() -> dict[Path, bytes]:
                 out[rel] = f.read_bytes()
     for dossier, texte in README.items():
         out[Path(dossier) / "README.md"] = texte.encode()
-    out[Path("6_video/.gitkeep")] = b""  # dossier de la vidéo, sans fichier .md
     out[Path("4_signalements_geojson/LICENCE_signalements_demo.md")] = LICENCE_DEMO.encode()
     equipe = ROOT / COMMUNE / "signalements_equipe.geojson"
     if equipe.exists():  # jeu de terrain, dès qu'il existe
