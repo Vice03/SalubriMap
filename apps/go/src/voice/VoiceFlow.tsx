@@ -52,16 +52,18 @@ export function VoiceFlow({ lang, onSent, onAgain, onClassic }: { lang: Lang; on
     sent.current = true
     const fix = gps.fix
     void (async () => {
+      const clientId = uuid()
       await outbox.put({
-        clientId: uuid(), createdAt: takenAt ?? new Date().toISOString(), lat: fix.lat, lon: fix.lon, accuracy: fix.accuracy,
+        clientId, createdAt: takenAt ?? new Date().toISOString(), lat: fix.lat, lon: fix.lon, accuracy: fix.accuracy,
         wasteType: waste ?? 'mixed', volumeClass: volume ?? 'wheelbarrow', photo: masked?.blob ?? null,
         exif: masked?.blob ? exif ?? undefined : undefined,
         masking: masked ? { faces: masked.faces, plates: masked.plates, manual: masked.manual, mode: masked.mode } : undefined,
         comment: '', state: 'pending', attempts: 0,
       })
       notify()
-      void syncOutbox()
-      setOnline(navigator.onLine)
+      // « transmis » seulement si le serveur a vraiment répondu (6 s au plus) ; sinon « enregistré, sera transmis »
+      await Promise.race([syncOutbox().catch(() => 0), new Promise((res) => window.setTimeout(res, 6000))])
+      setOnline((await outbox.all()).some((i) => i.clientId === clientId && i.state === 'sent'))
       setStep('thanks')
     })()
   }, [step, gps, takenAt, waste, volume, masked, exif])
