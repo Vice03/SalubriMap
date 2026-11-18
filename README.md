@@ -67,9 +67,11 @@ PostgreSQL + PostGIS, FastAPI (Python 3.12), OR-Tools, OSRM, moteur de simulatio
 |---|---|---|
 | OpenStreetMap (voies, eau, écoles, marchés, santé) | ODbL 1.0 — © contributeurs OpenStreetMap | `data/osm/` |
 | Google Open Buildings v3 (bâtiments) | CC-BY-4.0 / ODbL | `data/open_buildings/` |
+| Populations par arrondissement : INSD, 5e RGPH 2019 | publication officielle | `data/communes/ouagadougou/quartiers.geojson` |
+| SDGD 2020 (décharges et CCT, enquête 2019) | référence citée | `data/communes/ouagadougou/sdgd2020.geojson` |
 | Signalements de démonstration | CC0 | `data/communes/ouagadougou/` |
 
-Tant que les extraits OSM et Open Buildings ne sont pas présents, Salubri génère une **ville synthétique** plausible pour que tout fonctionne. Voir [data/README.md](data/README.md) pour charger les vraies données.
+Bâtiments : `python scripts/prepare_open_buildings.py` (1,35 Go téléchargés, 150 Mo gardés pour Ouagadougou, fichier hors git), puis recharger les données (choix 10 du lanceur). Tant que les extraits OSM et Open Buildings ne sont pas présents, Salubri génère une **ville synthétique** plausible pour que tout fonctionne. Voir [data/README.md](data/README.md) pour charger les vraies données.
 
 ## Licence
 

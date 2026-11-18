@@ -149,12 +149,15 @@ pour que la variante « budget −30 % » mesure un vrai effet.
 
 ![Dépôts sauvages par scénario](figures/scenarios_arr9.svg)
 
-Lecture : la capacité de chaque point par enlèvement est une contrainte dure du placement ; à 2 enlèvements par
-semaine elle est impossible avec 80 points au plus, le plan passe donc à 3 (lundi, mercredi, vendredi). La
-saison des pluies et la perte de deux camions augmentent nettement les dépôts sauvages ; +20 % d'abonnements ne
-change presque rien tant que la capacité des pré-collecteurs ne suit pas. Le budget −30 % ne change rien : le
-plan reste sous le budget réduit. Avec 8 camions, 1 point n'est pas desservi ; le plan publie la flotte actuelle
-et la flotte nécessaire (9 camions) avec leur coût et leurs dépôts sauvages simulés.
+Lecture : avec la population réelle (1 413 t de déchets par semaine), le plan compte 270 points de
+regroupement et passe à 3 enlèvements par semaine (lundi, mercredi, vendredi) pour respecter la capacité de chaque
+point. **La flotte de 8 camions ne suffit pas** : 172 points ne sont pas desservis, la couverture simulée tombe à
+50 %. Il faut **30 camions de 8 t** (~16,7 M FCFA par mois de fonctionnement, soit environ cinq fois le budget de
+l'arrondissement au prorata) ; avec eux, la couverture simulée monte à 95 % et les dépôts sauvages simulés sur
+90 jours baissent d'environ 13 100 t à 1 100 t. Le plan publie les deux flottes côte à côte. La saison des pluies
+et le budget réduit de 30 % aggravent nettement la situation ; +20 % d'abonnements ne change presque rien tant que la
+capacité des pré-collecteurs ne suit pas. Les écarts entre variantes sont publiés avec et sans l'incertitude des
+paramètres non calés (`PLAN_ARRONDISSEMENT_9.md`, « Incertitude des chiffres simulés »).
 
 ## 8. Validation
 

@@ -120,3 +120,23 @@ def test_placement_monte_a_trois_enlevements_plutot_que_deborder() -> None:
     cap = res.optimisation["capacite"]  # type: ignore[index]
     assert cap["contrainte"] == "dure" and cap["enlevements_semaine"] == 3.0  # 4 points × 2,5 t × 2 = 20 t < 24 t
     assert all(q.demand_t_week / 3 <= 2.5 + 1e-6 for q in res.points)
+
+
+def test_sparse_pairs_equal_dense(monkeypatch):  # type: ignore[no-untyped-def]
+    """Ville entière : paires calculées en creux (arbre k-d) = paires de la matrice complète (mêmes sites, distances)."""
+    import numpy as np
+
+    from salubri_api.services.planning import placement_opt as po
+
+    rng = np.random.default_rng(7)
+    xy, cand = rng.uniform(0, 3000, (400, 2)), rng.uniform(0, 3000, (250, 2))
+    dense = po.candidate_pairs(xy, cand, 300, 12)
+    monkeypatch.setattr(po, "DENSE_MAX_PAIRS", 0)
+    sparse = po.candidate_pairs(xy, cand, 300, 12)
+    for (pd, dd), (ps, ds) in zip(zip(*dense, strict=True), zip(*sparse, strict=True), strict=True):
+        assert pd.tolist() == ps.tolist()
+        assert np.allclose(dd, ds)
+    a = po.optimise(xy, np.full(400, 0.5), cand, 20.0, 300, 40, time_limit_s=2)
+    monkeypatch.setattr(po, "DENSE_MAX_PAIRS", 10**12)
+    b = po.optimise(xy, np.full(400, 0.5), cand, 20.0, 300, 40, time_limit_s=2)
+    assert a.status in ("optimal", "faisable") and b.status in ("optimal", "faisable")

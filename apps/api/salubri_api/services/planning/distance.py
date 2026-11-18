@@ -33,6 +33,11 @@ class Matrix:
 
 
 _CACHE: "OrderedDict[str, Matrix]" = OrderedDict()
+CACHE_MAX_BYTES = 384 * 1024 * 1024
+
+
+def _cache_bytes() -> int:
+    return sum(m.distance_km.nbytes + m.duration_min.nbytes for m in _CACHE.values())
 
 
 def cache_key(nodes: list[tuple[float, float]], season: str) -> str:
@@ -104,7 +109,8 @@ def build_matrix(
     m.duration_ms = int((time.perf_counter() - t0) * 1000)
     if m.mode == "osrm":
         _CACHE[key] = m
-        while len(_CACHE) > 32:
+        # borne par nombre ET par taille : une matrice de la ville entière (2 000 nœuds) pèse ~64 Mo
+        while len(_CACHE) > 32 or (len(_CACHE) > 1 and _cache_bytes() > CACHE_MAX_BYTES):
             _CACHE.popitem(last=False)
     return m
 

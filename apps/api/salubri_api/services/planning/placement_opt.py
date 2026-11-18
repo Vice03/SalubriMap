@@ -54,9 +54,55 @@ def cost_matrix(xy: np.ndarray, cand: np.ndarray) -> np.ndarray:
     return np.hypot(xy[:, None, 0] - cand[None, :, 0], xy[:, None, 1] - cand[None, :, 1]) * DETOUR
 
 
+# Au-delà de ce nombre de paires îlot × site, la matrice complète ne tient plus en mémoire (ville entière avec les
+# bâtiments réels : 30 000 îlots × 20 000 sites = 5 Go) : on ne calcule que les paires proches (arbre k-d).
+DENSE_MAX_PAIRS = 20_000_000
+
+
+def candidate_pairs(
+    xy: np.ndarray, cand_xy: np.ndarray, walk_max: float, k_nearest: int
+) -> tuple[list[np.ndarray], list[np.ndarray]]:
+    """Sites considérés pour chaque îlot (triés) et leurs distances : à portée de marche ×1,5 ou parmi les K plus
+    proches. Même résultat en dense et en creux ; le dense garde exactement le calcul des versions précédentes."""
+    n, m = len(xy), len(cand_xy)
+    k = min(k_nearest, m)
+    if n * m <= DENSE_MAX_PAIRS:
+        d = cost_matrix(xy, cand_xy)
+        from salubri_api.config import get_settings
+
+        if get_settings().seasons_enabled:  # module « Saisons » : paires interdites par une route impraticable
+            from salubri_api.modules.seasons.service import apply_walk
+
+            d = apply_walk(d)
+        near = np.argsort(d, axis=1)[:, :k]
+        allowed = d <= 1.5 * walk_max
+        allowed[np.arange(n)[:, None], near] = True
+        pairs = [np.flatnonzero(allowed[i]) for i in range(n)]
+        return pairs, [d[i, p] for i, p in enumerate(pairs)]
+    from scipy.spatial import cKDTree
+
+    tree = cKDTree(cand_xy)
+    _, knn = tree.query(xy, k=k)
+    knn = knn.reshape(n, -1)
+    ball = tree.query_ball_point(xy, r=1.5 * walk_max / DETOUR)
+    pairs, dists = [], []
+    for i in range(n):
+        p = np.array(sorted(set(knn[i].tolist()) | set(ball[i])), dtype=int)
+        pairs.append(p)
+        dists.append(np.hypot(*(cand_xy[p] - xy[i]).T) * DETOUR)
+    return pairs, dists
+
+
+def _nearest_idx(xy: np.ndarray, pts: np.ndarray) -> np.ndarray:
+    from scipy.spatial import cKDTree
+
+    return cKDTree(pts).query(xy, k=1)[1].astype(int)  # type: ignore[no-any-return]
+
+
 def _objective(
     w: np.ndarray,
-    d: np.ndarray,
+    di: np.ndarray,
+    m: int,
     assign_c: np.ndarray,
     opened: set[int],
     walk_max: float,
@@ -65,10 +111,9 @@ def _objective(
     stability: dict[int, float],
     cap_week: float,
 ) -> tuple[float, float, float, float]:
-    di = d[np.arange(len(w)), assign_c]
     walk = float((w * di).sum())
     far = di > walk_max
-    load = np.bincount(assign_c, weights=w, minlength=d.shape[1])
+    load = np.bincount(assign_c, weights=w, minlength=m)
     overload = float(np.maximum(load - cap_week, 0).sum())
     obj = walk + penalty * float((w * di * far).sum()) + open_cost * len(opened) + penalty * walk_max * overload
     obj += sum(v for j, v in stability.items() if j not in opened)
@@ -100,31 +145,29 @@ def optimise(
     stability = stability or {}
     if open_cost is None:  # un point plein doit faire gagner au moins la moitié de la distance de marche
         open_cost = cap_week * walk_max / 2
-    d = cost_matrix(xy, cand_xy)
-    from salubri_api.config import get_settings
-
-    if get_settings().seasons_enabled:  # module « Saisons » : paires interdites par une route impraticable
-        from salubri_api.modules.seasons.service import apply_walk
-
-        d = apply_walk(d)
-    # paires considérées : à portée de marche (×1,5) ou parmi les K plus proches
-    near = np.argsort(d, axis=1)[:, : min(k_nearest, m)]
-    allowed = d <= 1.5 * walk_max
-    allowed[np.arange(n)[:, None], near] = True
-    pairs = [np.flatnonzero(allowed[i]) for i in range(n)]
+    # paires considérées : à portée de marche (×1,5) ou parmi les K plus proches ; dij[i] = distances de pairs[i]
+    pairs, dij = candidate_pairs(xy, cand_xy, walk_max, k_nearest)
     used_c = sorted(set(np.concatenate(pairs).tolist()) | set(fixed) | set(stability))
 
-    def unit(i: int, j: int) -> int:
-        c = w_week[i] * d[i, j] * (1 + penalty * (d[i, j] > walk_max))
+    def di_of(assign_c: np.ndarray) -> np.ndarray:
+        return np.hypot(*(xy - cand_xy[assign_c]).T) * DETOUR
+
+    def unit(i: int, k: int) -> int:
+        dd = dij[i][k]
+        c = w_week[i] * dd * (1 + penalty * (dd > walk_max))
         return int(round(c * SCALE))
 
     mdl = cp_model.CpModel()
     y = {j: mdl.NewBoolVar(f"y{j}") for j in used_c}
     x = {}
+    cost: dict[tuple[int, int], int] = {}
+    by_j: dict[int, list[int]] = {}  # îlots reliés à chaque site, dans l'ordre des îlots
     for i in range(n):
         xi = []
-        for j in pairs[i]:
+        for k, j in enumerate(pairs[i].tolist()):
             x[i, j] = mdl.NewBoolVar(f"x{i}_{j}")
+            cost[i, j] = unit(i, k)
+            by_j.setdefault(j, []).append(i)
             mdl.AddImplication(x[i, j], y[j])
             xi.append(x[i, j])
         mdl.AddExactlyOne(xi)
@@ -132,7 +175,7 @@ def optimise(
     over = {}
     tot = int(round(w_week.sum() * 1000)) + 1
     for j in used_c:
-        terms = [(int(round(w_week[i] * 1000)), x[i, j]) for i in range(n) if (i, j) in x]
+        terms = [(int(round(w_week[i] * 1000)), x[i, j]) for i in by_j.get(j, [])]
         if terms and hard_capacity:  # capacité par enlèvement : contrainte dure
             mdl.Add(sum(c * v for c, v in terms) <= cap * y[j])
         elif terms:
@@ -141,7 +184,7 @@ def optimise(
     for j in fixed:
         mdl.Add(y[j] == 1)
     mdl.Add(sum(y.values()) <= max(max_points, len(fixed)))
-    obj = [unit(i, j) * v for (i, j), v in x.items()]
+    obj = [cost[i, j] * v for (i, j), v in x.items()]
     obj += [int(round(open_cost * SCALE)) * v for v in y.values()]
     over_cost = max(1, int(round(penalty * walk_max * SCALE / 1000)))  # par kg/semaine
     obj += [over_cost * o for o in over.values()]
@@ -155,10 +198,11 @@ def optimise(
         if wo:
             for j in used_c:
                 mdl.AddHint(y[j], j in wo)
-            wa = np.array(wo)[d[:, wo].argmin(1)]
+            wa = np.array(wo)[_nearest_idx(xy, cand_xy[wo])]
             for (i, j), v in x.items():
                 mdl.AddHint(v, j == wa[i])
-            warm_obj = _objective(w_week, d, wa, set(wo), walk_max, penalty, open_cost, stability, cap_week)[0]
+            warm_obj = _objective(w_week, di_of(wa), m, wa, set(wo), walk_max, penalty, open_cost, stability,
+                                  cap_week)[0]  # fmt: skip
 
     solver = cp_model.CpSolver()
     # limite en temps réel (le test en direct attend le plan) : résultat reproductible seulement à l'optimum
@@ -181,7 +225,7 @@ def optimise(
     objective = solver.ObjectiveValue() / SCALE
     bound = solver.BestObjectiveBound() / SCALE
     _, walk, uncovered, overload = _objective(
-        w_week, d, assign_c, set(opened), walk_max, penalty, open_cost, stability, cap_week
+        w_week, di_of(assign_c), m, assign_c, set(opened), walk_max, penalty, open_cost, stability, cap_week
     )
     return OptResult(
         opened,

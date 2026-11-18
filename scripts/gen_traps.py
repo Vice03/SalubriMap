@@ -128,9 +128,11 @@ def main() -> None:
             add(lon + 1e-6, lat + 1e-6, ["rejected"], ["R5"], f"r5-{name}")
         # R6: inside buildings
         blds = s.execute(
-            text("""SELECT ST_X(ST_Centroid(geom)) AS lon, ST_Y(ST_Centroid(geom)) AS lat, area_m2 FROM buildings
+            text("""SELECT ST_X(ST_PointOnSurface(geom)) AS lon, ST_Y(ST_PointOnSurface(geom)) AS lat, area_m2 FROM buildings
                                  WHERE commune_id = :c AND confidence >= 0.7 AND area_m2 BETWEEN 60 AND 2000
-                                 ORDER BY area_m2 DESC LIMIT 400"""),
+                                   AND EXISTS (SELECT 1 FROM quartiers q WHERE q.commune_id = :c
+                                               AND ST_Contains(q.geom, ST_Centroid(buildings.geom)))
+                                 ORDER BY area_m2 DESC LIMIT 400"""),  # dans les quartiers : sinon R5 (hors zone)
             {"c": cid},
         ).all()
         for b in (blds[0], blds[len(blds) // 2], blds[-1]):
@@ -169,11 +171,9 @@ def main() -> None:
             add(demo.lon, demo.lat, ["to_review", "rejected"], ["R8"], "r8-copied-point", waste_type=other)
         # R9: same device jumps across the city in 3 minutes
         a = next(pts)
-        far = s.execute(
-            text("""SELECT ST_X(c) AS lon, ST_Y(c) AS lat FROM (SELECT ST_Centroid(geom) AS c FROM quartiers
-                                WHERE commune_id = :c ORDER BY name DESC LIMIT 1) z"""),
-            {"c": cid},
-        ).first()
+        # le point libre (dans les quartiers, hors bâtiments et eau) le plus éloigné de `a`
+        far_xy = max(free_points(40, 23), key=lambda q: (q[0] - a[0]) ** 2 + (q[1] - a[1]) ** 2)
+        far = type("P", (), {"lon": far_xy[0], "lat": far_xy[1]})
         add(
             a[0],
             a[1],
@@ -194,11 +194,25 @@ def main() -> None:
         )
         # R10: 12 reports in 20 minutes from one device (40 m apart: no R1, no R9)
         lon0, lat0 = next(pts)
+        # 12 emplacements à 45 m les uns des autres, hors bâtiments (avec les bâtiments réels, une grille fixe
+        # tombe sur des toits : R6 s'ajouterait à R10)
+        grid = [(lon0 + i * 45 * m, lat0 + j * 45 * m) for j in range(-3, 4) for i in range(-3, 4)]
+        grid.sort(key=lambda g: (g[0] - lon0) ** 2 + (g[1] - lat0) ** 2)
+        burst = [g for g in grid if not s.execute(
+            text("""SELECT EXISTS (SELECT 1 FROM buildings b WHERE b.commune_id = :c
+                    AND ST_DWithin(b.geom, ST_SetSRID(ST_MakePoint(:x, :y), 4326), 0.0002)
+                    AND ST_DWithin(b.geom::geography, ST_SetSRID(ST_MakePoint(:x, :y), 4326)::geography, 6))
+                    OR EXISTS (SELECT 1 FROM water w WHERE w.commune_id = :c
+                    AND ST_DWithin(w.geom, ST_SetSRID(ST_MakePoint(:x, :y), 4326), 0.002)
+                    AND ST_DWithin(w.geom::geography, ST_SetSRID(ST_MakePoint(:x, :y), 4326)::geography, 40))"""),
+            {"c": cid, "x": g[0], "y": g[1]}).scalar()][:12]  # fmt: skip
+        if len(burst) < 12:
+            raise SystemExit("Pas assez d'emplacements libres pour la rafale R10")
         for k in range(12):
             exp = (["probable"], []) if k < 10 else (["probable", "to_review"], ["R10"])
             add(
-                lon0 + (k % 4) * 45 * m,
-                lat0 + (k // 4) * 45 * m,
+                burst[k][0],
+                burst[k][1],
                 exp[0],
                 exp[1],
                 "r10-burst",

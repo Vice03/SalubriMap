@@ -148,9 +148,12 @@ def _crossing_mask(a_xy: np.ndarray, b_xy: np.ndarray, pairs: np.ndarray, zone: 
 def prepare_walk(lonlat_ilots: np.ndarray, cand_lonlat: np.ndarray, walk_max: float) -> None:
     """Appelé par le placement (module allumé) : calcule les paires îlot-site interdites pour la période."""
     ctx = current()
-    if ctx is None or ctx.empty or not len(lonlat_ilots) or not len(cand_lonlat):
+    from salubri_api.services.planning.placement_opt import DENSE_MAX_PAIRS
+
+    too_big = len(lonlat_ilots) * len(cand_lonlat) > DENSE_MAX_PAIRS  # ville entière : pas de matrice complète
+    if ctx is None or ctx.empty or not len(lonlat_ilots) or not len(cand_lonlat) or too_big:
         if ctx is not None:
-            ctx.walk = {}
+            ctx.walk = {"trop_grand": True} if too_big and not ctx.empty else {}
         return
     xy, _ = _local(float(lonlat_ilots[:, 1].mean()))
     a = np.array([xy(*p) for p in lonlat_ilots])

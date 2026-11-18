@@ -289,7 +289,7 @@ def fleet_section(variants, s, pickups, bp=None) -> list[str]:  # type: ignore[n
             f"| {iv(sim, 'wild_dump_t')} | {iv(sim, 'coverage_rate', 0, 100.0)} |"
         )
     return out + [
-        f"Flotte nécessaire : {need['added']} camion(s) de 8 t de plus, ajoutés un par un jusqu'à ce que tous les "
+        f"Flotte nécessaire : {need['added']} camion(s) de 8 t de plus (le nombre estimé par le plan, puis un à la fois) jusqu'à ce que tous les "
         "points soient desservis (simulation : 30 réplications, médiane [intervalle à 90 %], 90 jours). La flotte "
         "actuelle est simulée avec le budget de l'arrondissement ; la flotte nécessaire avec le budget qu'elle demande "
         "(coût mensuel + 10 %) : c'est le montant à prévoir pour desservir tout l'arrondissement.",

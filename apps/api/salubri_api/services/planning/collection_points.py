@@ -126,6 +126,9 @@ def effective_frequency(
     return f, np.flatnonzero(loads_week / f > capacity_t + 1e-9).tolist()
 
 
+CPSAT_MAX_ILOTS = 8000  # environ trois arrondissements ; au-delà, k-means seul (voir _optimise)
+
+
 def place_points(
     ilot_lonlat: np.ndarray,
     demand_kg_day: np.ndarray,
@@ -229,6 +232,12 @@ def _optimise(
     k-means (solution de départ), sites des routes hors exclusions. Repli sur le k-means si rien de mieux."""
     from salubri_api.services.planning.placement_opt import optimise
 
+    if len(ilot_lonlat) > CPSAT_MAX_ILOTS:
+        # ville entière avec les bâtiments réels (~30 000 îlots) : un modèle CP-SAT de plus d'un million de variables
+        # demande des gigaoctets et n'améliore rien en quelques secondes ; on garde le k-means (contraintes vérifiées)
+        warm.optimisation = {"methode": "k-means", "statut": "repli", "ilots": len(ilot_lonlat),
+                             "raison": f"plus de {CPSAT_MAX_ILOTS} îlots : placement k-means sans CP-SAT (mémoire)"}  # fmt: skip
+        return warm
     pad = p.walk_distance_max_m / M_PER_DEG
     lo, hi = ilot_lonlat.min(0) - pad, ilot_lonlat.max(0) + pad
     road = candidates((float(lo[0]), float(lo[1]), float(hi[0]), float(hi[1])))
@@ -263,7 +272,20 @@ def _optimise(
         list(range(len(frozen), off)) if stab_pts else list(range(off, off + len(warm_new)))
     )  # départ : les points de la version précédente s'il y en a (stabilité), sinon le k-means
 
+    # budget total des essais CP-SAT : la limite d'un essai (le test en direct attend le plan) ; en mode
+    # déterministe, pas de budget à l'horloge (même entrée → même plan)
+    from salubri_api.services.planning.placement_opt import OptResult, _deterministic
+
+    det = _deterministic()
+    t_start = time.perf_counter()
+    budget = p.placement_time_limit_s
+
+    def left() -> float:
+        return budget - (time.perf_counter() - t_start)
+
     def run(cap_w: float, hard: bool, keep_previous: bool = False):  # type: ignore[no-untyped-def]
+        if not det and left() < 0.3:  # budget épuisé : même suite qu'un essai sans solution (repli stable)
+            return OptResult([], np.zeros(len(xy), int), "repli", *([math.nan] * 6), 0, None)
         return optimise(
             xy,
             w_week,
@@ -274,7 +296,7 @@ def _optimise(
             fixed=list(range(off if keep_previous else len(frozen))),
             stability=stability,
             warm_open=warm_open,
-            time_limit_s=p.placement_time_limit_s,
+            time_limit_s=p.placement_time_limit_s if det else max(0.3, min(p.placement_time_limit_s, left())),
             seed=seed,
             hard_capacity=hard,
         )
@@ -292,6 +314,9 @@ def _optimise(
             # peut rendre en 2 s un placement très différent (répétition, perturbations au hasard)
             rr = run(p.collection_point_capacity_t * f, True, keep_previous=True)
             essais.append({"enlevements_semaine": f, "statut": rr.status, "points_precedents_gardes": True})
+            if rr.status == "repli":  # temps écoulé sans solution : les essais suivants, plus grands, échoueraient
+                r = rr  # aussi (et le test en direct attend) → placement précédent gardé (repli stable, plus bas)
+                break
             if rr.status not in ("optimal", "faisable"):
                 rr = None
         if rr is None:
@@ -301,7 +326,12 @@ def _optimise(
             r, freq = rr, f
             break
     capacite: dict[str, object] = {"contrainte": "dure", "essais": essais}
-    if r is None:
+    if r is not None and r.status == "repli":
+        capacite["contrainte"] = "non vérifiée"
+        capacite["raison"] = ("CP-SAT n'a pas trouvé de solution dans le temps imparti : points de la version "
+                              "précédente gardés (augmenter placement_time_limit_s pour un placement optimisé)")  # fmt: skip
+        freq = p.pickup_frequency_per_week
+    elif r is None:
         r = run(cap_week, False)
         capacite["contrainte"] = "non respectée"
         prouve = all(e["statut"] == "infaisable" for e in essais if not e.get("points_precedents_gardes"))
@@ -333,6 +363,16 @@ def _optimise(
     }
     if r.status == "repli":  # sinon la solution part de l'indice : au moins aussi bonne, aux arrondis près
         info["statut"] = "repli"
+        if stab_pts:
+            # pas de solution CP-SAT dans le temps imparti : on garde les points de la version précédente et le
+            # k-means n'ajoute des points que là où aucun n'est à portée de marche (le plan ne saute pas)
+            keep = [PlacedPoint(q.key, q.lon, q.lat, p.collection_point_capacity_t) for q in [*frozen, *stab_pts]]
+            alt = place_points(ilot_lonlat, w_week * 1000 / 7, p, excluded=excluded, frozen=keep, seed=seed)
+            info["raison"] = ("CP-SAT sans solution dans le temps imparti : points de la version précédente gardés, "
+                              "points ajoutés seulement là où aucun n'est à portée de marche")  # fmt: skip
+            info["points_conserves"] = len(stab_pts)
+            alt.optimisation = info
+            return alt
         info["raison"] = "CP-SAT sans solution meilleure que le k-means dans le temps imparti"
         warm.optimisation = info
         return warm

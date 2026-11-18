@@ -1,0 +1,1036 @@
+{
+ "type": "FeatureCollection",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5644687000000002,
+     12.3060002
+    ]
+   },
+   "properties": {
+    "external_id": "trap-001-control",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-001",
+    "reported_at": "2026-11-16T08:07:00+00:00",
+    "photo": "demo-50001.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5907977,
+     12.315295200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-002-control",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-002",
+    "reported_at": "2026-11-16T08:14:00+00:00",
+    "photo": "demo-50002.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5816547,
+     12.3154272
+    ]
+   },
+   "properties": {
+    "external_id": "trap-003-control",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-003",
+    "reported_at": "2026-11-16T08:21:00+00:00",
+    "photo": "demo-50003.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5914307,
+     12.3224742
+    ]
+   },
+   "properties": {
+    "external_id": "trap-004-control",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-004",
+    "reported_at": "2026-11-16T08:28:00+00:00",
+    "photo": "demo-50004.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5818877,
+     12.3106802
+    ]
+   },
+   "properties": {
+    "external_id": "trap-005-control",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-005",
+    "reported_at": "2026-11-16T08:35:00+00:00",
+    "photo": "demo-50005.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5955417,
+     12.331032200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-006-r1-first",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-r1-0",
+    "reported_at": "2026-11-16T08:42:00+00:00",
+    "photo": "demo-50006.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.595406564864865,
+     12.331032200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-007-r1-dup",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-r1-0",
+    "reported_at": "2026-11-16T13:00:00+00:00",
+    "photo": "demo-50007.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5572237,
+     12.311006200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-008-r1-first",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-r1-1",
+    "reported_at": "2026-11-16T08:56:00+00:00",
+    "photo": "demo-50008.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.557088564864865,
+     12.311006200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-009-r1-dup",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-r1-1",
+    "reported_at": "2026-11-16T14:00:00+00:00",
+    "photo": "demo-50009.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5877117,
+     12.3238392
+    ]
+   },
+   "properties": {
+    "external_id": "trap-010-r1-first",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-r1-2",
+    "reported_at": "2026-11-16T09:10:00+00:00",
+    "photo": "demo-50010.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.587576564864865,
+     12.3238392
+    ]
+   },
+   "properties": {
+    "external_id": "trap-011-r1-dup",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-r1-2",
+    "reported_at": "2026-11-16T15:00:00+00:00",
+    "photo": "demo-50011.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5980957,
+     12.310935200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-012-r2-source",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-012",
+    "reported_at": "2026-11-16T09:24:00+00:00",
+    "photo": "demo-50012.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5937307,
+     12.3295562
+    ]
+   },
+   "properties": {
+    "external_id": "trap-013-r2-identical",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-013",
+    "reported_at": "2026-11-16T09:31:00+00:00",
+    "photo": "demo-50012.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5936057000000001,
+     12.3260082
+    ]
+   },
+   "properties": {
+    "external_id": "trap-014-r2-source",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-014",
+    "reported_at": "2026-11-16T09:38:00+00:00",
+    "photo": "demo-50015.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5448747,
+     12.3199272
+    ]
+   },
+   "properties": {
+    "external_id": "trap-015-r2-recompressed",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-015",
+    "reported_at": "2026-11-16T09:45:00+00:00",
+    "photo": "demo-50015-q30.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5940567,
+     12.315117200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-016-r3-exif-gps",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-016",
+    "reported_at": "2026-11-16T09:52:00+00:00",
+    "photo": "demo-50018-exifgps_12.36512_-1.59406.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5560567,
+     12.316081200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-017-r4-exif-old",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-017",
+    "reported_at": "2026-11-16T09:59:00+00:00",
+    "photo": "demo-50020-exifold.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -4.296699,
+     11.177100999999999
+    ]
+   },
+   "properties": {
+    "external_id": "trap-018-r5-bobo",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-018",
+    "reported_at": "2026-11-16T10:06:00+00:00",
+    "photo": "demo-50022.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -2.3626989999999997,
+     12.252600999999999
+    ]
+   },
+   "properties": {
+    "external_id": "trap-019-r5-koudougou",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-019",
+    "reported_at": "2026-11-16T10:13:00+00:00",
+    "photo": "demo-50023.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     1.000001,
+     4.000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-020-r5-golfe",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-020",
+    "reported_at": "2026-11-16T10:20:00+00:00",
+    "photo": "demo-50024.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5124195,
+     12.361474699999999
+    ]
+   },
+   "properties": {
+    "external_id": "trap-021-r6-building",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-021",
+    "reported_at": "2026-11-16T10:27:00+00:00",
+    "photo": "demo-50025.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.4800864,
+     12.394891
+    ]
+   },
+   "properties": {
+    "external_id": "trap-022-r6-building",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-022",
+    "reported_at": "2026-11-16T10:34:00+00:00",
+    "photo": "demo-50026.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5597979,
+     12.3365318
+    ]
+   },
+   "properties": {
+    "external_id": "trap-023-r6-building",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-023",
+    "reported_at": "2026-11-16T10:41:00+00:00",
+    "photo": "demo-50027.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5257228999999999,
+     12.387737099999999
+    ]
+   },
+   "properties": {
+    "external_id": "trap-024-r7-reservoir",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-024",
+    "reported_at": "2026-11-16T10:48:00+00:00",
+    "photo": "demo-50028.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.4122685,
+     12.3399915
+    ]
+   },
+   "properties": {
+    "external_id": "trap-025-r7-reservoir",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-025",
+    "reported_at": "2026-11-16T10:55:00+00:00",
+    "photo": "demo-50029.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.4230551,
+     12.4319632
+    ]
+   },
+   "properties": {
+    "external_id": "trap-026-r7-river",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-026",
+    "reported_at": "2026-11-16T11:02:00+00:00",
+    "photo": "demo-50030.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     0.0,
+     0.0
+    ]
+   },
+   "properties": {
+    "external_id": "trap-027-r8-zero",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-027",
+    "reported_at": "2026-11-16T11:09:00+00:00",
+    "photo": "demo-50031.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.585,
+     12.322
+    ]
+   },
+   "properties": {
+    "external_id": "trap-028-r8-rounded",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-028",
+    "reported_at": "2026-11-16T11:16:00+00:00",
+    "photo": "demo-50032.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5487347,
+     12.301586200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-029-r8-accuracy",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 900,
+    "device_id": "trap-dev-029",
+    "reported_at": "2026-11-16T11:23:00+00:00",
+    "photo": "demo-50033.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5428454999999999,
+     12.3382664
+    ]
+   },
+   "properties": {
+    "external_id": "trap-030-r8-copied-point",
+    "waste_type": "rubble",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-030",
+    "reported_at": "2026-11-16T11:30:00+00:00",
+    "photo": "demo-50034.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5988027,
+     12.3069362
+    ]
+   },
+   "properties": {
+    "external_id": "trap-031-r9-first",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-r9",
+    "reported_at": "2026-11-16T18:00:00+00:00",
+    "photo": "demo-50035.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5447967,
+     12.3001942
+    ]
+   },
+   "properties": {
+    "external_id": "trap-032-r9-jump",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-r9",
+    "reported_at": "2026-11-16T18:03:00+00:00",
+    "photo": "demo-50036.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5786047,
+     12.3355472
+    ]
+   },
+   "properties": {
+    "external_id": "trap-033-r10-burst",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:00:00+00:00",
+    "photo": "demo-50037.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5790101054054055,
+     12.3355472
+    ]
+   },
+   "properties": {
+    "external_id": "trap-034-r10-burst",
+    "waste_type": "plastic",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:01:36+00:00",
+    "photo": "demo-50038.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5781992945945946,
+     12.3355472
+    ]
+   },
+   "properties": {
+    "external_id": "trap-035-r10-burst",
+    "waste_type": "mixed",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:03:12+00:00",
+    "photo": "demo-50039.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5790101054054055,
+     12.335141794594595
+    ]
+   },
+   "properties": {
+    "external_id": "trap-036-r10-burst",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:04:48+00:00",
+    "photo": "demo-50040.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5781992945945946,
+     12.335952605405407
+    ]
+   },
+   "properties": {
+    "external_id": "trap-037-r10-burst",
+    "waste_type": "plastic",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:06:24+00:00",
+    "photo": "demo-50041.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5781992945945946,
+     12.33473638918919
+    ]
+   },
+   "properties": {
+    "external_id": "trap-038-r10-burst",
+    "waste_type": "mixed",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:08:00+00:00",
+    "photo": "demo-50042.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5777938891891892,
+     12.335141794594595
+    ]
+   },
+   "properties": {
+    "external_id": "trap-039-r10-burst",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:09:36+00:00",
+    "photo": "demo-50043.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5777938891891892,
+     12.33635801081081
+    ]
+   },
+   "properties": {
+    "external_id": "trap-040-r10-burst",
+    "waste_type": "plastic",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:11:12+00:00",
+    "photo": "demo-50044.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5781992945945946,
+     12.336763416216217
+    ]
+   },
+   "properties": {
+    "external_id": "trap-041-r10-burst",
+    "waste_type": "mixed",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:12:48+00:00",
+    "photo": "demo-50045.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.577388483783784,
+     12.335141794594595
+    ]
+   },
+   "properties": {
+    "external_id": "trap-042-r10-burst",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:14:24+00:00",
+    "photo": "demo-50046.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.577388483783784,
+     12.335952605405407
+    ]
+   },
+   "properties": {
+    "external_id": "trap-043-r10-burst",
+    "waste_type": "plastic",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:16:00+00:00",
+    "photo": "demo-50047.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.577388483783784,
+     12.33473638918919
+    ]
+   },
+   "properties": {
+    "external_id": "trap-044-r10-burst",
+    "waste_type": "mixed",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-spam",
+    "reported_at": "2026-11-16T20:17:36+00:00",
+    "photo": "demo-50048.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5660617000000001,
+     12.3044642
+    ]
+   },
+   "properties": {
+    "external_id": "trap-045-r10-comment",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-045",
+    "reported_at": "2026-11-16T22:00:00+00:00",
+    "photo": "demo-50049.jpg",
+    "comment": "Gros tas d'ordures ici"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5458807,
+     12.3234062
+    ]
+   },
+   "properties": {
+    "external_id": "trap-046-r10-comment",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-046",
+    "reported_at": "2026-11-16T22:09:00+00:00",
+    "photo": "demo-50050.jpg",
+    "comment": "Gros tas d'ordures ici"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5666847000000002,
+     12.3071882
+    ]
+   },
+   "properties": {
+    "external_id": "trap-047-r10-comment",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-047",
+    "reported_at": "2026-11-16T22:18:00+00:00",
+    "photo": "demo-50051.jpg",
+    "comment": "Gros tas d'ordures ici"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5922587000000001,
+     12.3316262
+    ]
+   },
+   "properties": {
+    "external_id": "trap-048-r10-comment",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-048",
+    "reported_at": "2026-11-16T22:27:00+00:00",
+    "photo": "demo-50052.jpg",
+    "comment": "Gros tas d'ordures ici"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5833637,
+     12.320199200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-049-r10-comment",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-049",
+    "reported_at": "2026-11-16T22:36:00+00:00",
+    "photo": "demo-50053.jpg",
+    "comment": "Gros tas d'ordures ici"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5612497,
+     12.3058142
+    ]
+   },
+   "properties": {
+    "external_id": "trap-050-r11-dark",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-050",
+    "reported_at": "2026-11-16T13:50:00+00:00",
+    "photo": "demo-50054-dark.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5594517,
+     12.3130552
+    ]
+   },
+   "properties": {
+    "external_id": "trap-051-r11-small",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-051",
+    "reported_at": "2026-11-16T13:57:00+00:00",
+    "photo": "demo-50056-small.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5719427000000001,
+     12.326439200000001
+    ]
+   },
+   "properties": {
+    "external_id": "trap-052-r12-truck-light",
+    "waste_type": "household",
+    "volume_class": "truck",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-052",
+    "reported_at": "2026-11-16T14:04:00+00:00",
+    "photo": "demo-50058-tiny.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.5498847,
+     12.3023212
+    ]
+   },
+   "properties": {
+    "external_id": "trap-053-r12-medical",
+    "waste_type": "medical",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-053",
+    "reported_at": "2026-11-16T14:11:00+00:00",
+    "photo": "demo-50060.jpg"
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Point",
+    "coordinates": [
+     -1.508006,
+     12.3718834
+    ]
+   },
+   "properties": {
+    "external_id": "trap-054-combined",
+    "waste_type": "household",
+    "volume_class": "cart",
+    "accuracy": 8.0,
+    "device_id": "trap-dev-054",
+    "reported_at": "2026-11-16T14:18:00+00:00",
+    "photo": "demo-50012.jpg"
+   }
+  }
+ ]
+}

@@ -16,6 +16,7 @@ import math
 import threading
 import time
 import uuid
+from collections import OrderedDict
 from dataclasses import dataclass, field
 from typing import Any
 
@@ -106,7 +107,10 @@ class RunState:
     stages: list[dict[str, Any]] = field(default_factory=list)
 
 
-_cache: dict[str, dict[str, Cached]] = {}
+# sorties des étapes, par scénario ; seuls les MAX_CACHED_SCENARIOS derniers recalculés sont gardés (mémoire :
+# la ville entière garde ~100 Mo d'étapes, et chaque cas simulé de la page Comparer est un scénario)
+_cache: "OrderedDict[str, dict[str, Cached]]" = OrderedDict()
+MAX_CACHED_SCENARIOS = 6
 _locks: dict[str, threading.Lock] = {}
 _locks_guard = threading.Lock()
 
@@ -351,6 +355,9 @@ def _execute(pv_id: str) -> None:
             must = INVALIDATES.get(kind, INVALIDATES["manual"])
             forced_all = kind == "manual"
             cache = _cache.setdefault(str(scenario.id), {})
+            _cache.move_to_end(str(scenario.id))
+            while len(_cache) > MAX_CACHED_SCENARIOS:
+                _cache.popitem(last=False)
             prev = latest_ready(s, scenario.id, pv.version)
             st = RunState()
             seasons = None

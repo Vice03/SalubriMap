@@ -14,7 +14,7 @@ const LINKS = [
   { to: '/journal', label: 'Journal', icon: ClipboardList },
 ]
 
-/** Logo : épingle aux couleurs du drapeau du Burkina Faso (rouge, vert, étoile jaune). */
+/** Logo : épingle aux couleurs du drapeau du Burkina Faso (rouge, vert) et feuille jaune (ville propre). */
 export function Logo({ size = 64 }: { size?: number }) {
   const pin = 'M32 3C18.7 3 8.5 13.2 8.5 26.4 8.5 43.6 32 61 32 61s23.5-17.4 23.5-34.6C55.5 13.2 45.3 3 32 3z'
   return (
@@ -23,7 +23,10 @@ export function Logo({ size = 64 }: { size?: number }) {
       <g clipPath="url(#logo-pin)"><rect width="64" height="27" fill="#EF2B2D" /><rect y="27" width="64" height="40" fill="#009E49" /></g>
       <path d={pin} fill="none" stroke="#fff" strokeOpacity=".9" strokeWidth="2" />
       <circle cx="32" cy="26.5" r="13.5" fill="#fff" />
-      <path d="M32.00,17.70 L34.29,24.14 L41.13,24.33 L35.71,28.51 L37.64,35.07 L32.00,31.20 L26.36,35.07 L28.29,28.51 L22.87,24.33 L29.71,24.14Z" fill="#FCD116" stroke="#E0A800" strokeWidth="1" strokeLinejoin="round" />
+      <g transform="translate(4.5 4.8) scale(0.55)">
+        <path d="M32 50c4-17 20-25 36-23-2 17-17 27-34 25" fill="#FCD116" stroke="#E0A800" strokeWidth="1.4" strokeLinejoin="round" />
+        <path d="M35 53 L60 33" stroke="#009E49" strokeWidth="3" strokeLinecap="round" />
+      </g>
     </svg>
   )
 }

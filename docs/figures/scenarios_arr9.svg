@@ -3,39 +3,39 @@
 <line x1="200" y1="35" x2="200" y2="293" stroke="#ddd"/>
 <text x="200" y="308" text-anchor="middle" fill="#666">0</text>
 <line x1="308" y1="35" x2="308" y2="293" stroke="#ddd"/>
-<text x="308" y="308" text-anchor="middle" fill="#666">690</text>
+<text x="308" y="308" text-anchor="middle" fill="#666">4 448</text>
 <line x1="415" y1="35" x2="415" y2="293" stroke="#ddd"/>
-<text x="415" y="308" text-anchor="middle" fill="#666">1 379</text>
+<text x="415" y="308" text-anchor="middle" fill="#666">8 896</text>
 <line x1="522" y1="35" x2="522" y2="293" stroke="#ddd"/>
-<text x="522" y="308" text-anchor="middle" fill="#666">2 069</text>
+<text x="522" y="308" text-anchor="middle" fill="#666">13 344</text>
 <line x1="630" y1="35" x2="630" y2="293" stroke="#ddd"/>
-<text x="630" y="308" text-anchor="middle" fill="#666">2 759</text>
+<text x="630" y="308" text-anchor="middle" fill="#666">17 791</text>
 <text x="192" y="54" text-anchor="end" fill="#222">Référence</text>
-<line x1="285.5" y1="50" x2="308.4" y2="50" stroke="#1d4e3f" stroke-width="3"/>
-<circle cx="294.5" cy="50" r="5" fill="#1d4e3f"/>
-<text x="314.4" y="54" fill="#666">606 t</text>
+<line x1="515.2" y1="50" x2="517.3" y2="50" stroke="#1d4e3f" stroke-width="3"/>
+<circle cx="516.2" cy="50" r="5" fill="#1d4e3f"/>
+<text x="523.3" y="54" fill="#666">13 082 t</text>
 <text x="192" y="88" text-anchor="end" fill="#222">Flotte nécessaire</text>
-<line x1="275.2" y1="84" x2="288.2" y2="84" stroke="#c0392b" stroke-width="3"/>
-<circle cx="281.6" cy="84" r="5" fill="#c0392b"/>
-<text x="294.2" y="88" fill="#666">524 t</text>
+<line x1="223.5" y1="84" x2="230.5" y2="84" stroke="#c0392b" stroke-width="3"/>
+<circle cx="227.0" cy="84" r="5" fill="#c0392b"/>
+<text x="236.5" y="88" fill="#666">1 117 t</text>
 <text x="192" y="122" text-anchor="end" fill="#222">2 camions en panne</text>
-<line x1="441.5" y1="118" x2="461.7" y2="118" stroke="#2471a3" stroke-width="3"/>
-<circle cx="448.7" cy="118" r="5" fill="#2471a3"/>
-<text x="467.7" y="122" fill="#666">1 596 t</text>
+<line x1="517.4" y1="118" x2="520.6" y2="118" stroke="#2471a3" stroke-width="3"/>
+<circle cx="518.9" cy="118" r="5" fill="#2471a3"/>
+<text x="526.6" y="122" fill="#666">13 194 t</text>
 <text x="192" y="156" text-anchor="end" fill="#222">Saison des pluies</text>
-<line x1="411.8" y1="152" x2="434.6" y2="152" stroke="#b9770e" stroke-width="3"/>
-<circle cx="420.4" cy="152" r="5" fill="#b9770e"/>
-<text x="440.6" y="156" fill="#666">1 414 t</text>
+<line x1="588.6" y1="152" x2="590.9" y2="152" stroke="#b9770e" stroke-width="3"/>
+<circle cx="589.7" cy="152" r="5" fill="#b9770e"/>
+<text x="596.9" y="156" fill="#666">16 124 t</text>
 <text x="192" y="190" text-anchor="end" fill="#222">Abonnements +20 %</text>
-<line x1="288.0" y1="186" x2="306.8" y2="186" stroke="#1d4e3f" stroke-width="3"/>
-<circle cx="295.8" cy="186" r="5" fill="#1d4e3f"/>
-<text x="312.8" y="190" fill="#666">615 t</text>
+<line x1="514.1" y1="186" x2="517.1" y2="186" stroke="#1d4e3f" stroke-width="3"/>
+<circle cx="516.0" cy="186" r="5" fill="#1d4e3f"/>
+<text x="523.1" y="190" fill="#666">13 076 t</text>
 <text x="192" y="224" text-anchor="end" fill="#222">Budget −30 %</text>
-<line x1="285.5" y1="220" x2="308.4" y2="220" stroke="#c0392b" stroke-width="3"/>
-<circle cx="294.5" cy="220" r="5" fill="#c0392b"/>
-<text x="314.4" y="224" fill="#666">606 t</text>
+<line x1="546.7" y1="220" x2="548.6" y2="220" stroke="#c0392b" stroke-width="3"/>
+<circle cx="547.5" cy="220" r="5" fill="#c0392b"/>
+<text x="554.6" y="224" fill="#666">14 378 t</text>
 <text x="192" y="258" text-anchor="end" fill="#222">Pluies + 2 camions en panne</text>
-<line x1="564.2" y1="254" x2="590.9" y2="254" stroke="#2471a3" stroke-width="3"/>
-<circle cx="570.1" cy="254" r="5" fill="#2471a3"/>
-<text x="596.9" y="258" fill="#666">2 375 t</text>
+<line x1="585.9" y1="254" x2="588.3" y2="254" stroke="#2471a3" stroke-width="3"/>
+<circle cx="586.8" cy="254" r="5" fill="#2471a3"/>
+<text x="594.3" y="258" fill="#666">16 005 t</text>
 </svg>
