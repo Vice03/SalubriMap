@@ -9,7 +9,7 @@ if [ ! -s data/osm/ouaga.osm.pbf ] && command -v osmium >/dev/null 2>&1 && curl 
   read -r rep
   case "$rep" in o|O|oui) sh scripts/prepare_osm_extract.sh || echo "Téléchargement impossible : ville synthétique.";; esac
 fi
-# Hors démonstration (défaut) : secrets et mot de passe du premier admin générés une fois dans .env
+# Hors démonstration (SALUBRI_DEMO_MODE=false dans .env) : secrets générés une fois dans .env
 sh "$(dirname "$0")/secrets.sh" || exit 1
 # Les interfaces sont construites dans l'image Docker « web » : pas besoin de Node ici.
 PROFILES=""
@@ -23,14 +23,15 @@ fi
 # On ne reconstruit que nos images (API, interfaces) : OSRM et PostGIS viennent de registres (ghcr.io, Docker Hub)
 # parfois injoignables ; déjà présentes, elles servent telles quelles (compose ne construit que celles qui manquent).
 docker compose build seed api web || echo "Attention : reconstruction impossible (réseau ?) — démarrage avec les images déjà présentes."
-docker compose $PROFILES up -d || exit 1
+# rues OSM chargees AVANT le demarrage de l'API (sinon blocage mutuel sur la base)
 if [ -s data/osm/ouaga.osm.pbf ] && [ ! -f data/osm/.seeded_osm ]; then
   echo "Premier chargement des vraies rues OpenStreetMap (1 à 2 minutes)..."
   docker compose run --rm seed python -m salubri_api.seed.run --force && echo charge > data/osm/.seeded_osm
   # jeu de pièges de la répétition propre à cette carte (scripts/rehearse.py le choisit tout seul)
   docker compose run --rm -v "$PWD/scripts:/app/scripts:ro" -v "$PWD/data/rehearsal:/app/data/rehearsal" seed \
-    python scripts/gen_traps.py || echo "Jeu de pièges non généré : la répétition utilisera le jeu par défaut."
+    python /app/scripts/gen_traps.py || echo "Jeu de pièges non généré : la répétition utilisera le jeu par défaut."
 fi
+docker compose $PROFILES up -d || exit 1
 printf "Attente de l'API"
 i=0
 WEBP=$(grep -E '^WEB_PORT=' .env 2>/dev/null | tail -1 | cut -d= -f2-); WEBP=${WEBP:-80}
@@ -40,7 +41,7 @@ until curl -fs "$URL/api/health" >/dev/null 2>&1; do
   printf "."; sleep 2
 done
 echo; echo "Salubri est prêt : $URL  (Salubri Go : $URL/go/ , API : $URL/api/docs)"
-grep -E "^SALUBRI_BOOTSTRAP_ADMIN_PASSWORD=" .env 2>/dev/null | tail -n 1 | sed 's/^SALUBRI_BOOTSTRAP_ADMIN_PASSWORD=/Connexion mairie : identifiant admin, mot de passe /'
+echo "Comptes (SALUBRI_DEMO_MODE=true) : admin / Salubri2026 (administrateur) ou demo / ouaga2026. Production : voir .env.example"
 # Adresse(s) du serveur pour l'application Android (même réseau Wi-Fi)
 IPS=$( (hostname -I 2>/dev/null | tr ' ' '\n'; ifconfig 2>/dev/null | awk '/inet /{print $2}') | grep -E '^(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.)' | grep -v '^172\.17\.' | sort -u)
 PSUF=""; [ "$WEBP" = 80 ] || PSUF=":$WEBP"
