@@ -71,7 +71,7 @@ if errorlevel 1 ( timeout /t 2 /nobreak >nul & goto wait )
 echo Salubri est pret : %URL%   (Salubri Go : %URL%/go/ , API : %URL%/api/docs)
 findstr /b /c:"SALUBRI_DEMO_MODE=false" ".env" >nul 2>nul
 if not errorlevel 1 (
-  echo Connexion : les identifiants generes arrivent plus bas ^(aussi dans .env : SALUBRI_BOOTSTRAP_ADMIN_PASSWORD^).
+  for /f "tokens=2 delims==" %%a in ('findstr /b /c:"SALUBRI_BOOTSTRAP_ADMIN_PASSWORD=" ".env" 2^>nul') do echo Connexion mairie : identifiant admin, mot de passe %%a ^(garde dans .env^)
 ) else (
   echo Comptes demo : admin / Salubri2026 ^(administrateur^) ou demo / ouaga2026.
 )

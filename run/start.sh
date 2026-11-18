@@ -44,7 +44,7 @@ until curl -fs "$URL/api/health" >/dev/null 2>&1; do
 done
 echo; echo "Salubri est prêt : $URL  (Salubri Go : $URL/go/ , API : $URL/api/docs)"
 if grep -q '^SALUBRI_DEMO_MODE=false' .env 2>/dev/null; then
-  echo "Connexion : mot de passe admin généré au premier lancement, relisible dans .env (SALUBRI_BOOTSTRAP_ADMIN_PASSWORD)."
+  echo "Connexion mairie : identifiant admin, mot de passe $(grep -E '^SALUBRI_BOOTSTRAP_ADMIN_PASSWORD=' .env | tail -n 1 | cut -d= -f2-) (gardé dans .env)"
 else
   echo "Comptes démo : admin / Salubri2026 (administrateur) ou demo / ouaga2026."
 fi
