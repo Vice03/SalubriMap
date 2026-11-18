@@ -238,6 +238,9 @@ echo   %Y%Docker Desktop est arrete : demarrage automatique, patientez...%N%
 set "DD="
 if exist "%ProgramFiles%\Docker\Docker\Docker Desktop.exe" set "DD=%ProgramFiles%\Docker\Docker\Docker Desktop.exe"
 if not defined DD if exist "%LocalAppData%\Programs\Docker\Docker\Docker Desktop.exe" set "DD=%LocalAppData%\Programs\Docker\Docker\Docker Desktop.exe"
+if not defined DD if exist "%LocalAppData%\Programs\DockerDesktop\frontend\Docker Desktop.exe" set "DD=%LocalAppData%\Programs\DockerDesktop\frontend\Docker Desktop.exe"
+if not defined DD if exist "%ProgramFiles%\Docker\Docker\frontend\Docker Desktop.exe" set "DD=%ProgramFiles%\Docker\Docker\frontend\Docker Desktop.exe"
+if not defined DD for /f "delims=" %%x in ('where "Docker Desktop.exe" 2^>nul') do set "DD=%%x"
 if defined DD start "" "%DD%"
 set /a T=0
 :wait_docker
