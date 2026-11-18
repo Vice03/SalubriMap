@@ -2,6 +2,7 @@
 """Données de démonstration ou données réelles (SALUBRI_DATA_MODE).
 
 - « demo » : les signalements d'exemple (reports_demo.geojson) sont chargés, pour le jury.
+- « reference » : comme « reel », sans les décharges SDGD non plus (aucun signalement au départ).
 - « reel » : on les retire, avec les signalements d'appareils « demo-… » ; restent les décharges et CCT officiels du
   SDGD 2020 (enquête 2019), les signalements envoyés par Salubri Go et les imports faits par la mairie ; les pièges de
   la répétition (« trap-… », de fausses alertes) partent aussi. Rien de réel
@@ -76,6 +77,18 @@ def to_demo(s: Session, commune: Commune) -> int:
     return n
 
 
+def to_reference(s: Session, commune: Commune) -> int:
+    """Mode « reference » : comme « reel », et les décharges SDGD 2020 (lignes de `reports`) partent aussi.
+    Restent les données de référence (CCT du fichier SDGD, routes, quartiers…) et ce que Salubri Go envoie."""
+    n = to_reel(s, commune)
+    n += (
+        s.query(Report)
+        .filter(Report.commune_id == commune.id, Report.external_id.like("sdgd2020:%"))
+        .delete(synchronize_session=False)
+    )
+    return n
+
+
 def apply(s: Session, recompute: bool = True) -> dict[str, Any]:
     """Met la base dans le mode réglé. Renvoie ce qui a changé (rien la plupart du temps)."""
     mode = get_settings().data_mode
@@ -83,13 +96,13 @@ def apply(s: Session, recompute: bool = True) -> dict[str, Any]:
         return {"mode": mode, "skipped": "verrou"}
     out: dict[str, Any] = {"mode": mode}
     for commune in s.query(Commune).all():
-        n = to_reel(s, commune) if mode == "reel" else to_demo(s, commune)
+        n = {"reel": to_reel, "reference": to_reference}.get(mode, to_demo)(s, commune)
         if not n:
             continue
         s.flush()
         consolidate(s, commune.id)
         out[commune.slug] = n
-        log.info("Données %s : %d signalement(s) %s", mode, n, "retiré(s)" if mode == "reel" else "d'exemple chargé(s)")
+        log.info("Données %s : %d signalement(s) %s", mode, n, "retiré(s)" if mode != "demo" else "d'exemple chargé(s)")
         if recompute:
             from salubri_api.models import Scenario
             from salubri_api.services.plan.pipeline import request_recompute

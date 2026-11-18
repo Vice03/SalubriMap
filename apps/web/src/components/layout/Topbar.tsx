@@ -90,8 +90,8 @@ export function Topbar() {
             </div>
           )}
         </div>
-        {health?.donnees === 'reel' && (
-          <span className="real-badge" title="Version complète : décharges et CCT du SDGD 2020 et signalements envoyés par Salubri Go ; aucun signalement d'exemple">
+        {health?.donnees && health.donnees !== 'demo' && (
+          <span className="real-badge" title="Version complète : données de référence seulement ; aucun signalement d'exemple (ceux de Salubri Go s'ajoutent)">
             Données réelles
           </span>
         )}

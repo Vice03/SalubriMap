@@ -37,7 +37,8 @@ après chaque action, une touche ramène au menu.
 | Choix | Ce que ça fait | Durée |
 |---|---|---|
 | **1** Version DEMO | démarre Salubri en mode démonstration : compte `demo`, modules optionnels éteints. **C'est la version à tester.** | 3–8 min la 1ʳᵉ fois, ~1 min ensuite |
-| **2** Version COMPLÈTE | la démo + le module **Saisons** (routes coupées en saison des pluies) + le module **Assistant** (modèle de langue local) | idem |
+| **2** Version COMPLÈTE | les **données de référence seules** (aucun signalement fictif) + le module **Saisons** (routes coupées en saison des pluies) + le module **Assistant** (modèle de langue local) | idem |
+| **P** Purger | supprime tous les signalements et ce qui en découle, garde les données de référence (commande `python -m salubri_api.purge signalements`, confirmation : taper PURGER) | ~1 min |
 | **3** Salubri Map | ouvre l'application de la mairie dans le navigateur | — |
 | **4** Salubri Go | ouvre l'application citoyenne (signalement avec photo, hors ligne) | — |
 | **5** API | documentation interactive de l'API (`/api/docs`) | — |

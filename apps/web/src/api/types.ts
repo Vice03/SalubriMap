@@ -132,7 +132,7 @@ export interface CompareMany {
   wins: number[]; ranking: string[]; better_when_lower: string[]; neutral: string[]
 }
 
-export interface Health { status: string; db: string; osrm: string; version: string; demo_mode?: boolean; donnees?: 'demo' | 'reel' }
+export interface Health { status: string; db: string; osrm: string; version: string; demo_mode?: boolean; donnees?: 'demo' | 'reel' | 'reference' }
 export interface ValidationRules { rules: { code: string; title: string; description: string; penalty: string }[] }
 
 export interface WaterDumpSite {

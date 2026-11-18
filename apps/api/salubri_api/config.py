@@ -31,8 +31,8 @@ class Settings(BaseSettings):
     # visible dans l'interface. Hors démonstration (false), l'API refuse de démarrer avec un secret par défaut.
     # Faux par défaut (sûr) ; docker-compose.yml l'active pour que la démo reste « une commande ».
     demo_mode: bool = False
-    # « demo » : signalements d'exemple chargés ; « reel » : SDGD 2020 + Salubri Go seulement (services/data_mode.py)
-    data_mode: Literal["demo", "reel"] = "demo"
+    # « demo » : signalements d'exemple chargés ; « reel » : SDGD 2020 + Salubri Go seulement ; « reference » : aucun signalement chargé (que ceux de Salubri Go) (services/data_mode.py)
+    data_mode: Literal["demo", "reel", "reference"] = "demo"
     # Clé de signature des sessions (connexion des comptes mairie). Vide = clé aléatoire tirée au démarrage :
     # les sessions ouvertes ne survivent pas à un redémarrage de l'API (il suffit de se reconnecter).
     secret_key: str = ""

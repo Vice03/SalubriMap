@@ -62,6 +62,8 @@ def demo_photos(fc: dict) -> dict[str, bytes]:  # type: ignore[type-arg]
 def seed(slug: str, force: bool = False, reports: bool = True, plans: bool = True) -> dict[str, object]:
     settings = get_settings()
     data = settings.data_dir
+    if settings.data_mode == "reference":
+        reports = False  # version complète : données de référence seulement, aucun signalement chargé
     folder = data / "communes" / slug
     t0 = time.perf_counter()
     migrate()

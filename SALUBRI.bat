@@ -38,7 +38,7 @@ echo   %G%-----------------------------------------------------------------%N%
 echo.
 echo   %C%DEMARRER%N%
 echo    %Y% 1%N%  Version DEMO         %D%(recommandee pour le jury)%N%
-echo    %Y% 2%N%  Version COMPLETE     %D%(donnees reelles + Saisons + Assistant IA)%N%
+echo    %Y% 2%N%  Version COMPLETE     %D%(donnees de reference, sans signalement fictif + Saisons + Assistant IA)%N%
 echo.
 echo   %C%OUVRIR%N%
 echo    %Y% 3%N%  Salubri Map   %D%carte, moderation, plan, simulation%N%
@@ -59,6 +59,7 @@ echo    %Y%12%N%  Assistant IA : installer un modele local (avec accord)
 echo    %Y%13%N%  Journal de l'API en direct (Ctrl+C puis N pour revenir)
 echo    %Y%14%N%  Arreter Salubri
 echo    %Y%15%N%  Caler le facteur de detour contre OSRM
+echo    %Y% P%N%  Purger les signalements %D%(garder les donnees de reference)%N%
 echo    %Y% R%N%  Reparer : nettoyer les conteneurs et relancer
 echo.
 echo    %Y% 0%N%  Quitter %D%(Salubri continue de tourner)%N%
@@ -83,6 +84,7 @@ if /i "%choix%"=="13" ( docker compose logs -f --tail 50 api & goto menu )
 if /i "%choix%"=="14" goto stop
 if /i "%choix%"=="15" goto detour
 if /i "%choix%"=="R" goto repair
+if /i "%choix%"=="P" goto purge
 if /i "%choix%"=="0" goto fin
 echo   %RD%Choix inconnu : %choix%%N%
 call :sleep 2
@@ -101,10 +103,10 @@ goto launch
 
 :complete
 echo.
-echo   %W%Version COMPLETE%N% : donnees reelles ^(SDGD 2020 + signalements Salubri Go^), Saisons et Assistant IA.
-echo   Les signalements d'exemple sont retires ; ceux envoyes par Salubri Go restent enregistres.
+echo   %W%Version COMPLETE%N% : donnees de reference seulement ^(aucun signalement fictif^), Saisons et Assistant IA.
+echo   Seuls les signalements envoyes par Salubri Go seront enregistres.
 call :setenv SALUBRI_DEMO_MODE true
-call :setenv SALUBRI_DATA_MODE reel
+call :setenv SALUBRI_DATA_MODE reference
 call :setenv SALUBRI_SEASONS_ENABLED true
 call :setenv SALUBRI_ASSISTANT_ENABLED true
 set "ARGS=--llm=no"
@@ -154,6 +156,13 @@ goto menu
 call :need_running
 if errorlevel 1 goto menu
 call run\rehearse.bat
+pause
+goto menu
+
+:purge
+call :need_running
+if errorlevel 1 goto menu
+call run\purge.bat
 pause
 goto menu
 
@@ -327,7 +336,7 @@ exit /b %errorlevel%
 
 :state
 set "MODE=demo"
-findstr /b /c:"SALUBRI_SEASONS_ENABLED=true" ".env" >nul 2>nul && set "MODE=complete, donnees reelles (Saisons + Assistant IA)"
+findstr /b /c:"SALUBRI_SEASONS_ENABLED=true" ".env" >nul 2>nul && set "MODE=complete, donnees de reference (Saisons + Assistant IA)"
 findstr /b /c:"SALUBRI_DEMO_MODE=false" ".env" >nul 2>nul && set "MODE=production"
 set "DOCKER_TXT=%RD%absent ou arrete%N% %D%- demarre seul aux options 1 et 2%N%"
 docker info >nul 2>nul && set "DOCKER_TXT=%G%pret%N%"
