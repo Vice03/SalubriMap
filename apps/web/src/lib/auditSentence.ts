@@ -28,6 +28,7 @@ export function auditSentence(a: AuditEntry): string {
     case 'breakdown': return `Camion ${String(after.label ?? '')} déclaré en panne`.replace('  ', ' ')
     case 'repair': return `Camion ${String(after.label ?? '')} remis en service`.replace('  ', ' ')
     case 'cleaned': return 'Dépotoir marqué nettoyé'
+    case 'laabal_alert': return after.auto ? `Dépotoir revenu après nettoyage : transmis automatiquement à la brigade Laabal${after.caniveau ? ' (dans un caniveau)' : ''}` : 'Dépotoir transmis à la brigade Laabal'
     case 'merge': return 'Signalements fusionnés (doublon)'
     case 'login': return 'Connexion'
     case 'login_failed': return `Échec de connexion${after.login ? ` pour « ${String(after.login)} »` : ''}`

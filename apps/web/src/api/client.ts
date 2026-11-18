@@ -4,6 +4,7 @@ import type {
   Plan, PointGeom, PointProps, PolyGeom, QuartierProps, ReportProps, ReportStatus, RouteProps, Scenario, Stats,
   ValidationRules, Vehicle,
 } from './types'
+import type { LaabalAlerts } from '../lib/laabal'
 import { askLogin, authHeaders, getSession, setSession, type Session } from './session'
 
 export class ApiError extends Error {
@@ -117,6 +118,7 @@ export const api = {
     request<{ plan_version_id: string; vehicle: Vehicle }>('POST', `/scenarios/${sid}/vehicles`, { json: { kind } }),
   removeVehicle: (sid: string, vid: string) => request<{ plan_version_id: string }>('DELETE', `/scenarios/${sid}/vehicles/${vid}`),
   toLaabal: (id: string) => request<Feature<PointGeom, DumpProps>>('POST', `/dump-sites/${id}/laabal`),
+  laabalAlerts: () => get<LaabalAlerts>('/dump-sites/laabal/alertes'),
   recompute: (sid: string) => request<{ plan_version_id: string }>('POST', `/scenarios/${sid}/recompute`, { json: { reason: 'tableau de bord' } }),
   compare: (a: string, b: string) => get<CompareResult>('/scenarios/compare', { a, b }),
   compareMany: (ids: string[]) => get<CompareMany>('/scenarios/compare-many', { ids: ids.join(',') }),

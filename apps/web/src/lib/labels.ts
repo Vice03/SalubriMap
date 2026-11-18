@@ -29,6 +29,6 @@ export const STAGES: { code: string; name: string }[] = [
 export const AUDIT_ACTION: Record<string, string> = {
   moderate: 'Modération', merge: 'Fusion', import: 'Import', rollback: 'Import annulé', cleaned: 'Dépotoir nettoyé',
   osm_id: 'Versé dans OSM', create: 'Création', update: 'Modification', breakdown: 'Camion en panne',
-  repair: 'Camion réparé', delete: 'Suppression',
+  repair: 'Camion réparé', delete: 'Suppression', laabal_alert: 'Transmis à la brigade Laabal',
 }
 export const TRUCK_COLORS = ['#2563eb', '#16a34a', '#f28c28', '#9333ea', '#dc2626', '#0891b2', '#ca8a04', '#db2777']

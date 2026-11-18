@@ -105,7 +105,17 @@ l'écart à la référence ; « En bref » classe les cas. Les comportements des
 servent à **comparer** des choix, pas à prédire. En version complète, « Analyser avec l'IA » demande à l'assistant
 une recommandation chiffrée.
 
-### Étape 6 — Le journal
+### Étape 6 — Récidive et brigade Laabal
+
+Connecté, ouvrez un dépotoir sur la carte du tableau de bord et cliquez « Marquer nettoyé ». S'il est à nouveau
+signalé au même endroit, il devient **récidiviste** et part **tout seul** à la brigade Laabal (ligne dans le journal).
+La carte « Brigade Laabal : zones récidivistes » du tableau de bord liste les quartiers en alerte ; « Prévenir Laabal
+sur WhatsApp » ouvre la discussion avec le message prêt (lieux, volumes, liens de carte) : rien ne part sans votre clic.
+Le numéro +226 00 00 00 00 est **fictif** (à remplacer dans `.env` : `SALUBRI_LAABAL_WHATSAPP`). Un dépotoir dans ou
+au bord d'un **caniveau** (données OpenStreetMap) est signalé en rouge et passe en priorité × 2 : il bouche
+l'écoulement et provoque des inondations en saison des pluies.
+
+### Étape 7 — Le journal
 
 Page « Journal » : chaque action (connexion, modération, changement de scénario) est tracée, en phrases lisibles.
 

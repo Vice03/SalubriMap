@@ -28,7 +28,7 @@ export interface ReportProps {
 
 export interface DumpProps {
   id: string; status: DumpStatus; waste_type: WasteType; volume_est_m3: number; n_reports: number
-  first_reported_at: string; last_reported_at: string; near_water: boolean; priority: number
+  first_reported_at: string; last_reported_at: string; near_water: boolean; near_drain?: boolean; priority: number
   confidence: number; osm_id: number | null
   site_kind?: 'sauvage' | 'encadree' | 'autre'; ref?: string | null
 }

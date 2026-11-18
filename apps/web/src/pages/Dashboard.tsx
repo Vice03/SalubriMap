@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
 import type { DumpProps, Feature, PointGeom, WasteType } from '../api/types'
 import { FleetPanel } from '../components/dashboard/FleetPanel'
+import { LaabalPanel, WhatsAppLaabal } from '../components/dashboard/LaabalPanel'
 import type { Layers } from '../components/map/MapView'
 import { MAP_KEY } from '../components/map/mapKey'
 // MapLibre (~800 Ko) n'est chargé qu'à l'affichage de la carte : premier écran plus léger (lot E)
@@ -71,7 +72,7 @@ export function DumpDrawer({ f, onClose }: { f: Feature<PointGeom, DumpProps>; o
       <table className="table"><tbody>
         <tr><td>Volume estimé</td><td><b>{num(d.volume_est_m3, 1)} m³</b></td></tr>
         <tr><td>Priorité d'intervention</td><td><b>{num(d.priority, 1)}</b></td></tr>
-        <tr><td>Près d'un cours d'eau</td><td>{d.near_water ? 'Oui (priorité × 1,5)' : 'Non'}</td></tr>
+        <tr><td>Eau</td><td>{d.near_drain ? <b style={{ color: '#c62828' }}>Dans ou au bord d'un caniveau : risque d'inondation (priorité × 2)</b> : d.near_water ? "Près d'un cours d'eau (priorité × 1,5)" : 'Non'}</td></tr>
         <tr><td>Premier signalement</td><td>{ago(d.first_reported_at)}</td></tr>
         <tr><td>Dernier signalement</td><td>{ago(d.last_reported_at)}</td></tr>
         <tr><td>Confiance moyenne</td><td>{num(d.confidence)} / 100</td></tr>
@@ -86,6 +87,8 @@ export function DumpDrawer({ f, onClose }: { f: Feature<PointGeom, DumpProps>; o
           try { await api.toLaabal(d.id); toast('ok', 'Transmis à la brigade Laabal : contrôle et sensibilisation des riverains') } catch (e) { toast('error', (e as Error).message) }
         }}>Signaler à la brigade Laabal (contrôle civique)</button>
       )}
+      {d.status !== 'cleaned' && <WhatsAppLaabal zone={{ quartier: 'Dépotoir signalé', sites: [{ lat: f.geometry.coordinates[1], lon: f.geometry.coordinates[0],
+        volume_m3: d.volume_est_m3, type: d.waste_type, n_signalements: d.n_reports, caniveau: !!d.near_drain, nettoye_le: null, revu_le: d.last_reported_at, transmis_le: null, auto: false }] }} />}
     </Drawer>
   )
 }
@@ -131,10 +134,11 @@ export function Dashboard() {
       const inside = dumps.features.filter((d) => inPolygon(d.geometry.coordinates, q.geometry))
       const vol = inside.reduce((s, d) => s + d.properties.volume_est_m3, 0)
       const water = inside.filter((d) => d.properties.near_water).length
+      const drain = inside.filter((d) => d.properties.near_drain).length
       const types: Partial<Record<WasteType, number>> = {}
       inside.forEach((d) => { types[d.properties.waste_type] = (types[d.properties.waste_type] ?? 0) + 1 })
       const top = (Object.entries(types).sort((a, b) => b[1] - a[1])[0]?.[0] ?? 'household') as WasteType
-      return { q, n: inside.length, vol, water, top, score: inside.reduce((s, d) => s + d.properties.priority, 0) }
+      return { q, n: inside.length, vol, water, drain, top, score: inside.reduce((s, d) => s + d.properties.priority, 0) }
     }).filter((z) => z.n > 0).sort((a, b) => b.score - a.score).slice(0, 3)
   }, [quartiers, dumps])
 
@@ -214,7 +218,7 @@ export function Dashboard() {
                 <WasteIcon type={z.top} size={54} />
                 <div style={{ flex: 1 }}>
                   <b>{z.q.properties.name}</b>
-                  <div style={{ color: '#dc2626', fontSize: 13 }}>{z.n} dépotoir(s) · {num(z.vol, 1)} m³{z.water ? ` · ${z.water} près de l'eau` : ''}</div>
+                  <div style={{ color: '#dc2626', fontSize: 13 }}>{z.n} dépotoir(s) · {num(z.vol, 1)} m³{z.drain ? ` · ${z.drain} dans un caniveau` : z.water ? ` · ${z.water} près de l'eau` : ''}</div>
                 </div>
                 <span className="badge" style={{ background: lvl.bg, color: lvl.c }}>{lvl.t}</span>
               </div>
@@ -238,6 +242,7 @@ export function Dashboard() {
           {!alerts?.length && <div className="empty">Aucune alerte</div>}
         </div>
       </div>
+      <LaabalPanel />
       {dump && <DumpDrawer f={dump} onClose={() => setDump(null)} />}
     </div>
   )
