@@ -102,8 +102,8 @@ def test_bootstrap_admin_makes_a_fresh_production_start_possible(db):  # type: i
     assert not db.query(User).filter(User.login == "demo", User.active.is_(True)).count()
     assert problems(st, db) == []
     assert not bootstrap_admin(db, st)  # second passage : rien à faire
-    admin.password_hash = hash_password("choisi-par-le-jury")
+    admin.password_hash = hash_password("reste-d-un-ancien-lancement")
     db.commit()
-    assert not bootstrap_admin(db, st)
-    assert verify_password(db.query(User).filter(User.login == "admin").one().password_hash, "choisi-par-le-jury")
+    assert bootstrap_admin(db, st)  # .env fait foi : la base d'un lancement précédent reprend son mot de passe
+    assert verify_password(db.query(User).filter(User.login == "admin").one().password_hash, "Premier-mdp-2026")
     assert not bootstrap_admin(db, prod(bootstrap_admin_password="court"))

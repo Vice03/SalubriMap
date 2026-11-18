@@ -104,7 +104,7 @@ def ensure_demo_account(s: Session) -> bool:
 def bootstrap_admin(s: Session, settings: Settings) -> bool:
     """Hors démo : premier lancement sur un clone. Avec SALUBRI_BOOTSTRAP_ADMIN_PASSWORD (généré par run/start) : crée
     l'admin s'il n'y en a aucun, remplace le mot de passe de démonstration de « admin », désactive le compte « demo ».
-    Un admin dont le mot de passe a été changé n'est jamais touché. True si quelque chose a changé."""
+    Le mot de passe de .env fait foi à chaque démarrage (pour le changer : modifier .env, relancer). True si quelque chose a changé."""
     pw = settings.bootstrap_admin_password
     if len(pw) < 8 or pw == settings.default_admin_password:
         return False
@@ -116,8 +116,12 @@ def bootstrap_admin(s: Session, settings: Settings) -> bool:
         changed = True
     login = settings.default_admin_login.strip().lower()
     u = s.query(User).filter(User.login == login).first()
-    if u is not None and u.active and verify_password(u.password_hash, settings.default_admin_password):
+    if u is not None and not verify_password(u.password_hash, pw):
+        # le fichier .env fait foi : une base gardée d'un lancement précédent (autre mot de passe généré) ou
+        # restée au mot de passe de démonstration reprend celui de .env ; sinon la console afficherait un mot de
+        # passe que la base refuse
         u.password_hash = hash_password(pw)
+        u.active = True
         u.session_version = (u.session_version or 0) + 1
         changed = True
     if u is None and not s.query(User).filter(User.role == "admin", User.active.is_(True)).count():
