@@ -25,6 +25,8 @@ peut le faire : terrain, tournage, envoi OSM, valeurs de la mairie).
 | 14a | Rapport technique | `docs/RAPPORT_TECHNIQUE.md` + PDF, figures depuis les calculs | `python scripts/figures_rapport.py` ; `scripts/md_pdf.sh docs/RAPPORT_TECHNIQUE.md` | fait (à relire par l'équipe, à régénérer après la collecte) |
 | 14b | Vidéo de 3 minutes | `docs/VIDEO_SCRIPT.md`, `scripts/demo_video.py` | `python scripts/demo_video.py --api http://localhost` | **à faire par l'équipe** : tournage et montage |
 | 14c | Matrice de contribution avec briques réutilisées et licences | `docs/MATRICE_CONTRIBUTION.md` (généré pour les bibliothèques) | `python scripts/matrice_contribution.py` | **à faire par l'équipe** : noms et pourcentages |
+| 9b | Guide vocal de Salubri Go pour les non-lecteurs (hors fiche) | `apps/go/src/voice/`, voix françaises `apps/go/public/audio/fr/` (`scripts/go_audio_fr.py`), `docs/AUDIO_GO.md` | `apps/go/src/__tests__/voice.test.ts` (chaque phrase a son fichier) ; essai à l'écran sur téléphone à faire | fait pour le français ; **à faire par l'équipe** : enregistrer les 22 voix mooré (`apps/go/public/audio/mos/`) |
+| 15a | Dossier des livrables | `livrable/` (un sous-dossier par livrable, README dans chacun), `scripts/livrable.py`, `run/livrable.bat`, choix G du lanceur | `python scripts/livrable.py --verifier` (étape de la CI) | fait ; vidéo et jeu de terrain à y déposer |
 | 15 | Dépôt public, licence libre, déploiement en une commande | AGPL-3.0 (`LICENSE`), `docker compose up` / `run/start`, CI (`.github/workflows/ci.yml`) | CI locale verte (tests, ruff, builds) | **à faire par l'équipe** : pousser et vérifier que la CI passe sur GitHub |
 
 ## Modules optionnels (hors fiche, éteints par défaut)

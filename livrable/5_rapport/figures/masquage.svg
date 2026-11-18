@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="165" font-family="sans-serif" font-size="12">
+<text x="10" y="20" font-size="14" fill="#222">Masquage sur le jeu public de contrôle (cibles : 0,95 visages, 0,90 plaques)</text>
+<text x="222" y="49" text-anchor="end" fill="#222">Visages — rappel</text>
+<rect x="230" y="37" width="318.9" height="18" rx="3" fill="#1d4e3f"/>
+<text x="554.9" y="50" fill="#666">0,94</text>
+<text x="222" y="79" text-anchor="end" fill="#222">Visages — précision</text>
+<rect x="230" y="67" width="280.2" height="18" rx="3" fill="#1d4e3f"/>
+<text x="516.2" y="80" fill="#666">0,82</text>
+<text x="222" y="109" text-anchor="end" fill="#222">Plaques — rappel</text>
+<rect x="230" y="97" width="317.9" height="18" rx="3" fill="#1d4e3f"/>
+<text x="553.9" y="110" fill="#666">0,94</text>
+<text x="222" y="139" text-anchor="end" fill="#222">Plaques — précision</text>
+<rect x="230" y="127" width="238.7" height="18" rx="3" fill="#1d4e3f"/>
+<text x="474.7" y="140" fill="#666">0,70</text>
+</svg>

@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="285" font-family="sans-serif" font-size="12">
+<text x="10" y="20" font-size="14" fill="#222">Indice de Sobol total — dépôts sauvages</text>
+<text x="222" y="49" text-anchor="end" fill="#222">Déchets par habitant (kg/j)</text>
+<rect x="230" y="37" width="374.7" height="18" rx="3" fill="#1d4e3f"/>
+<text x="610.7" y="50" fill="#666">1,10</text>
+<text x="222" y="79" text-anchor="end" fill="#222">Pannes de camion (par jour)</text>
+<rect x="230" y="67" width="20.7" height="18" rx="3" fill="#1d4e3f"/>
+<text x="256.7" y="80" fill="#666">0,06</text>
+<text x="222" y="109" text-anchor="end" fill="#222">Propension de base à jeter (log-cote)</text>
+<rect x="230" y="97" width="4.4" height="18" rx="3" fill="#1d4e3f"/>
+<text x="240.4" y="110" fill="#666">0,01</text>
+<text x="222" y="139" text-anchor="end" fill="#222">Poids de la norme sociale de l'îlot</text>
+<rect x="230" y="127" width="2.7" height="18" rx="3" fill="#1d4e3f"/>
+<text x="238.7" y="140" fill="#666">0,01</text>
+<text x="222" y="169" text-anchor="end" fill="#222">Dissuasion d'un contrôle Laabal</text>
+<rect x="230" y="157" width="3.7" height="18" rx="3" fill="#1d4e3f"/>
+<text x="239.7" y="170" fill="#666">0,01</text>
+<text x="222" y="199" text-anchor="end" fill="#222">Prix de l'abonnement (FCFA/mois)</text>
+<rect x="230" y="187" width="1.4" height="18" rx="3" fill="#1d4e3f"/>
+<text x="237.4" y="200" fill="#666">0,00</text>
+<text x="222" y="229" text-anchor="end" fill="#222">Effet de la distance au-delà de la marche (/m)</text>
+<rect x="230" y="217" width="1.7" height="18" rx="3" fill="#1d4e3f"/>
+<text x="237.7" y="230" fill="#666">0,01</text>
+<text x="222" y="259" text-anchor="end" fill="#222">Taux d'abonnement initial</text>
+<rect x="230" y="247" width="2.0" height="18" rx="3" fill="#1d4e3f"/>
+<text x="238.0" y="260" fill="#666">0,01</text>
+</svg>

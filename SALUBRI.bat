@@ -5,7 +5,7 @@ rem  SALUBRI - lanceur unique (Windows). Double-cliquer ce fichier.
 rem  Tout se fait depuis ce menu. Le lanceur corrige seul les problemes
 rem  courants : Docker arrete (il le demarre), port 80/8443 deja pris (il
 rem  choisit un port libre), .env absent, anciens conteneurs (nettoyage et
-rem  nouvel essai). Guide : docs\GUIDE_JURY.pdf (option G).
+rem  nouvel essai). Livrables et guide : dossier livrable\ (option G).
 rem ==========================================================================
 cd /d "%~dp0"
 title Salubri - Assainissement de Ouaga
@@ -44,7 +44,7 @@ echo   %C%OUVRIR%N%
 echo    %Y% 3%N%  Salubri Map   %D%carte, moderation, plan, simulation%N%
 echo    %Y% 4%N%  Salubri Go    %D%appli citoyenne de signalement%N%
 echo    %Y% 5%N%  Documentation de l'API
-echo    %Y% G%N%  Guide d'utilisation (PDF)
+echo    %Y% G%N%  Livrables du defi + guide d'utilisation %D%(dossier livrable)%N%
 echo.
 echo   %C%VERIFIER%N%
 echo    %Y% 6%N%  Etat des services
@@ -232,7 +232,8 @@ call :ready
 goto menu
 
 :guide
-if exist "docs\GUIDE_JURY.pdf" ( start "" "docs\GUIDE_JURY.pdf" ) else ( echo   docs\GUIDE_JURY.pdf introuvable & pause )
+rem Ouvre le dossier livrable (les 6 livrables + GUIDE_JURY.pdf) ; le guide s'ouvre aussi tout de suite.
+if exist "livrable\README.md" ( start "" "livrable" & if exist "livrable\GUIDE_JURY.pdf" start "" "livrable\GUIDE_JURY.pdf" ) else ( echo   dossier livrable introuvable : lancer run\livrable.bat & pause )
 goto menu
 
 :fin

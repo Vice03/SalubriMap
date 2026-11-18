@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 670 288" font-family="sans-serif" font-size="12">
+<rect width="670" height="288" fill="#fff"/>
+<text x="10" y="18" fill="#333">Tonnes jetées en dépôt sauvage : S1 (plein) et ST (contour)</text>
+<text x="282" y="47" text-anchor="end" fill="#333">Déchets par habitant (kg/j)</text>
+<rect x="290" y="34" width="300.0" height="16" fill="none" stroke="#1f6f8b" stroke-width="2" rx="2"/>
+<rect x="290" y="34" width="279.3" height="16" fill="#1f6f8b" rx="2"/>
+<text x="596.0" y="47" fill="#555">0,931 / 1,1</text>
+<text x="282" y="75" text-anchor="end" fill="#333">Pannes de camion (par jour)</text>
+<rect x="290" y="62" width="18.3" height="16" fill="none" stroke="#1f6f8b" stroke-width="2" rx="2"/>
+<rect x="290" y="62" width="15.3" height="16" fill="#1f6f8b" rx="2"/>
+<text x="314.3" y="75" fill="#555">0,051 / 0,061</text>
+<text x="282" y="103" text-anchor="end" fill="#333">Propension de base à jeter (log-cote)</text>
+<rect x="290" y="90" width="3.9" height="16" fill="none" stroke="#1f6f8b" stroke-width="2" rx="2"/>
+<rect x="290" y="90" width="0.6" height="16" fill="#1f6f8b" rx="2"/>
+<text x="299.9" y="103" fill="#555">0,002 / 0,013</text>
+<text x="282" y="131" text-anchor="end" fill="#333">Poids de la norme sociale de l'îlot</text>
+<rect x="290" y="118" width="2.4" height="16" fill="none" stroke="#1f6f8b" stroke-width="2" rx="2"/>
+<rect x="290" y="118" width="3.0" height="16" fill="#1f6f8b" rx="2"/>
+<text x="299.0" y="131" fill="#555">0,01 / 0,008</text>
+<text x="282" y="159" text-anchor="end" fill="#333">Dissuasion d'un contrôle Laabal</text>
+<rect x="290" y="146" width="3.3" height="16" fill="none" stroke="#1f6f8b" stroke-width="2" rx="2"/>
+<rect x="290" y="146" width="2.7" height="16" fill="#1f6f8b" rx="2"/>
+<text x="299.3" y="159" fill="#555">0,009 / 0,011</text>
+<text x="282" y="187" text-anchor="end" fill="#333">Prix de l'abonnement (FCFA/mois)</text>
+<rect x="290" y="174" width="1.2" height="16" fill="none" stroke="#1f6f8b" stroke-width="2" rx="2"/>
+<rect x="290" y="174" width="0.0" height="16" fill="#1f6f8b" rx="2"/>
+<text x="297.2" y="187" fill="#555">0 / 0,004</text>
+<text x="282" y="215" text-anchor="end" fill="#333">Effet de la distance au-delà de la marche (/m)</text>
+<rect x="290" y="202" width="1.5" height="16" fill="none" stroke="#1f6f8b" stroke-width="2" rx="2"/>
+<rect x="290" y="202" width="0.0" height="16" fill="#1f6f8b" rx="2"/>
+<text x="297.5" y="215" fill="#555">0 / 0,005</text>
+<text x="282" y="243" text-anchor="end" fill="#333">Taux d'abonnement initial</text>
+<rect x="290" y="230" width="1.8" height="16" fill="none" stroke="#1f6f8b" stroke-width="2" rx="2"/>
+<rect x="290" y="230" width="1.5" height="16" fill="#1f6f8b" rx="2"/>
+<text x="297.8" y="243" fill="#555">0,005 / 0,006</text>
+</svg>

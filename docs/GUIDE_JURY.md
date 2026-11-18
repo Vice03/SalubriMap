@@ -42,7 +42,7 @@ après chaque action, une touche ramène au menu.
 | **3** Salubri Map | ouvre l'application de la mairie dans le navigateur | — |
 | **4** Salubri Go | ouvre l'application citoyenne (signalement avec photo, hors ligne) | — |
 | **5** API | documentation interactive de l'API (`/api/docs`) | — |
-| **G** Guide | ouvre ce document | — |
+| **G** Livrables et guide | ouvre le dossier `livrable/` (les six livrables du défi, chacun avec son `README.md`) et ce guide | — |
 | **6** État des services | conteneurs Docker et réponse de l'API | quelques s |
 | **7** Diagnostic | Docker, ports, disque, carte utilisée, assistant | quelques s |
 | **8** Répétition générale | rejoue les pièges du jury et des changements de paramètres, écrit `docs/REHEARSAL_REPORT.md` | 3–5 min |
@@ -69,9 +69,7 @@ de la flotte. Une fois connecté avec le compte public « demo », le badge jaun
 
 <img src="guide/06_salubri_go.jpg" alt="Salubri Go" style="width:34%;display:block;margin:0 auto;border:1px solid #ccc;border-radius:10px">
 
-Choix **4** du menu (ou `http://localhost/go/`, aussi sur téléphone : choix 11). Prenez une photo : **les visages et
-les plaques sont floutés sur l'appareil, avant tout envoi**. Choisissez le type de déchets et le volume, puis
-« Envoyer ». Sans réseau, le signalement attend dans « Mes envois » et part tout seul au retour du réseau.
+Choix **4** du menu (ou `http://localhost/go/`, aussi sur téléphone : choix 11). Au lancement, l'écran de langue parle : une voix française puis une voix mooré proposent la langue, le bouton de celle qui parle brille ; touchez la vôtre (ou « Continuer sans voix »). Le signalement se fait ensuite **pas à pas, un grand bouton par étape**, la voix guidant chacune : photo, quantité (chaque bouton brille quand la voix le nomme), type de déchets, localisation, remerciement. **Les visages et les plaques sont floutés sur l'appareil, avant tout envoi.** Sans réseau, le signalement attend dans « Mes envois » et part tout seul au retour du réseau. Les voix mooré sont en cours d'enregistrement : en attendant, les boutons brillent sans son.
 
 ### Étape 3 — La carte et la vérification des signalements
 
@@ -170,5 +168,6 @@ le trouve tout seul.
 - Adresses : Salubri Map `http://localhost/` · Salubri Go `http://localhost/go/` · API `http://localhost/api/docs`.
 - Données de la démonstration : carte synthétique de Ouagadougou, quartiers et populations de démonstration ;
   avec l'extrait OpenStreetMap (`data/osm/ouaga.osm.pbf`), vraies rues et itinéraires routiers.
+- Les six livrables du défi : dossier `livrable/` (`livrable/README.md`).
 - Pour aller plus loin : `README.md`, `docs/RAPPORT_TECHNIQUE.pdf`, `docs/DEMO.md`, `docs/MODULES.md`.
 - Logiciel libre (AGPL-3.0), données sous ODbL 1.0.

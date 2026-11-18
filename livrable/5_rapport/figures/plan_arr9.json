@@ -1,0 +1,3539 @@
+{
+ "Référence": {
+  "plan_id": "18702ea2-25a6-4c8e-861a-53675bbc5d62",
+  "summary": {
+   "sim": {
+    "truck_km": 12076.9,
+    "cleanup_t": 1044.93,
+    "cost_per_t": 2550.0,
+    "households": 48060,
+    "produced_t": 18145.97,
+    "collected_t": 4108.95,
+    "voluntary_t": 3436.27,
+    "wild_dump_t": 13056.84,
+    "laabal_fines": 7349,
+    "coverage_rate": 0.501,
+    "precollected_t": 5327.07,
+    "cost_total_fcfa": 10479621.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 144,
+    "laabal_cleared_t": 1.64,
+    "mass_balance_error": 1.4370697696684813e-15,
+    "overflow_point_days": 16975,
+    "precollectors_dropped": 0,
+    "budget_left_final_fcfa": 3482877.0,
+    "wild_dumps_active_mean": 2637.1,
+    "mean_cleanup_delay_days": 6.7,
+    "subscription_rate_final": 0.3981,
+    "wild_dumps_active_final": 3099,
+    "precollectors_active_final": 192,
+    "precollector_income_mean_fcfa": 146680.0
+   },
+   "vrp": {
+    "km": 419.9,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 18167,
+    "ecart_max": 0.278,
+    "borne_inf_km": 303.3
+   },
+   "diff": {
+    "text": "16 tournées refaites, 204 points ajoutés, 66 points déplacés, 4 points supprimés, +172 points non desservis, -8 % de km",
+    "km_delta": -37.2,
+    "coherence": {
+     "km_delta": -37.2,
+     "cout_delta": 73009,
+     "couverture_apres": 0.9969,
+     "couverture_avant": 0.9565,
+     "tournees_jaccard": 0.024,
+     "deplacement_max_m": 12685.2,
+     "deplacement_moyen_m": 8258.2,
+     "points_inchanges_part": 0.0
+    },
+    "cost_delta": 73009,
+    "km_delta_pct": -8.1,
+    "points_added": 204,
+    "points_moved": 66,
+    "first_version": false,
+    "points_removed": 4,
+    "routes_changed": 16,
+    "unserved_delta": 172
+   },
+   "ilots": 2872,
+   "notes": [],
+   "km_day": 419.9,
+   "points": 270,
+   "routes": 16,
+   "solver": "ortools",
+   "capacite": {
+    "respectee": false,
+    "points_debordants": [
+     {
+      "point": "CCT-078",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.41
+     },
+     {
+      "point": "CCT-080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.18
+     },
+     {
+      "point": "CCT-084",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.6
+     },
+     {
+      "point": "CCT-086",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 4.1
+     },
+     {
+      "point": "P006",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.61
+     },
+     {
+      "point": "P021",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.0
+     },
+     {
+      "point": "P061",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.97
+     },
+     {
+      "point": "P080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.91
+     },
+     {
+      "point": "P102",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.57
+     },
+     {
+      "point": "P119",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.59
+     },
+     {
+      "point": "P123",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.56
+     },
+     {
+      "point": "P125",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P174",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.81
+     },
+     {
+      "point": "P180",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P189",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.55
+     },
+     {
+      "point": "P219",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P245",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.1
+     },
+     {
+      "point": "P247",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.53
+     }
+    ],
+    "enlevements_semaine": 3.0,
+    "non_collecte_t_semaine": 21.97,
+    "enlevements_semaine_demandes": 2.0
+   },
+   "placement": {
+    "borne": null,
+    "ecart": null,
+    "depart": "k-means",
+    "raison": "CP-SAT sans solution meilleure que le k-means dans le temps imparti",
+    "statut": "repli",
+    "methode": "CP-SAT",
+    "capacite": {
+     "essais": [
+      {
+       "statut": "repli",
+       "enlevements_semaine": 2.0
+      },
+      {
+       "statut": "repli",
+       "enlevements_semaine": 3.0
+      }
+     ],
+     "raison": "CP-SAT n'a pas trouvé, dans le temps imparti, de placement qui tienne dans la capacité : placement pénalisé gardé (des points peuvent déborder)",
+     "contrainte": "non respectée",
+     "enlevements_semaine": 2.0
+    },
+    "duree_ms": 10178,
+    "objectif": null,
+    "candidats": 931,
+    "marche_t_m": null,
+    "objectif_depart": 960196.0,
+    "candidats_routes": 661,
+    "surcharge_t_semaine": null,
+    "demande_hors_marche_t_semaine": null
+   },
+   "dump_sites": 174,
+   "population": 336483,
+   "duration_ms": 50044,
+   "cost_day_fcfa": 375345,
+   "coverage_walk": 0.9969,
+   "demand_t_week": 1413.23,
+   "distance_mode": "approx",
+   "trucks_needed": 25,
+   "unserved_points": 172,
+   "vehicles_available": 8,
+   "unserved_t_per_pickup": 314.94,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 12047.47,
+    "p10": 12048.9,
+    "p90": 12083.52,
+    "p95": 12085.955,
+    "median": 12066.2,
+    "p5_param": 12040.47,
+    "p95_param": 12078.970000000001,
+    "median_param": 12066.2
+   },
+   "cleanup_t": {
+    "p5": 1044.709,
+    "p10": 1044.72,
+    "p90": 1045.091,
+    "p95": 1045.1,
+    "median": 1044.865,
+    "p5_param": 1044.3025,
+    "p95_param": 1046.5455,
+    "median_param": 1044.83
+   },
+   "cost_per_t": {
+    "p5": 2537.05,
+    "p10": 2542.9,
+    "p90": 2562.1,
+    "p95": 2563.0,
+    "median": 2551.0,
+    "p5_param": 2479.35,
+    "p95_param": 2821.8999999999996,
+    "median_param": 2549.5
+   },
+   "households": {
+    "p5": 48060.0,
+    "p10": 48060.0,
+    "p90": 48060.0,
+    "p95": 48060.0,
+    "median": 48060.0,
+    "p5_param": 48060.0,
+    "p95_param": 48060.0,
+    "median_param": 48060.0
+   },
+   "produced_t": {
+    "p5": 18123.325,
+    "p10": 18129.321,
+    "p90": 18193.577,
+    "p95": 18197.7215,
+    "median": 18164.98,
+    "p5_param": 15314.268,
+    "p95_param": 22268.1965,
+    "median_param": 18214.75
+   },
+   "collected_t": {
+    "p5": 4083.585,
+    "p10": 4086.512,
+    "p90": 4117.8679999999995,
+    "p95": 4130.2785,
+    "median": 4104.49,
+    "p5_param": 3712.8815,
+    "p95_param": 4223.003,
+    "median_param": 4111.555
+   },
+   "voluntary_t": {
+    "p5": 3396.0415000000003,
+    "p10": 3399.262,
+    "p90": 3439.705,
+    "p95": 3453.2315,
+    "median": 3421.4399999999996,
+    "p5_param": 3005.8525,
+    "p95_param": 3731.886,
+    "median_param": 3460.26
+   },
+   "wild_dump_t": {
+    "p5": 13043.0315,
+    "p10": 13048.195,
+    "p90": 13104.876,
+    "p95": 13128.0705,
+    "median": 13082.154999999999,
+    "p5_param": 10719.7945,
+    "p95_param": 16860.883,
+    "median_param": 13061.96
+   },
+   "laabal_fines": {
+    "p5": 7170.85,
+    "p10": 7188.8,
+    "p90": 7394.2,
+    "p95": 7414.0,
+    "median": 7302.0,
+    "p5_param": 6207.05,
+    "p95_param": 8047.65,
+    "median_param": 7074.5
+   },
+   "coverage_rate": {
+    "p5": 0.49645,
+    "p10": 0.497,
+    "p90": 0.5001,
+    "p95": 0.501,
+    "median": 0.4985,
+    "p5_param": 0.43255,
+    "p95_param": 0.538,
+    "median_param": 0.493
+   },
+   "precollected_t": {
+    "p5": 5304.72,
+    "p10": 5305.822,
+    "p90": 5356.131,
+    "p95": 5363.811000000001,
+    "median": 5335.62,
+    "p5_param": 4977.964,
+    "p95_param": 5620.5125,
+    "median_param": 5327.595
+   },
+   "cost_total_fcfa": {
+    "p5": 10464566.2,
+    "p10": 10465726.9,
+    "p90": 10484098.6,
+    "p95": 10484535.55,
+    "median": 10471383.0,
+    "p5_param": 10460371.3,
+    "p95_param": 10490939.05,
+    "median_param": 10474089.0
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0,
+    "p5_param": 228.0,
+    "p95_param": 228.0,
+    "median_param": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 121.45,
+    "p10": 122.9,
+    "p90": 150.0,
+    "p95": 151.64999999999998,
+    "median": 140.5,
+    "p5_param": 118.35,
+    "p95_param": 278.65,
+    "median_param": 148.5
+   },
+   "laabal_cleared_t": {
+    "p5": 0.12,
+    "p10": 0.129,
+    "p90": 2.887,
+    "p95": 3.0709999999999993,
+    "median": 1.28,
+    "p5_param": 0.1545,
+    "p95_param": 2.9684999999999997,
+    "median_param": 1.525
+   },
+   "mass_balance_error": {
+    "p5": 2.0473996309353666e-16,
+    "p10": 2.0509854622357736e-16,
+    "p90": 1.6834610102191919e-15,
+    "p95": 2.1644449884951007e-15,
+    "median": 1.024024249160832e-15,
+    "p5_param": 7.473040391890338e-17,
+    "p95_param": 2.149785532188718e-15,
+    "median_param": 9.077183166777507e-16
+   },
+   "overflow_point_days": {
+    "p5": 16964.85,
+    "p10": 16975.6,
+    "p90": 17051.2,
+    "p95": 17056.85,
+    "median": 17021.5,
+    "p5_param": 16363.0,
+    "p95_param": 18300.649999999998,
+    "median_param": 17151.0
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 2.1000000000000014,
+    "p95": 3.0,
+    "median": 1.0,
+    "p5_param": 0.0,
+    "p95_param": 3.0,
+    "median_param": 1.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 3482877.0,
+    "p10": 3482877.0,
+    "p90": 3482877.0,
+    "p95": 3482877.0,
+    "median": 3482877.0,
+    "p5_param": 3482877.0,
+    "p95_param": 3482877.0,
+    "median_param": 3482877.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 2633.3450000000003,
+    "p10": 2635.58,
+    "p90": 2664.61,
+    "p95": 2665.1949999999997,
+    "median": 2652.7,
+    "p5_param": 2524.705,
+    "p95_param": 2760.81,
+    "median_param": 2639.55
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 6.29,
+    "p10": 6.4,
+    "p90": 7.109999999999999,
+    "p95": 7.2,
+    "median": 6.9,
+    "p5_param": 5.1899999999999995,
+    "p95_param": 7.2,
+    "median_param": 6.45
+   },
+   "subscription_rate_final": {
+    "p5": 0.39419,
+    "p10": 0.39483999999999997,
+    "p90": 0.39936,
+    "p95": 0.400175,
+    "median": 0.39775,
+    "p5_param": 0.366995,
+    "p95_param": 0.42034,
+    "median_param": 0.39454999999999996
+   },
+   "wild_dumps_active_final": {
+    "p5": 3075.0,
+    "p10": 3077.7,
+    "p90": 3112.1,
+    "p95": 3114.1,
+    "median": 3098.5,
+    "p5_param": 3035.5,
+    "p95_param": 3128.0,
+    "median_param": 3090.5
+   },
+   "precollectors_active_final": {
+    "p5": 189.0,
+    "p10": 189.9,
+    "p90": 192.0,
+    "p95": 192.0,
+    "median": 191.0,
+    "p5_param": 189.0,
+    "p95_param": 192.0,
+    "median_param": 191.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 146540.65,
+    "p10": 146671.4,
+    "p90": 148865.3,
+    "p95": 149060.3,
+    "median": 147492.5,
+    "p5_param": 139226.1,
+    "p95_param": 154529.2,
+    "median_param": 147470.0
+   }
+  }
+ },
+ "Flotte nécessaire": {
+  "plan_id": "f65b9fdb-f9a3-44e2-aa17-87cb450cceb0",
+  "summary": {
+   "sim": {
+    "truck_km": 59555.9,
+    "cleanup_t": 964.31,
+    "cost_per_t": 2973.0,
+    "households": 48060,
+    "produced_t": 18145.97,
+    "collected_t": 16787.92,
+    "voluntary_t": 12096.64,
+    "wild_dump_t": 1034.13,
+    "laabal_fines": 3539,
+    "coverage_rate": 0.951,
+    "precollected_t": 5268.87,
+    "cost_total_fcfa": 49915162.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 1324,
+    "laabal_cleared_t": 32.45,
+    "mass_balance_error": 1.2317740882872697e-15,
+    "overflow_point_days": 1399,
+    "precollectors_dropped": 1,
+    "budget_left_final_fcfa": 18336246.0,
+    "wild_dumps_active_mean": 129.6,
+    "mean_cleanup_delay_days": 6.1,
+    "subscription_rate_final": 0.4068,
+    "wild_dumps_active_final": 295,
+    "precollectors_active_final": 191,
+    "precollector_income_mean_fcfa": 148696.0
+   },
+   "vrp": {
+    "km": 1587.5,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 36108,
+    "ecart_max": 0.352,
+    "borne_inf_km": 1029.0
+   },
+   "diff": {
+    "text": "Aucun changement",
+    "km_delta": 0.0,
+    "coherence": {
+     "km_delta": 0.0,
+     "cout_delta": 0,
+     "couverture_apres": 0.9969,
+     "couverture_avant": 0.9969,
+     "tournees_jaccard": 1.0,
+     "deplacement_max_m": 0.0,
+     "deplacement_moyen_m": 0.0,
+     "points_inchanges_part": 1.0
+    },
+    "cost_delta": 0,
+    "km_delta_pct": 0.0,
+    "points_added": 0,
+    "points_moved": 0,
+    "first_version": false,
+    "points_removed": 0,
+    "routes_changed": 0,
+    "unserved_delta": 0
+   },
+   "ilots": 2872,
+   "notes": [],
+   "km_day": 1587.5,
+   "points": 270,
+   "routes": 57,
+   "solver": "ortools",
+   "capacite": {
+    "respectee": false,
+    "points_debordants": [
+     {
+      "point": "CCT-078",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.41
+     },
+     {
+      "point": "CCT-080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.18
+     },
+     {
+      "point": "CCT-084",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.6
+     },
+     {
+      "point": "CCT-086",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 4.1
+     },
+     {
+      "point": "P006",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.61
+     },
+     {
+      "point": "P021",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.0
+     },
+     {
+      "point": "P061",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.97
+     },
+     {
+      "point": "P080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.91
+     },
+     {
+      "point": "P102",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.57
+     },
+     {
+      "point": "P119",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.59
+     },
+     {
+      "point": "P123",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.56
+     },
+     {
+      "point": "P125",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P174",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.81
+     },
+     {
+      "point": "P180",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P189",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.55
+     },
+     {
+      "point": "P219",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P245",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.1
+     },
+     {
+      "point": "P247",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.53
+     }
+    ],
+    "enlevements_semaine": 3.0,
+    "non_collecte_t_semaine": 21.97,
+    "enlevements_semaine_demandes": 2.0
+   },
+   "placement": {
+    "borne": null,
+    "ecart": null,
+    "depart": "k-means",
+    "raison": "CP-SAT sans solution meilleure que le k-means dans le temps imparti",
+    "statut": "repli",
+    "methode": "CP-SAT",
+    "capacite": {
+     "essais": [
+      {
+       "statut": "repli",
+       "enlevements_semaine": 2.0
+      },
+      {
+       "statut": "repli",
+       "enlevements_semaine": 3.0
+      }
+     ],
+     "raison": "CP-SAT n'a pas trouvé, dans le temps imparti, de placement qui tienne dans la capacité : placement pénalisé gardé (des points peuvent déborder)",
+     "contrainte": "non respectée",
+     "enlevements_semaine": 2.0
+    },
+    "duree_ms": 10178,
+    "objectif": null,
+    "candidats": 931,
+    "marche_t_m": null,
+    "objectif_depart": 960196.0,
+    "candidats_routes": 661,
+    "surcharge_t_semaine": null,
+    "demande_hors_marche_t_semaine": null
+   },
+   "dump_sites": 174,
+   "population": 336483,
+   "duration_ms": 678,
+   "cost_day_fcfa": 1282255,
+   "coverage_walk": 0.9969,
+   "demand_t_week": 1413.23,
+   "distance_mode": "approx",
+   "trucks_needed": null,
+   "unserved_points": 0,
+   "vehicles_available": 30,
+   "unserved_t_per_pickup": 0.0,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 58950.375,
+    "p10": 59031.130000000005,
+    "p90": 59863.51,
+    "p95": 60068.63,
+    "median": 59497.5,
+    "p5_param": 58993.105,
+    "p95_param": 60131.92,
+    "median_param": 59536.2
+   },
+   "cleanup_t": {
+    "p5": 918.1145,
+    "p10": 944.851,
+    "p90": 1001.579,
+    "p95": 1003.2955,
+    "median": 980.48,
+    "p5_param": 375.4055,
+    "p95_param": 1009.8745,
+    "median_param": 971.94
+   },
+   "cost_per_t": {
+    "p5": 2970.45,
+    "p10": 2971.9,
+    "p90": 2988.0,
+    "p95": 2989.1,
+    "median": 2981.0,
+    "p5_param": 2841.9,
+    "p95_param": 3408.1,
+    "median_param": 2971.5
+   },
+   "households": {
+    "p5": 48060.0,
+    "p10": 48060.0,
+    "p90": 48060.0,
+    "p95": 48060.0,
+    "median": 48060.0,
+    "p5_param": 48060.0,
+    "p95_param": 48060.0,
+    "median_param": 48060.0
+   },
+   "produced_t": {
+    "p5": 18123.325,
+    "p10": 18129.321,
+    "p90": 18193.577,
+    "p95": 18197.7215,
+    "median": 18164.98,
+    "p5_param": 15314.268,
+    "p95_param": 22268.1965,
+    "median_param": 18214.75
+   },
+   "collected_t": {
+    "p5": 16600.4215,
+    "p10": 16604.041,
+    "p90": 16832.541,
+    "p95": 16865.3595,
+    "median": 16702.42,
+    "p5_param": 14629.137,
+    "p95_param": 17684.597999999998,
+    "median_param": 16802.89
+   },
+   "voluntary_t": {
+    "p5": 11958.017,
+    "p10": 11981.237,
+    "p90": 12134.062000000002,
+    "p95": 12148.6555,
+    "median": 12034.76,
+    "p5_param": 10044.283,
+    "p95_param": 13641.418,
+    "median_param": 12164.119999999999
+   },
+   "wild_dump_t": {
+    "p5": 972.4295000000001,
+    "p10": 1003.5550000000001,
+    "p90": 1232.031,
+    "p95": 1262.4395,
+    "median": 1117.1100000000001,
+    "p5_param": 389.62800000000004,
+    "p95_param": 4097.667999999999,
+    "median_param": 1088.83
+   },
+   "laabal_fines": {
+    "p5": 3294.05,
+    "p10": 3403.7,
+    "p90": 3777.5,
+    "p95": 3807.15,
+    "median": 3571.5,
+    "p5_param": 2260.8,
+    "p95_param": 5001.9,
+    "median_param": 3429.5
+   },
+   "coverage_rate": {
+    "p5": 0.9419,
+    "p10": 0.9439,
+    "p90": 0.953,
+    "p95": 0.9541,
+    "median": 0.948,
+    "p5_param": 0.83765,
+    "p95_param": 0.98255,
+    "median_param": 0.945
+   },
+   "precollected_t": {
+    "p5": 5248.675,
+    "p10": 5250.426,
+    "p90": 5305.0509999999995,
+    "p95": 5311.152999999999,
+    "median": 5280.219999999999,
+    "p5_param": 4916.598,
+    "p95_param": 5587.854,
+    "median_param": 5272.6
+   },
+   "cost_total_fcfa": {
+    "p5": 49384257.5,
+    "p10": 49492177.7,
+    "p90": 50170569.6,
+    "p95": 50302887.75,
+    "median": 49830556.0,
+    "p5_param": 49420585.85,
+    "p95_param": 50358946.75,
+    "median_param": 49866284.0
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0,
+    "p5_param": 228.0,
+    "p95_param": 228.0,
+    "median_param": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 909.35,
+    "p10": 929.2,
+    "p90": 1183.6,
+    "p95": 1218.6999999999998,
+    "median": 1069.0,
+    "p5_param": 315.9,
+    "p95_param": 1326.5499999999997,
+    "median_param": 979.0
+   },
+   "laabal_cleared_t": {
+    "p5": 31.585,
+    "p10": 33.606,
+    "p90": 50.32600000000001,
+    "p95": 55.0135,
+    "median": 43.269999999999996,
+    "p5_param": 14.192,
+    "p95_param": 83.338,
+    "median_param": 40.455
+   },
+   "mass_balance_error": {
+    "p5": 2.0490790550329761e-16,
+    "p10": 2.053021928300475e-16,
+    "p90": 1.480187902345202e-15,
+    "p95": 2.297397561120679e-15,
+    "median": 1.0239657449401072e-15,
+    "p5_param": 2.0191316459838814e-16,
+    "p95_param": 2.3644206638967636e-15,
+    "median_param": 8.169323518060333e-16
+   },
+   "overflow_point_days": {
+    "p5": 1295.2,
+    "p10": 1308.5,
+    "p90": 1633.5,
+    "p95": 1689.7499999999998,
+    "median": 1495.0,
+    "p5_param": 443.3,
+    "p95_param": 4875.749999999997,
+    "median_param": 1575.5
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 2.0,
+    "p95": 2.549999999999997,
+    "median": 1.0,
+    "p5_param": 0.0,
+    "p95_param": 3.0,
+    "median_param": 1.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 18336246.0,
+    "p10": 18336246.0,
+    "p90": 18336246.0,
+    "p95": 18336246.0,
+    "median": 18336246.0,
+    "p5_param": 18336246.0,
+    "p95_param": 18336246.0,
+    "median_param": 18336246.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 129.89000000000001,
+    "p10": 175.10999999999999,
+    "p90": 617.19,
+    "p95": 687.1299999999999,
+    "median": 464.4,
+    "p5_param": 3.385,
+    "p95_param": 1468.205,
+    "median_param": 389.95
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 5.085,
+    "p10": 6.069999999999999,
+    "p90": 12.530000000000001,
+    "p95": 14.669999999999991,
+    "median": 9.75,
+    "p5_param": 1.445,
+    "p95_param": 10.11,
+    "median_param": 8.1
+   },
+   "subscription_rate_final": {
+    "p5": 0.40214500000000003,
+    "p10": 0.4022,
+    "p90": 0.40687,
+    "p95": 0.407775,
+    "median": 0.4056,
+    "p5_param": 0.37504,
+    "p95_param": 0.42591999999999997,
+    "median_param": 0.40375
+   },
+   "wild_dumps_active_final": {
+    "p5": 0.0,
+    "p10": 110.70000000000005,
+    "p90": 1106.5,
+    "p95": 1179.0499999999997,
+    "median": 746.0,
+    "p5_param": 0.0,
+    "p95_param": 2039.3999999999999,
+    "median_param": 520.5
+   },
+   "precollectors_active_final": {
+    "p5": 189.45,
+    "p10": 190.0,
+    "p90": 192.0,
+    "p95": 192.0,
+    "median": 191.0,
+    "p5_param": 189.0,
+    "p95_param": 192.0,
+    "median_param": 191.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 147730.1,
+    "p10": 147840.5,
+    "p90": 150228.1,
+    "p95": 150233.95,
+    "median": 148818.0,
+    "p5_param": 141065.4,
+    "p95_param": 155380.15,
+    "median_param": 148825.0
+   }
+  }
+ },
+ "2 camions en panne": {
+  "plan_id": "9b64cc3b-706c-4abc-8da4-a7f14b29f74a",
+  "summary": {
+   "sim": {
+    "truck_km": 12221.9,
+    "cleanup_t": 1044.96,
+    "cost_per_t": 2503.0,
+    "households": 48060,
+    "produced_t": 18145.97,
+    "collected_t": 4189.49,
+    "voluntary_t": 3331.55,
+    "wild_dump_t": 13146.85,
+    "laabal_fines": 8204,
+    "coverage_rate": 0.496,
+    "precollected_t": 5314.27,
+    "cost_total_fcfa": 10484834.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 138,
+    "laabal_cleared_t": 0.02,
+    "mass_balance_error": 1.2317740882872697e-15,
+    "overflow_point_days": 16469,
+    "precollectors_dropped": 1,
+    "budget_left_final_fcfa": 3482877.0,
+    "wild_dumps_active_mean": 2296.5,
+    "mean_cleanup_delay_days": 6.8,
+    "subscription_rate_final": 0.3978,
+    "wild_dumps_active_final": 2583,
+    "precollectors_active_final": 191,
+    "precollector_income_mean_fcfa": 147825.0
+   },
+   "vrp": {
+    "km": 332.7,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 23613,
+    "ecart_max": 0.253,
+    "borne_inf_km": 248.6
+   },
+   "diff": {
+    "text": "12 tournées refaites, +13 points non desservis, -21 % de km",
+    "km_delta": -87.2,
+    "coherence": {
+     "km_delta": -87.2,
+     "cout_delta": -78113,
+     "couverture_apres": 0.9969,
+     "couverture_avant": 0.9969,
+     "tournees_jaccard": 0.046,
+     "deplacement_max_m": 0.0,
+     "deplacement_moyen_m": 0.0,
+     "points_inchanges_part": 1.0
+    },
+    "cost_delta": -78113,
+    "km_delta_pct": -20.8,
+    "points_added": 0,
+    "points_moved": 0,
+    "first_version": false,
+    "points_removed": 0,
+    "routes_changed": 12,
+    "unserved_delta": 13
+   },
+   "ilots": 2872,
+   "notes": [],
+   "km_day": 332.7,
+   "points": 270,
+   "routes": 12,
+   "solver": "ortools",
+   "capacite": {
+    "respectee": false,
+    "points_debordants": [
+     {
+      "point": "CCT-078",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.41
+     },
+     {
+      "point": "CCT-080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.18
+     },
+     {
+      "point": "CCT-084",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.6
+     },
+     {
+      "point": "CCT-086",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 4.1
+     },
+     {
+      "point": "P006",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.61
+     },
+     {
+      "point": "P021",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.0
+     },
+     {
+      "point": "P061",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.97
+     },
+     {
+      "point": "P080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.91
+     },
+     {
+      "point": "P102",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.57
+     },
+     {
+      "point": "P119",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.59
+     },
+     {
+      "point": "P123",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.56
+     },
+     {
+      "point": "P125",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P174",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.81
+     },
+     {
+      "point": "P180",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P189",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.55
+     },
+     {
+      "point": "P219",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P245",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.1
+     },
+     {
+      "point": "P247",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.53
+     }
+    ],
+    "enlevements_semaine": 3.0,
+    "non_collecte_t_semaine": 21.97,
+    "enlevements_semaine_demandes": 2.0
+   },
+   "placement": {
+    "borne": null,
+    "ecart": null,
+    "depart": "k-means",
+    "raison": "CP-SAT sans solution meilleure que le k-means dans le temps imparti",
+    "statut": "repli",
+    "methode": "CP-SAT",
+    "capacite": {
+     "essais": [
+      {
+       "statut": "repli",
+       "enlevements_semaine": 2.0
+      },
+      {
+       "statut": "repli",
+       "enlevements_semaine": 3.0
+      }
+     ],
+     "raison": "CP-SAT n'a pas trouvé, dans le temps imparti, de placement qui tienne dans la capacité : placement pénalisé gardé (des points peuvent déborder)",
+     "contrainte": "non respectée",
+     "enlevements_semaine": 2.0
+    },
+    "duree_ms": 10178,
+    "objectif": null,
+    "candidats": 931,
+    "marche_t_m": null,
+    "objectif_depart": 960196.0,
+    "candidats_routes": 661,
+    "surcharge_t_semaine": null,
+    "demande_hors_marche_t_semaine": null
+   },
+   "dump_sites": 174,
+   "population": 336483,
+   "duration_ms": 24324,
+   "cost_day_fcfa": 297232,
+   "coverage_walk": 0.9969,
+   "demand_t_week": 1413.23,
+   "distance_mode": "approx",
+   "trucks_needed": 24,
+   "unserved_points": 185,
+   "vehicles_available": 6,
+   "unserved_t_per_pickup": 346.24,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 12115.904999999999,
+    "p10": 12127.01,
+    "p90": 12240.49,
+    "p95": 12249.34,
+    "median": 12213.6,
+    "p5_param": 12087.05,
+    "p95_param": 12250.425000000001,
+    "median_param": 12220.45
+   },
+   "cleanup_t": {
+    "p5": 1044.7645,
+    "p10": 1044.77,
+    "p90": 1045.1670000000001,
+    "p95": 1045.2575,
+    "median": 1044.955,
+    "p5_param": 1044.3425,
+    "p95_param": 1046.8139999999999,
+    "median_param": 1044.9099999999999
+   },
+   "cost_per_t": {
+    "p5": 2498.35,
+    "p10": 2501.8,
+    "p90": 2519.1,
+    "p95": 2522.75,
+    "median": 2508.5,
+    "p5_param": 2434.35,
+    "p95_param": 2890.7999999999997,
+    "median_param": 2499.5
+   },
+   "households": {
+    "p5": 48060.0,
+    "p10": 48060.0,
+    "p90": 48060.0,
+    "p95": 48060.0,
+    "median": 48060.0,
+    "p5_param": 48060.0,
+    "p95_param": 48060.0,
+    "median_param": 48060.0
+   },
+   "produced_t": {
+    "p5": 18123.325,
+    "p10": 18129.321,
+    "p90": 18193.577,
+    "p95": 18197.7215,
+    "median": 18164.98,
+    "p5_param": 15314.268,
+    "p95_param": 22268.1965,
+    "median_param": 18214.75
+   },
+   "collected_t": {
+    "p5": 4127.6720000000005,
+    "p10": 4141.603999999999,
+    "p90": 4189.985,
+    "p95": 4193.477,
+    "median": 4167.450000000001,
+    "p5_param": 3619.5539999999996,
+    "p95_param": 4308.4845,
+    "median_param": 4142.355
+   },
+   "voluntary_t": {
+    "p5": 3248.283,
+    "p10": 3255.635,
+    "p90": 3309.379,
+    "p95": 3322.119,
+    "median": 3278.56,
+    "p5_param": 2794.712,
+    "p95_param": 3623.3734999999997,
+    "median_param": 3300.3999999999996
+   },
+   "wild_dump_t": {
+    "p5": 13132.722,
+    "p10": 13136.931,
+    "p90": 13260.312,
+    "p95": 13264.0655,
+    "median": 13194.265,
+    "p5_param": 10960.7675,
+    "p95_param": 16953.069,
+    "median_param": 13233.79
+   },
+   "laabal_fines": {
+    "p5": 8148.15,
+    "p10": 8180.1,
+    "p90": 8369.9,
+    "p95": 8396.55,
+    "median": 8279.0,
+    "p5_param": 6863.95,
+    "p95_param": 8844.9,
+    "median_param": 8010.5
+   },
+   "coverage_rate": {
+    "p5": 0.492,
+    "p10": 0.492,
+    "p90": 0.497,
+    "p95": 0.49755,
+    "median": 0.495,
+    "p5_param": 0.43085,
+    "p95_param": 0.5286500000000001,
+    "median_param": 0.4895
+   },
+   "precollected_t": {
+    "p5": 5300.0115000000005,
+    "p10": 5306.409000000001,
+    "p90": 5356.9929999999995,
+    "p95": 5358.594,
+    "median": 5331.725,
+    "p5_param": 4983.424,
+    "p95_param": 5620.303,
+    "median_param": 5329.59
+   },
+   "cost_total_fcfa": {
+    "p5": 10370535.4,
+    "p10": 10378509.5,
+    "p90": 10503801.9,
+    "p95": 10510353.55,
+    "median": 10474645.5,
+    "p5_param": 10355210.25,
+    "p95_param": 10502721.0,
+    "median_param": 10479537.0
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0,
+    "p5_param": 228.0,
+    "p95_param": 228.0,
+    "median_param": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 115.45,
+    "p10": 116.0,
+    "p90": 142.0,
+    "p95": 143.1,
+    "median": 132.5,
+    "p5_param": 114.6,
+    "p95_param": 213.69999999999996,
+    "median_param": 154.5
+   },
+   "laabal_cleared_t": {
+    "p5": 0.0245,
+    "p10": 0.03,
+    "p90": 0.11200000000000003,
+    "p95": 0.1464999999999999,
+    "median": 0.07500000000000001,
+    "p5_param": 0.014500000000000002,
+    "p95_param": 0.21199999999999988,
+    "median_param": 0.07
+   },
+   "mass_balance_error": {
+    "p5": 9.212462628685507e-17,
+    "p10": 2.0521777391806082e-16,
+    "p90": 1.6587993863780571e-15,
+    "p95": 2.07198009565288e-15,
+    "median": 1.023872990637236e-15,
+    "p5_param": 2.628048028847599e-16,
+    "p95_param": 2.2060199764469266e-15,
+    "median_param": 9.261281447703538e-16
+   },
+   "overflow_point_days": {
+    "p5": 16428.6,
+    "p10": 16434.8,
+    "p90": 16600.6,
+    "p95": 16616.45,
+    "median": 16510.0,
+    "p5_param": 16139.45,
+    "p95_param": 17898.95,
+    "median_param": 16656.5
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 2.0,
+    "p95": 2.549999999999997,
+    "median": 1.0,
+    "p5_param": 0.0,
+    "p95_param": 3.0,
+    "median_param": 1.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 3482877.0,
+    "p10": 3482877.0,
+    "p90": 3482877.0,
+    "p95": 3482877.0,
+    "median": 3482877.0,
+    "p5_param": 3482877.0,
+    "p95_param": 3482877.0,
+    "median_param": 3482877.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 2286.155,
+    "p10": 2288.73,
+    "p90": 2346.9900000000002,
+    "p95": 2364.4900000000002,
+    "median": 2315.65,
+    "p5_param": 2182.8799999999997,
+    "p95_param": 2509.585,
+    "median_param": 2305.95
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 6.5,
+    "p10": 6.59,
+    "p90": 7.5,
+    "p95": 7.555,
+    "median": 6.7,
+    "p5_param": 5.2,
+    "p95_param": 7.609999999999999,
+    "median_param": 6.5
+   },
+   "subscription_rate_final": {
+    "p5": 0.39512499999999995,
+    "p10": 0.39549,
+    "p90": 0.39972,
+    "p95": 0.400065,
+    "median": 0.398,
+    "p5_param": 0.36741999999999997,
+    "p95_param": 0.420935,
+    "median_param": 0.3961
+   },
+   "wild_dumps_active_final": {
+    "p5": 2546.95,
+    "p10": 2553.9,
+    "p90": 2654.4,
+    "p95": 2688.25,
+    "median": 2601.0,
+    "p5_param": 2456.45,
+    "p95_param": 2804.05,
+    "median_param": 2607.0
+   },
+   "precollectors_active_final": {
+    "p5": 189.45,
+    "p10": 190.0,
+    "p90": 192.0,
+    "p95": 192.0,
+    "median": 191.0,
+    "p5_param": 189.0,
+    "p95_param": 192.0,
+    "median_param": 191.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 146854.6,
+    "p10": 146872.5,
+    "p90": 149118.3,
+    "p95": 149362.8,
+    "median": 147919.5,
+    "p5_param": 139279.2,
+    "p95_param": 155352.05,
+    "median_param": 147875.0
+   }
+  }
+ },
+ "Saison des pluies": {
+  "plan_id": "d184f957-bd10-46ea-817e-4b3740ace067",
+  "summary": {
+   "sim": {
+    "truck_km": 12911.0,
+    "cleanup_t": 1046.42,
+    "cost_per_t": 2754.0,
+    "households": 48060,
+    "produced_t": 20867.87,
+    "collected_t": 3808.39,
+    "voluntary_t": 3272.84,
+    "wild_dump_t": 16100.45,
+    "laabal_fines": 8703,
+    "coverage_rate": 0.45,
+    "precollected_t": 5524.36,
+    "cost_total_fcfa": 10489939.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 169,
+    "laabal_cleared_t": 0.06,
+    "mass_balance_error": 1.7851798380974935e-15,
+    "overflow_point_days": 17960,
+    "precollectors_dropped": 1,
+    "budget_left_final_fcfa": 3482877.0,
+    "wild_dumps_active_mean": 2761.1,
+    "mean_cleanup_delay_days": 5.9,
+    "subscription_rate_final": 0.3791,
+    "wild_dumps_active_final": 3132,
+    "precollectors_active_final": 191,
+    "precollector_income_mean_fcfa": 141895.0
+   },
+   "vrp": {
+    "km": 482.5,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 33656,
+    "ecart_max": 0.291,
+    "borne_inf_km": 342.0
+   },
+   "diff": {
+    "text": "16 tournées refaites, +7 points non desservis, +15 % de km",
+    "km_delta": 62.6,
+    "coherence": {
+     "km_delta": 62.6,
+     "cout_delta": 29802,
+     "couverture_apres": 0.9969,
+     "couverture_avant": 0.9969,
+     "tournees_jaccard": 0.132,
+     "deplacement_max_m": 0.0,
+     "deplacement_moyen_m": 0.0,
+     "points_inchanges_part": 1.0
+    },
+    "cost_delta": 29802,
+    "km_delta_pct": 14.9,
+    "points_added": 0,
+    "points_moved": 0,
+    "first_version": false,
+    "points_removed": 0,
+    "routes_changed": 16,
+    "unserved_delta": 7
+   },
+   "ilots": 2872,
+   "notes": [],
+   "km_day": 482.5,
+   "points": 270,
+   "routes": 16,
+   "solver": "ortools",
+   "capacite": {
+    "respectee": false,
+    "points_debordants": [
+     {
+      "point": "CCT-078",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.92
+     },
+     {
+      "point": "CCT-080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.65
+     },
+     {
+      "point": "CCT-084",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 4.14
+     },
+     {
+      "point": "CCT-086",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 4.71
+     },
+     {
+      "point": "P006",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.01
+     },
+     {
+      "point": "P007",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.51
+     },
+     {
+      "point": "P017",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.52
+     },
+     {
+      "point": "P018",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.52
+     },
+     {
+      "point": "P020",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.85
+     },
+     {
+      "point": "P021",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.45
+     },
+     {
+      "point": "P022",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P024",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.53
+     },
+     {
+      "point": "P025",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.53
+     },
+     {
+      "point": "P032",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.59
+     },
+     {
+      "point": "P038",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.84
+     },
+     {
+      "point": "P042",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.65
+     },
+     {
+      "point": "P045",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.85
+     },
+     {
+      "point": "P047",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.69
+     },
+     {
+      "point": "P053",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.75
+     },
+     {
+      "point": "P054",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.63
+     },
+     {
+      "point": "P061",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.42
+     },
+     {
+      "point": "P066",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.86
+     },
+     {
+      "point": "P067",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.59
+     },
+     {
+      "point": "P072",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.67
+     },
+     {
+      "point": "P080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.35
+     },
+     {
+      "point": "P092",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P101",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.65
+     },
+     {
+      "point": "P102",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.96
+     },
+     {
+      "point": "P104",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.57
+     },
+     {
+      "point": "P118",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.62
+     },
+     {
+      "point": "P119",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.98
+     },
+     {
+      "point": "P123",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.94
+     },
+     {
+      "point": "P125",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.09
+     },
+     {
+      "point": "P133",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.72
+     },
+     {
+      "point": "P150",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.87
+     },
+     {
+      "point": "P159",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.54
+     },
+     {
+      "point": "P166",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.69
+     },
+     {
+      "point": "P174",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.23
+     },
+     {
+      "point": "P179",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.67
+     },
+     {
+      "point": "P180",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.97
+     },
+     {
+      "point": "P188",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.86
+     },
+     {
+      "point": "P189",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.93
+     },
+     {
+      "point": "P190",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.51
+     },
+     {
+      "point": "P194",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P201",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.69
+     },
+     {
+      "point": "P219",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.96
+     },
+     {
+      "point": "P220",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.54
+     },
+     {
+      "point": "P245",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.56
+     },
+     {
+      "point": "P247",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.91
+     }
+    ],
+    "enlevements_semaine": 3.0,
+    "non_collecte_t_semaine": 60.69,
+    "enlevements_semaine_demandes": 2.0
+   },
+   "placement": {
+    "borne": null,
+    "ecart": null,
+    "depart": "k-means",
+    "raison": "CP-SAT sans solution meilleure que le k-means dans le temps imparti",
+    "statut": "repli",
+    "methode": "CP-SAT",
+    "capacite": {
+     "essais": [
+      {
+       "statut": "repli",
+       "enlevements_semaine": 2.0
+      },
+      {
+       "statut": "repli",
+       "enlevements_semaine": 3.0
+      }
+     ],
+     "raison": "CP-SAT n'a pas trouvé, dans le temps imparti, de placement qui tienne dans la capacité : placement pénalisé gardé (des points peuvent déborder)",
+     "contrainte": "non respectée",
+     "enlevements_semaine": 2.0
+    },
+    "duree_ms": 10178,
+    "objectif": null,
+    "candidats": 931,
+    "marche_t_m": null,
+    "objectif_depart": 960196.0,
+    "candidats_routes": 661,
+    "surcharge_t_semaine": null,
+    "demande_hors_marche_t_semaine": null
+   },
+   "dump_sites": 174,
+   "population": 336483,
+   "duration_ms": 34400,
+   "cost_day_fcfa": 405147,
+   "coverage_walk": 0.9969,
+   "demand_t_week": 1625.21,
+   "distance_mode": "approx",
+   "trucks_needed": 29,
+   "unserved_points": 179,
+   "vehicles_available": 8,
+   "unserved_t_per_pickup": 372.7,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 12902.595,
+    "p10": 12912.43,
+    "p90": 12960.52,
+    "p95": 12964.66,
+    "median": 12930.45,
+    "p5_param": 12885.735,
+    "p95_param": 12959.955,
+    "median_param": 12927.4
+   },
+   "cleanup_t": {
+    "p5": 1045.882,
+    "p10": 1046.033,
+    "p90": 1046.6009999999999,
+    "p95": 1046.6595,
+    "median": 1046.34,
+    "p5_param": 1044.9370000000001,
+    "p95_param": 1050.952,
+    "median_param": 1046.41
+   },
+   "cost_per_t": {
+    "p5": 2747.9,
+    "p10": 2753.5,
+    "p90": 2772.2,
+    "p95": 2774.55,
+    "median": 2764.0,
+    "p5_param": 2671.15,
+    "p95_param": 3052.1,
+    "median_param": 2758.0
+   },
+   "households": {
+    "p5": 48060.0,
+    "p10": 48060.0,
+    "p90": 48060.0,
+    "p95": 48060.0,
+    "median": 48060.0,
+    "p5_param": 48060.0,
+    "p95_param": 48060.0,
+    "median_param": 48060.0
+   },
+   "produced_t": {
+    "p5": 20841.827,
+    "p10": 20848.712000000003,
+    "p90": 20922.611999999997,
+    "p95": 20927.3835,
+    "median": 20889.730000000003,
+    "p5_param": 17611.4115,
+    "p95_param": 25608.427999999996,
+    "median_param": 20946.97
+   },
+   "collected_t": {
+    "p5": 3792.961,
+    "p10": 3795.146,
+    "p90": 3817.675,
+    "p95": 3820.7365,
+    "median": 3805.695,
+    "p5_param": 3439.9514999999997,
+    "p95_param": 3931.933,
+    "median_param": 3814.12
+   },
+   "voluntary_t": {
+    "p5": 3254.1515,
+    "p10": 3255.7340000000004,
+    "p90": 3290.105,
+    "p95": 3295.313,
+    "median": 3273.61,
+    "p5_param": 2866.8485,
+    "p95_param": 3573.9539999999997,
+    "median_param": 3301.855
+   },
+   "wild_dump_t": {
+    "p5": 16077.609,
+    "p10": 16089.516000000001,
+    "p90": 16163.807999999999,
+    "p95": 16173.992,
+    "median": 16123.73,
+    "p5_param": 13310.118999999999,
+    "p95_param": 20566.679,
+    "median_param": 16144.645
+   },
+   "laabal_fines": {
+    "p5": 8609.75,
+    "p10": 8637.8,
+    "p90": 8797.0,
+    "p95": 8804.15,
+    "median": 8720.0,
+    "p5_param": 8061.9,
+    "p95_param": 9017.2,
+    "median_param": 8541.0
+   },
+   "coverage_rate": {
+    "p5": 0.44645,
+    "p10": 0.447,
+    "p90": 0.4501,
+    "p95": 0.451,
+    "median": 0.449,
+    "p5_param": 0.3871,
+    "p95_param": 0.48855,
+    "median_param": 0.4425
+   },
+   "precollected_t": {
+    "p5": 5501.6715,
+    "p10": 5513.313,
+    "p90": 5544.978,
+    "p95": 5546.4974999999995,
+    "median": 5532.605,
+    "p5_param": 5267.574,
+    "p95_param": 5746.3345,
+    "median_param": 5536.84
+   },
+   "cost_total_fcfa": {
+    "p5": 10489274.6,
+    "p10": 10491502.5,
+    "p90": 10534788.0,
+    "p95": 10536532.95,
+    "median": 10515506.5,
+    "p5_param": 10465897.65,
+    "p95_param": 10541116.65,
+    "median_param": 10508759.5
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0,
+    "p5_param": 228.0,
+    "p95_param": 228.0,
+    "median_param": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 138.35,
+    "p10": 140.0,
+    "p90": 167.1,
+    "p95": 168.55,
+    "median": 157.0,
+    "p5_param": 128.9,
+    "p95_param": 271.84999999999997,
+    "median_param": 159.5
+   },
+   "laabal_cleared_t": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 0.09200000000000003,
+    "p95": 0.11549999999999996,
+    "median": 0.02,
+    "p5_param": 0.0,
+    "p95_param": 0.7339999999999998,
+    "median_param": 0.04
+   },
+   "mass_balance_error": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 1.4271842564458707e-15,
+    "p95": 1.4282295997527505e-15,
+    "median": 8.900554412087236e-16,
+    "p5_param": 0.0,
+    "p95_param": 2.2666598447716094e-15,
+    "median_param": 7.117586838332045e-16
+   },
+   "overflow_point_days": {
+    "p5": 17940.15,
+    "p10": 17944.0,
+    "p90": 18003.7,
+    "p95": 18012.75,
+    "median": 17967.5,
+    "p5_param": 17418.5,
+    "p95_param": 19019.1,
+    "median_param": 18088.0
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 3.0,
+    "p95": 3.0,
+    "median": 1.0,
+    "p5_param": 0.0,
+    "p95_param": 3.0,
+    "median_param": 1.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 3482877.0,
+    "p10": 3482877.0,
+    "p90": 3482877.0,
+    "p95": 3482877.0,
+    "median": 3482877.0,
+    "p5_param": 3482877.0,
+    "p95_param": 3482877.0,
+    "median_param": 3482877.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 2750.645,
+    "p10": 2753.04,
+    "p90": 2768.4,
+    "p95": 2768.565,
+    "median": 2758.7,
+    "p5_param": 2689.16,
+    "p95_param": 2833.9849999999997,
+    "median_param": 2746.7
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 5.345,
+    "p10": 5.4,
+    "p90": 6.1,
+    "p95": 6.1,
+    "median": 5.8,
+    "p5_param": 3.79,
+    "p95_param": 7.0,
+    "median_param": 5.95
+   },
+   "subscription_rate_final": {
+    "p5": 0.376935,
+    "p10": 0.3771,
+    "p90": 0.3818,
+    "p95": 0.381855,
+    "median": 0.37905,
+    "p5_param": 0.34774,
+    "p95_param": 0.404515,
+    "median_param": 0.3755
+   },
+   "wild_dumps_active_final": {
+    "p5": 3124.0,
+    "p10": 3124.9,
+    "p90": 3133.0,
+    "p95": 3133.0,
+    "median": 3128.5,
+    "p5_param": 3116.45,
+    "p95_param": 3136.1,
+    "median_param": 3128.5
+   },
+   "precollectors_active_final": {
+    "p5": 189.0,
+    "p10": 189.0,
+    "p90": 192.0,
+    "p95": 192.0,
+    "median": 191.0,
+    "p5_param": 189.0,
+    "p95_param": 192.0,
+    "median_param": 191.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 141588.8,
+    "p10": 141761.7,
+    "p90": 143800.4,
+    "p95": 144183.6,
+    "median": 142963.0,
+    "p5_param": 134293.5,
+    "p95_param": 150402.2,
+    "median_param": 142667.5
+   }
+  }
+ },
+ "Abonnements +20 %": {
+  "plan_id": "e55cb78e-d5ad-4742-b855-6008c4f13a55",
+  "summary": {
+   "sim": {
+    "truck_km": 12077.1,
+    "cleanup_t": 1044.6,
+    "cost_per_t": 2532.0,
+    "households": 48060,
+    "produced_t": 18145.97,
+    "collected_t": 4139.53,
+    "voluntary_t": 3377.21,
+    "wild_dump_t": 13012.35,
+    "laabal_fines": 7692,
+    "coverage_rate": 0.516,
+    "precollected_t": 5567.78,
+    "cost_total_fcfa": 10479682.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 130,
+    "laabal_cleared_t": 1.56,
+    "mass_balance_error": 1.2317740882872697e-15,
+    "overflow_point_days": 16923,
+    "precollectors_dropped": 0,
+    "budget_left_final_fcfa": 3482877.0,
+    "wild_dumps_active_mean": 2624.2,
+    "mean_cleanup_delay_days": 6.2,
+    "subscription_rate_final": 0.4254,
+    "wild_dumps_active_final": 3091,
+    "precollectors_active_final": 192,
+    "precollector_income_mean_fcfa": 161711.0
+   },
+   "vrp": {
+    "km": 419.9,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 18204,
+    "ecart_max": 0.278,
+    "borne_inf_km": 303.3
+   },
+   "diff": {
+    "text": "Aucun changement",
+    "km_delta": 0.0,
+    "coherence": {
+     "km_delta": 0.0,
+     "cout_delta": 0,
+     "couverture_apres": 0.9969,
+     "couverture_avant": 0.9969,
+     "tournees_jaccard": 1.0,
+     "deplacement_max_m": 0.0,
+     "deplacement_moyen_m": 0.0,
+     "points_inchanges_part": 1.0
+    },
+    "cost_delta": 0,
+    "km_delta_pct": 0.0,
+    "points_added": 0,
+    "points_moved": 0,
+    "first_version": false,
+    "points_removed": 0,
+    "routes_changed": 0,
+    "unserved_delta": 0
+   },
+   "ilots": 2872,
+   "notes": [],
+   "km_day": 419.9,
+   "points": 270,
+   "routes": 16,
+   "solver": "ortools",
+   "capacite": {
+    "respectee": false,
+    "points_debordants": [
+     {
+      "point": "CCT-078",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.41
+     },
+     {
+      "point": "CCT-080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.18
+     },
+     {
+      "point": "CCT-084",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.6
+     },
+     {
+      "point": "CCT-086",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 4.1
+     },
+     {
+      "point": "P006",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.61
+     },
+     {
+      "point": "P021",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.0
+     },
+     {
+      "point": "P061",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.97
+     },
+     {
+      "point": "P080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.91
+     },
+     {
+      "point": "P102",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.57
+     },
+     {
+      "point": "P119",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.59
+     },
+     {
+      "point": "P123",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.56
+     },
+     {
+      "point": "P125",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P174",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.81
+     },
+     {
+      "point": "P180",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P189",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.55
+     },
+     {
+      "point": "P219",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P245",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.1
+     },
+     {
+      "point": "P247",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.53
+     }
+    ],
+    "enlevements_semaine": 3.0,
+    "non_collecte_t_semaine": 21.97,
+    "enlevements_semaine_demandes": 2.0
+   },
+   "placement": {
+    "borne": null,
+    "ecart": null,
+    "depart": "k-means",
+    "raison": "CP-SAT sans solution meilleure que le k-means dans le temps imparti",
+    "statut": "repli",
+    "methode": "CP-SAT",
+    "capacite": {
+     "essais": [
+      {
+       "statut": "repli",
+       "enlevements_semaine": 2.0
+      },
+      {
+       "statut": "repli",
+       "enlevements_semaine": 3.0
+      }
+     ],
+     "raison": "CP-SAT n'a pas trouvé, dans le temps imparti, de placement qui tienne dans la capacité : placement pénalisé gardé (des points peuvent déborder)",
+     "contrainte": "non respectée",
+     "enlevements_semaine": 2.0
+    },
+    "duree_ms": 10178,
+    "objectif": null,
+    "candidats": 931,
+    "marche_t_m": null,
+    "objectif_depart": 960196.0,
+    "candidats_routes": 661,
+    "surcharge_t_semaine": null,
+    "demande_hors_marche_t_semaine": null
+   },
+   "dump_sites": 174,
+   "population": 336483,
+   "duration_ms": 549,
+   "cost_day_fcfa": 375345,
+   "coverage_walk": 0.9969,
+   "demand_t_week": 1413.23,
+   "distance_mode": "approx",
+   "trucks_needed": 25,
+   "unserved_points": 172,
+   "vehicles_available": 8,
+   "unserved_t_per_pickup": 314.94,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 12042.395,
+    "p10": 12049.18,
+    "p90": 12088.710000000001,
+    "p95": 12094.54,
+    "median": 12068.1,
+    "p5_param": 12044.095,
+    "p95_param": 12105.645,
+    "median_param": 12070.4
+   },
+   "cleanup_t": {
+    "p5": 1044.52,
+    "p10": 1044.529,
+    "p90": 1044.763,
+    "p95": 1044.7955,
+    "median": 1044.62,
+    "p5_param": 1044.2315,
+    "p95_param": 1046.123,
+    "median_param": 1044.5949999999998
+   },
+   "cost_per_t": {
+    "p5": 2529.6,
+    "p10": 2534.9,
+    "p90": 2567.1,
+    "p95": 2568.55,
+    "median": 2555.5,
+    "p5_param": 2478.15,
+    "p95_param": 2829.8999999999996,
+    "median_param": 2552.5
+   },
+   "households": {
+    "p5": 48060.0,
+    "p10": 48060.0,
+    "p90": 48060.0,
+    "p95": 48060.0,
+    "median": 48060.0,
+    "p5_param": 48060.0,
+    "p95_param": 48060.0,
+    "median_param": 48060.0
+   },
+   "produced_t": {
+    "p5": 18123.325,
+    "p10": 18129.321,
+    "p90": 18193.577,
+    "p95": 18197.7215,
+    "median": 18164.98,
+    "p5_param": 15314.268,
+    "p95_param": 22268.1965,
+    "median_param": 18214.75
+   },
+   "collected_t": {
+    "p5": 4074.8865,
+    "p10": 4077.128,
+    "p90": 4133.9490000000005,
+    "p95": 4143.593,
+    "median": 4100.57,
+    "p5_param": 3705.031,
+    "p95_param": 4228.787,
+    "median_param": 4104.67
+   },
+   "voluntary_t": {
+    "p5": 3305.0625,
+    "p10": 3314.23,
+    "p90": 3372.371,
+    "p95": 3379.723,
+    "median": 3344.29,
+    "p5_param": 2898.914,
+    "p95_param": 3684.4995,
+    "median_param": 3376.915
+   },
+   "wild_dump_t": {
+    "p5": 12996.247000000001,
+    "p10": 13007.359,
+    "p90": 13108.609999999999,
+    "p95": 13120.9145,
+    "median": 13075.525,
+    "p5_param": 10718.368,
+    "p95_param": 16861.5305,
+    "median_param": 13061.435
+   },
+   "laabal_fines": {
+    "p5": 7588.7,
+    "p10": 7608.2,
+    "p90": 7746.1,
+    "p95": 7762.95,
+    "median": 7669.5,
+    "p5_param": 6489.3,
+    "p95_param": 8292.95,
+    "median_param": 7430.0
+   },
+   "coverage_rate": {
+    "p5": 0.511,
+    "p10": 0.5119,
+    "p90": 0.515,
+    "p95": 0.515,
+    "median": 0.513,
+    "p5_param": 0.441,
+    "p95_param": 0.561,
+    "median_param": 0.5075000000000001
+   },
+   "precollected_t": {
+    "p5": 5559.1475,
+    "p10": 5560.085,
+    "p90": 5592.867,
+    "p95": 5598.0655,
+    "median": 5579.84,
+    "p5_param": 5320.954000000001,
+    "p95_param": 5771.2455,
+    "median_param": 5583.54
+   },
+   "cost_total_fcfa": {
+    "p5": 10462734.5,
+    "p10": 10465786.6,
+    "p90": 10487252.7,
+    "p95": 10488518.65,
+    "median": 10474453.5,
+    "p5_param": 10462676.05,
+    "p95_param": 10493393.7,
+    "median_param": 10476799.0
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0,
+    "p5_param": 228.0,
+    "p95_param": 228.0,
+    "median_param": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 115.35,
+    "p10": 118.8,
+    "p90": 137.3,
+    "p95": 141.64999999999998,
+    "median": 129.0,
+    "p5_param": 112.8,
+    "p95_param": 301.84999999999997,
+    "median_param": 145.0
+   },
+   "laabal_cleared_t": {
+    "p5": 0.10800000000000001,
+    "p10": 0.13,
+    "p90": 2.391,
+    "p95": 2.916999999999997,
+    "median": 0.87,
+    "p5_param": 0.1645,
+    "p95_param": 3.2109999999999976,
+    "median_param": 1.165
+   },
+   "mass_balance_error": {
+    "p5": 2.0473996309353666e-16,
+    "p10": 2.0499671488895957e-16,
+    "p90": 1.6587993863780571e-15,
+    "p95": 2.07198009565288e-15,
+    "median": 1.0263738702416713e-15,
+    "p5_param": 1.8088565512549213e-16,
+    "p95_param": 2.149785532188718e-15,
+    "median_param": 8.823233973679534e-16
+   },
+   "overflow_point_days": {
+    "p5": 16944.7,
+    "p10": 16966.0,
+    "p90": 17066.2,
+    "p95": 17080.85,
+    "median": 17008.5,
+    "p5_param": 16334.3,
+    "p95_param": 18268.0,
+    "median_param": 17110.0
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 1.0,
+    "p95": 1.0,
+    "median": 0.0,
+    "p5_param": 0.0,
+    "p95_param": 1.0,
+    "median_param": 0.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 3482877.0,
+    "p10": 3482877.0,
+    "p90": 3482877.0,
+    "p95": 3482877.0,
+    "median": 3482877.0,
+    "p5_param": 3482877.0,
+    "p95_param": 3482877.0,
+    "median_param": 3482877.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 2622.455,
+    "p10": 2624.1299999999997,
+    "p90": 2648.2000000000003,
+    "p95": 2650.955,
+    "median": 2637.7,
+    "p5_param": 2481.74,
+    "p95_param": 2750.7599999999998,
+    "median_param": 2619.9
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 6.045,
+    "p10": 6.1,
+    "p90": 6.8,
+    "p95": 6.8,
+    "median": 6.45,
+    "p5_param": 4.79,
+    "p95_param": 6.8549999999999995,
+    "median_param": 6.199999999999999
+   },
+   "subscription_rate_final": {
+    "p5": 0.42477,
+    "p10": 0.42546,
+    "p90": 0.42993000000000003,
+    "p95": 0.43042,
+    "median": 0.4283,
+    "p5_param": 0.394835,
+    "p95_param": 0.454835,
+    "median_param": 0.42555
+   },
+   "wild_dumps_active_final": {
+    "p5": 3066.25,
+    "p10": 3071.7,
+    "p90": 3101.1,
+    "p95": 3102.55,
+    "median": 3088.0,
+    "p5_param": 3013.15,
+    "p95_param": 3120.2,
+    "median_param": 3087.0
+   },
+   "precollectors_active_final": {
+    "p5": 191.0,
+    "p10": 191.0,
+    "p90": 192.0,
+    "p95": 192.0,
+    "median": 192.0,
+    "p5_param": 191.0,
+    "p95_param": 192.0,
+    "median_param": 192.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 161596.05,
+    "p10": 161684.8,
+    "p90": 163208.5,
+    "p95": 163309.15,
+    "median": 162226.5,
+    "p5_param": 153986.9,
+    "p95_param": 169717.55,
+    "median_param": 162109.0
+   }
+  }
+ },
+ "Budget −30 %": {
+  "plan_id": "5d0bcbae-a2d7-4bb7-bc5a-502d3c3eaf3b",
+  "summary": {
+   "sim": {
+    "truck_km": 8452.0,
+    "cleanup_t": 1044.93,
+    "cost_per_t": 2588.0,
+    "households": 48060,
+    "produced_t": 18145.97,
+    "collected_t": 2835.14,
+    "voluntary_t": 2510.11,
+    "wild_dump_t": 14356.96,
+    "laabal_fines": 7698,
+    "coverage_rate": 0.454,
+    "precollected_t": 5335.49,
+    "cost_total_fcfa": 7338396.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 145,
+    "laabal_cleared_t": 6.91,
+    "mass_balance_error": 1.2317740882872697e-15,
+    "overflow_point_days": 18863,
+    "precollectors_dropped": 1,
+    "budget_left_final_fcfa": 2438014.0,
+    "wild_dumps_active_mean": 2760.6,
+    "mean_cleanup_delay_days": 6.7,
+    "subscription_rate_final": 0.3955,
+    "wild_dumps_active_final": 3134,
+    "precollectors_active_final": 191,
+    "precollector_income_mean_fcfa": 146953.0
+   },
+   "vrp": {
+    "km": 419.9,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 18204,
+    "ecart_max": 0.278,
+    "borne_inf_km": 303.3
+   },
+   "diff": {
+    "text": "Aucun changement",
+    "km_delta": 0.0,
+    "coherence": {
+     "km_delta": 0.0,
+     "cout_delta": 0,
+     "couverture_apres": 0.9969,
+     "couverture_avant": 0.9969,
+     "tournees_jaccard": 1.0,
+     "deplacement_max_m": 0.0,
+     "deplacement_moyen_m": 0.0,
+     "points_inchanges_part": 1.0
+    },
+    "cost_delta": 0,
+    "km_delta_pct": 0.0,
+    "points_added": 0,
+    "points_moved": 0,
+    "first_version": false,
+    "points_removed": 0,
+    "routes_changed": 0,
+    "unserved_delta": 0
+   },
+   "ilots": 2872,
+   "notes": [],
+   "km_day": 419.9,
+   "points": 270,
+   "routes": 16,
+   "solver": "ortools",
+   "capacite": {
+    "respectee": false,
+    "points_debordants": [
+     {
+      "point": "CCT-078",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.41
+     },
+     {
+      "point": "CCT-080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.18
+     },
+     {
+      "point": "CCT-084",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.6
+     },
+     {
+      "point": "CCT-086",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 4.1
+     },
+     {
+      "point": "P006",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.61
+     },
+     {
+      "point": "P021",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.0
+     },
+     {
+      "point": "P061",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.97
+     },
+     {
+      "point": "P080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.91
+     },
+     {
+      "point": "P102",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.57
+     },
+     {
+      "point": "P119",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.59
+     },
+     {
+      "point": "P123",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.56
+     },
+     {
+      "point": "P125",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P174",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.81
+     },
+     {
+      "point": "P180",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P189",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.55
+     },
+     {
+      "point": "P219",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.58
+     },
+     {
+      "point": "P245",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.1
+     },
+     {
+      "point": "P247",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.53
+     }
+    ],
+    "enlevements_semaine": 3.0,
+    "non_collecte_t_semaine": 21.97,
+    "enlevements_semaine_demandes": 2.0
+   },
+   "placement": {
+    "borne": null,
+    "ecart": null,
+    "depart": "k-means",
+    "raison": "CP-SAT sans solution meilleure que le k-means dans le temps imparti",
+    "statut": "repli",
+    "methode": "CP-SAT",
+    "capacite": {
+     "essais": [
+      {
+       "statut": "repli",
+       "enlevements_semaine": 2.0
+      },
+      {
+       "statut": "repli",
+       "enlevements_semaine": 3.0
+      }
+     ],
+     "raison": "CP-SAT n'a pas trouvé, dans le temps imparti, de placement qui tienne dans la capacité : placement pénalisé gardé (des points peuvent déborder)",
+     "contrainte": "non respectée",
+     "enlevements_semaine": 2.0
+    },
+    "duree_ms": 10178,
+    "objectif": null,
+    "candidats": 931,
+    "marche_t_m": null,
+    "objectif_depart": 960196.0,
+    "candidats_routes": 661,
+    "surcharge_t_semaine": null,
+    "demande_hors_marche_t_semaine": null
+   },
+   "dump_sites": 174,
+   "population": 336483,
+   "duration_ms": 555,
+   "cost_day_fcfa": 375345,
+   "coverage_walk": 0.9969,
+   "demand_t_week": 1413.23,
+   "distance_mode": "approx",
+   "trucks_needed": 25,
+   "unserved_points": 172,
+   "vehicles_available": 8,
+   "unserved_t_per_pickup": 314.94,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 8429.72,
+    "p10": 8432.31,
+    "p90": 8458.13,
+    "p95": 8461.72,
+    "median": 8440.9,
+    "p5_param": 8422.5,
+    "p95_param": 8452.724999999999,
+    "median_param": 8439.95
+   },
+   "cleanup_t": {
+    "p5": 1044.709,
+    "p10": 1044.72,
+    "p90": 1045.091,
+    "p95": 1045.1,
+    "median": 1044.865,
+    "p5_param": 1044.3025,
+    "p95_param": 1046.5455,
+    "median_param": 1044.83
+   },
+   "cost_per_t": {
+    "p5": 2570.0,
+    "p10": 2572.7,
+    "p90": 2608.1,
+    "p95": 2613.95,
+    "median": 2592.5,
+    "p5_param": 2514.8,
+    "p95_param": 2820.65,
+    "median_param": 2589.5
+   },
+   "households": {
+    "p5": 48060.0,
+    "p10": 48060.0,
+    "p90": 48060.0,
+    "p95": 48060.0,
+    "median": 48060.0,
+    "p5_param": 48060.0,
+    "p95_param": 48060.0,
+    "median_param": 48060.0
+   },
+   "produced_t": {
+    "p5": 18123.325,
+    "p10": 18129.321,
+    "p90": 18193.577,
+    "p95": 18197.7215,
+    "median": 18164.98,
+    "p5_param": 15314.268,
+    "p95_param": 22268.1965,
+    "median_param": 18214.75
+   },
+   "collected_t": {
+    "p5": 2803.0565,
+    "p10": 2812.3399999999997,
+    "p90": 2852.074,
+    "p95": 2855.239,
+    "median": 2830.6,
+    "p5_param": 2597.3819999999996,
+    "p95_param": 2917.613,
+    "median_param": 2832.005
+   },
+   "voluntary_t": {
+    "p5": 2473.0155,
+    "p10": 2475.184,
+    "p90": 2514.206,
+    "p95": 2519.2385,
+    "median": 2490.73,
+    "p5_param": 2230.8355,
+    "p95_param": 2720.5029999999997,
+    "median_param": 2517.815
+   },
+   "wild_dump_t": {
+    "p5": 14344.717,
+    "p10": 14349.628,
+    "p90": 14406.41,
+    "p95": 14421.7085,
+    "median": 14377.79,
+    "p5_param": 11858.1415,
+    "p95_param": 18194.5355,
+    "median_param": 14338.015
+   },
+   "laabal_fines": {
+    "p5": 7566.45,
+    "p10": 7592.2,
+    "p90": 7816.4,
+    "p95": 7849.15,
+    "median": 7679.0,
+    "p5_param": 6403.9,
+    "p95_param": 8429.4,
+    "median_param": 7424.0
+   },
+   "coverage_rate": {
+    "p5": 0.45,
+    "p10": 0.4509,
+    "p90": 0.454,
+    "p95": 0.45455,
+    "median": 0.452,
+    "p5_param": 0.39265,
+    "p95_param": 0.48955,
+    "median_param": 0.4465
+   },
+   "precollected_t": {
+    "p5": 5307.6635,
+    "p10": 5316.643,
+    "p90": 5356.093,
+    "p95": 5370.439,
+    "median": 5337.0599999999995,
+    "p5_param": 4981.756,
+    "p95_param": 5623.360000000001,
+    "median_param": 5335.799999999999
+   },
+   "cost_total_fcfa": {
+    "p5": 7327510.5,
+    "p10": 7328638.3,
+    "p90": 7342116.6,
+    "p95": 7343243.05,
+    "median": 7335260.0,
+    "p5_param": 7325871.15,
+    "p95_param": 7343774.8,
+    "median_param": 7331935.0
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0,
+    "p5_param": 228.0,
+    "p95_param": 228.0,
+    "median_param": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 120.9,
+    "p10": 122.9,
+    "p90": 148.1,
+    "p95": 150.1,
+    "median": 141.0,
+    "p5_param": 121.45,
+    "p95_param": 278.1,
+    "median_param": 150.5
+   },
+   "laabal_cleared_t": {
+    "p5": 1.9195,
+    "p10": 2.612,
+    "p90": 8.033,
+    "p95": 8.115,
+    "median": 5.4350000000000005,
+    "p5_param": 1.8315000000000001,
+    "p95_param": 8.222499999999993,
+    "median_param": 4.925
+   },
+   "mass_balance_error": {
+    "p5": 9.214319763182499e-17,
+    "p10": 2.0499671488895957e-16,
+    "p90": 1.6587993863780571e-15,
+    "p95": 2.073791045942037e-15,
+    "median": 1.024087483678717e-15,
+    "p5_param": 9.43106184579033e-17,
+    "p95_param": 2.149785532188718e-15,
+    "median_param": 9.2821612887521e-16
+   },
+   "overflow_point_days": {
+    "p5": 18855.25,
+    "p10": 18874.4,
+    "p90": 18953.2,
+    "p95": 18955.0,
+    "median": 18924.0,
+    "p5_param": 18351.8,
+    "p95_param": 19845.1,
+    "median_param": 19032.5
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 3.0,
+    "p95": 3.0,
+    "median": 1.0,
+    "p5_param": 0.0,
+    "p95_param": 2.0,
+    "median_param": 1.5
+   },
+   "budget_left_final_fcfa": {
+    "p5": 2438014.0,
+    "p10": 2438014.0,
+    "p90": 2438014.0,
+    "p95": 2438014.0,
+    "median": 2438014.0,
+    "p5_param": 2438014.0,
+    "p95_param": 2438014.0,
+    "median_param": 2438014.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 2761.69,
+    "p10": 2761.8,
+    "p90": 2769.4500000000003,
+    "p95": 2771.2200000000003,
+    "median": 2764.5,
+    "p5_param": 2701.04,
+    "p95_param": 2827.72,
+    "median_param": 2759.35
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 6.445,
+    "p10": 6.5,
+    "p90": 7.1,
+    "p95": 7.154999999999999,
+    "median": 6.9,
+    "p5_param": 5.345,
+    "p95_param": 7.3199999999999985,
+    "median_param": 6.35
+   },
+   "subscription_rate_final": {
+    "p5": 0.395145,
+    "p10": 0.39537999999999995,
+    "p90": 0.39943,
+    "p95": 0.40025,
+    "median": 0.39725,
+    "p5_param": 0.367015,
+    "p95_param": 0.4219,
+    "median_param": 0.39444999999999997
+   },
+   "wild_dumps_active_final": {
+    "p5": 3132.45,
+    "p10": 3133.0,
+    "p90": 3138.0,
+    "p95": 3138.0,
+    "median": 3135.5,
+    "p5_param": 3131.45,
+    "p95_param": 3138.0,
+    "median_param": 3135.0
+   },
+   "precollectors_active_final": {
+    "p5": 189.0,
+    "p10": 189.0,
+    "p90": 192.0,
+    "p95": 192.0,
+    "median": 191.0,
+    "p5_param": 190.0,
+    "p95_param": 192.0,
+    "median_param": 190.5
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 146317.05,
+    "p10": 146604.9,
+    "p90": 148858.2,
+    "p95": 149046.7,
+    "median": 147809.0,
+    "p5_param": 139110.3,
+    "p95_param": 154364.3,
+    "median_param": 147217.0
+   }
+  }
+ },
+ "Pluies + 2 camions en panne": {
+  "plan_id": "cbd650da-65c9-4f50-8708-7fa683d4beb1",
+  "summary": {
+   "sim": {
+    "truck_km": 12694.1,
+    "cleanup_t": 1046.28,
+    "cost_per_t": 2621.0,
+    "households": 48060,
+    "produced_t": 20867.87,
+    "collected_t": 3996.8,
+    "voluntary_t": 3313.99,
+    "wild_dump_t": 16021.5,
+    "laabal_fines": 8785,
+    "coverage_rate": 0.451,
+    "precollected_t": 5514.74,
+    "cost_total_fcfa": 10477360.0,
+    "laabal_controls": 228,
+    "recurring_dumps": 165,
+    "laabal_cleared_t": 1.77,
+    "mass_balance_error": 1.7851798380974935e-15,
+    "overflow_point_days": 17539,
+    "precollectors_dropped": 1,
+    "budget_left_final_fcfa": 3482877.0,
+    "wild_dumps_active_mean": 2488.9,
+    "mean_cleanup_delay_days": 5.6,
+    "subscription_rate_final": 0.3795,
+    "wild_dumps_active_final": 2790,
+    "precollectors_active_final": 191,
+    "precollector_income_mean_fcfa": 142500.0
+   },
+   "vrp": {
+    "km": 359.5,
+    "note": "écart à une borne inférieure garantie mais faible : l'écart réel est plus petit (meilleure solution connue : docs/BENCHMARK_TOURNEES.md)",
+    "solveur": "ortools",
+    "duree_ms": 19996,
+    "ecart_max": 0.246,
+    "borne_inf_km": 271.0
+   },
+   "diff": {
+    "text": "12 tournées refaites, +15 points non desservis, -26 % de km",
+    "km_delta": -123.1,
+    "coherence": {
+     "km_delta": -123.1,
+     "cout_delta": -94888,
+     "couverture_apres": 0.9969,
+     "couverture_avant": 0.9969,
+     "tournees_jaccard": 0.031,
+     "deplacement_max_m": 0.0,
+     "deplacement_moyen_m": 0.0,
+     "points_inchanges_part": 1.0
+    },
+    "cost_delta": -94888,
+    "km_delta_pct": -25.5,
+    "points_added": 0,
+    "points_moved": 0,
+    "first_version": false,
+    "points_removed": 0,
+    "routes_changed": 12,
+    "unserved_delta": 15
+   },
+   "ilots": 2872,
+   "notes": [],
+   "km_day": 359.5,
+   "points": 270,
+   "routes": 12,
+   "solver": "ortools",
+   "capacite": {
+    "respectee": false,
+    "points_debordants": [
+     {
+      "point": "CCT-078",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.92
+     },
+     {
+      "point": "CCT-080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.65
+     },
+     {
+      "point": "CCT-084",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 4.14
+     },
+     {
+      "point": "CCT-086",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 4.71
+     },
+     {
+      "point": "P006",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.01
+     },
+     {
+      "point": "P007",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.51
+     },
+     {
+      "point": "P017",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.52
+     },
+     {
+      "point": "P018",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.52
+     },
+     {
+      "point": "P020",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.85
+     },
+     {
+      "point": "P021",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.45
+     },
+     {
+      "point": "P022",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P024",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.53
+     },
+     {
+      "point": "P025",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.53
+     },
+     {
+      "point": "P032",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.59
+     },
+     {
+      "point": "P038",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.84
+     },
+     {
+      "point": "P042",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.65
+     },
+     {
+      "point": "P045",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.85
+     },
+     {
+      "point": "P047",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.69
+     },
+     {
+      "point": "P053",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.75
+     },
+     {
+      "point": "P054",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.63
+     },
+     {
+      "point": "P061",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.42
+     },
+     {
+      "point": "P066",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.86
+     },
+     {
+      "point": "P067",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.59
+     },
+     {
+      "point": "P072",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.67
+     },
+     {
+      "point": "P080",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.35
+     },
+     {
+      "point": "P092",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P101",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.65
+     },
+     {
+      "point": "P102",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.96
+     },
+     {
+      "point": "P104",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.57
+     },
+     {
+      "point": "P118",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.62
+     },
+     {
+      "point": "P119",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.98
+     },
+     {
+      "point": "P123",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.94
+     },
+     {
+      "point": "P125",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.09
+     },
+     {
+      "point": "P133",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.72
+     },
+     {
+      "point": "P150",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.87
+     },
+     {
+      "point": "P159",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.54
+     },
+     {
+      "point": "P166",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.69
+     },
+     {
+      "point": "P174",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.23
+     },
+     {
+      "point": "P179",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.67
+     },
+     {
+      "point": "P180",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.97
+     },
+     {
+      "point": "P188",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.86
+     },
+     {
+      "point": "P189",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.93
+     },
+     {
+      "point": "P190",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.51
+     },
+     {
+      "point": "P194",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.68
+     },
+     {
+      "point": "P201",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.69
+     },
+     {
+      "point": "P219",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.96
+     },
+     {
+      "point": "P220",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.54
+     },
+     {
+      "point": "P245",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 3.56
+     },
+     {
+      "point": "P247",
+      "capacite_t": 2.5,
+      "demande_par_enlevement_t": 2.91
+     }
+    ],
+    "enlevements_semaine": 3.0,
+    "non_collecte_t_semaine": 60.69,
+    "enlevements_semaine_demandes": 2.0
+   },
+   "placement": {
+    "borne": null,
+    "ecart": null,
+    "depart": "k-means",
+    "raison": "CP-SAT sans solution meilleure que le k-means dans le temps imparti",
+    "statut": "repli",
+    "methode": "CP-SAT",
+    "capacite": {
+     "essais": [
+      {
+       "statut": "repli",
+       "enlevements_semaine": 2.0
+      },
+      {
+       "statut": "repli",
+       "enlevements_semaine": 3.0
+      }
+     ],
+     "raison": "CP-SAT n'a pas trouvé, dans le temps imparti, de placement qui tienne dans la capacité : placement pénalisé gardé (des points peuvent déborder)",
+     "contrainte": "non respectée",
+     "enlevements_semaine": 2.0
+    },
+    "duree_ms": 10178,
+    "objectif": null,
+    "candidats": 931,
+    "marche_t_m": null,
+    "objectif_depart": 960196.0,
+    "candidats_routes": 661,
+    "surcharge_t_semaine": null,
+    "demande_hors_marche_t_semaine": null
+   },
+   "dump_sites": 174,
+   "population": 336483,
+   "duration_ms": 20894,
+   "cost_day_fcfa": 310259,
+   "coverage_walk": 0.9969,
+   "demand_t_week": 1625.21,
+   "distance_mode": "approx",
+   "trucks_needed": 27,
+   "unserved_points": 194,
+   "vehicles_available": 6,
+   "unserved_t_per_pickup": 403.34,
+   "points_constraint_relaxed": 0
+  },
+  "sim": {
+   "truck_km": {
+    "p5": 12639.519999999999,
+    "p10": 12653.470000000001,
+    "p90": 12717.0,
+    "p95": 12723.949999999999,
+    "median": 12676.75,
+    "p5_param": 12617.935,
+    "p95_param": 12711.56,
+    "median_param": 12667.2
+   },
+   "cleanup_t": {
+    "p5": 1045.8410000000001,
+    "p10": 1045.994,
+    "p90": 1046.597,
+    "p95": 1046.671,
+    "median": 1046.38,
+    "p5_param": 1044.9735,
+    "p95_param": 1051.451,
+    "median_param": 1046.32
+   },
+   "cost_per_t": {
+    "p5": 2606.25,
+    "p10": 2609.9,
+    "p90": 2627.0,
+    "p95": 2629.75,
+    "median": 2621.0,
+    "p5_param": 2546.8,
+    "p95_param": 2936.6,
+    "median_param": 2619.5
+   },
+   "households": {
+    "p5": 48060.0,
+    "p10": 48060.0,
+    "p90": 48060.0,
+    "p95": 48060.0,
+    "median": 48060.0,
+    "p5_param": 48060.0,
+    "p95_param": 48060.0,
+    "median_param": 48060.0
+   },
+   "produced_t": {
+    "p5": 20841.827,
+    "p10": 20848.712000000003,
+    "p90": 20922.611999999997,
+    "p95": 20927.3835,
+    "median": 20889.730000000003,
+    "p5_param": 17611.4115,
+    "p95_param": 25608.427999999996,
+    "median_param": 20946.97
+   },
+   "collected_t": {
+    "p5": 3982.95,
+    "p10": 3992.547,
+    "p90": 4023.95,
+    "p95": 4025.852,
+    "median": 4002.3,
+    "p5_param": 3571.0215,
+    "p95_param": 4111.735,
+    "median_param": 3999.34
+   },
+   "voluntary_t": {
+    "p5": 3296.8245,
+    "p10": 3306.8030000000003,
+    "p90": 3381.221,
+    "p95": 3384.391,
+    "median": 3337.0299999999997,
+    "p5_param": 2874.254,
+    "p95_param": 3627.034,
+    "median_param": 3365.3149999999996
+   },
+   "wild_dump_t": {
+    "p5": 15965.723,
+    "p10": 15971.582,
+    "p90": 16061.807,
+    "p95": 16066.459499999999,
+    "median": 16005.43,
+    "p5_param": 13259.2845,
+    "p95_param": 20471.4215,
+    "median_param": 16038.445
+   },
+   "laabal_fines": {
+    "p5": 8708.0,
+    "p10": 8722.4,
+    "p90": 8887.1,
+    "p95": 8906.0,
+    "median": 8831.0,
+    "p5_param": 8093.2,
+    "p95_param": 9269.1,
+    "median_param": 8630.5
+   },
+   "coverage_rate": {
+    "p5": 0.45,
+    "p10": 0.45,
+    "p90": 0.453,
+    "p95": 0.453,
+    "median": 0.451,
+    "p5_param": 0.38855,
+    "p95_param": 0.4911,
+    "median_param": 0.4465
+   },
+   "precollected_t": {
+    "p5": 5502.0895,
+    "p10": 5504.978,
+    "p90": 5545.898,
+    "p95": 5552.4035,
+    "median": 5526.299999999999,
+    "p5_param": 5265.6145,
+    "p95_param": 5733.7294999999995,
+    "median_param": 5528.1900000000005
+   },
+   "cost_total_fcfa": {
+    "p5": 10461499.1,
+    "p10": 10471748.4,
+    "p90": 10521656.2,
+    "p95": 10525608.55,
+    "median": 10485909.5,
+    "p5_param": 10434324.9,
+    "p95_param": 10508034.25,
+    "median_param": 10479514.0
+   },
+   "laabal_controls": {
+    "p5": 228.0,
+    "p10": 228.0,
+    "p90": 228.0,
+    "p95": 228.0,
+    "median": 228.0,
+    "p5_param": 228.0,
+    "p95_param": 228.0,
+    "median_param": 228.0
+   },
+   "recurring_dumps": {
+    "p5": 137.9,
+    "p10": 139.9,
+    "p90": 167.0,
+    "p95": 168.1,
+    "median": 157.5,
+    "p5_param": 126.35,
+    "p95_param": 280.0999999999999,
+    "median_param": 161.0
+   },
+   "laabal_cleared_t": {
+    "p5": 0.0,
+    "p10": 0.01800000000000001,
+    "p90": 2.0020000000000024,
+    "p95": 3.6269999999999993,
+    "median": 0.06,
+    "p5_param": 0.009000000000000005,
+    "p95_param": 3.5134999999999996,
+    "median_param": 0.10500000000000001
+   },
+   "mass_balance_error": {
+    "p5": 8.027485051354295e-17,
+    "p10": 1.7852460015153658e-16,
+    "p90": 1.4247016394470235e-15,
+    "p95": 1.427593804826712e-15,
+    "median": 8.90238928476184e-16,
+    "p5_param": 8.215413963635075e-17,
+    "p95_param": 2.2666598447716094e-15,
+    "median_param": 7.416917891384645e-16
+   },
+   "overflow_point_days": {
+    "p5": 17482.7,
+    "p10": 17487.8,
+    "p90": 17575.4,
+    "p95": 17592.75,
+    "median": 17523.0,
+    "p5_param": 17083.15,
+    "p95_param": 18613.85,
+    "median_param": 17638.5
+   },
+   "precollectors_dropped": {
+    "p5": 0.0,
+    "p10": 0.0,
+    "p90": 2.1000000000000014,
+    "p95": 3.0,
+    "median": 1.5,
+    "p5_param": 0.0,
+    "p95_param": 3.0,
+    "median_param": 1.0
+   },
+   "budget_left_final_fcfa": {
+    "p5": 3482877.0,
+    "p10": 3482877.0,
+    "p90": 3482877.0,
+    "p95": 3482877.0,
+    "median": 3482877.0,
+    "p5_param": 3482877.0,
+    "p95_param": 3482877.0,
+    "median_param": 3482877.0
+   },
+   "wild_dumps_active_mean": {
+    "p5": 2473.36,
+    "p10": 2479.02,
+    "p90": 2544.97,
+    "p95": 2555.5950000000003,
+    "median": 2507.75,
+    "p5_param": 2385.97,
+    "p95_param": 2692.525,
+    "median_param": 2479.75
+   },
+   "mean_cleanup_delay_days": {
+    "p5": 5.2,
+    "p10": 5.29,
+    "p90": 6.1,
+    "p95": 6.154999999999999,
+    "median": 5.6,
+    "p5_param": 3.645,
+    "p95_param": 7.0,
+    "median_param": 5.6
+   },
+   "subscription_rate_final": {
+    "p5": 0.37615,
+    "p10": 0.37688,
+    "p90": 0.38072,
+    "p95": 0.3809,
+    "median": 0.3791,
+    "p5_param": 0.347535,
+    "p95_param": 0.404385,
+    "median_param": 0.3764
+   },
+   "wild_dumps_active_final": {
+    "p5": 2750.6,
+    "p10": 2757.7,
+    "p90": 2855.8,
+    "p95": 2878.95,
+    "median": 2811.0,
+    "p5_param": 2674.2,
+    "p95_param": 2978.65,
+    "median_param": 2794.5
+   },
+   "precollectors_active_final": {
+    "p5": 189.0,
+    "p10": 189.9,
+    "p90": 192.0,
+    "p95": 192.0,
+    "median": 190.5,
+    "p5_param": 189.0,
+    "p95_param": 192.0,
+    "median_param": 191.0
+   },
+   "precollector_income_mean_fcfa": {
+    "p5": 141912.4,
+    "p10": 142030.8,
+    "p90": 144024.0,
+    "p95": 144032.8,
+    "median": 142851.5,
+    "p5_param": 134443.25,
+    "p95_param": 150542.65,
+    "median_param": 141799.5
+   }
+  }
+ }
+}

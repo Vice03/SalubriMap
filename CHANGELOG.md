@@ -1,5 +1,10 @@
 # Journal des versions
 
+## Non publié
+
+- Salubri Go : guide vocal pour les non-lecteurs (langue français/mooré au lancement, signalement pas à pas à la voix, boutons qui brillent, voix françaises générées ; voix mooré à enregistrer, liste dans `docs/AUDIO_GO.md`).
+- Dossier `livrable/` : les six livrables du défi, reconstruits par `scripts/livrable.py` (vérifié en CI) ; choix G du lanceur et `run/livrable` l'ouvrent.
+
 ## 0.5.0 — 18 novembre 2026
 
 - Comparer des implantations de la ville entière : six variantes prêtes (base, bacs à 200 m / 400 m, gros bacs, 3 enlèvements, équipes 6 h – 14 h) calculées en arrière-plan avec la flotte choisie ; cas personnalisé avec ville entière, flotte et réglages d'implantation ; lignes de coûts dans le tableau ; mini-carte de chaque cas.
