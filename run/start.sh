@@ -9,7 +9,7 @@ if [ ! -s data/osm/ouaga.osm.pbf ] && command -v osmium >/dev/null 2>&1 && curl 
   read -r rep
   case "$rep" in o|O|oui) sh scripts/prepare_osm_extract.sh || echo "Téléchargement impossible : ville synthétique.";; esac
 fi
-# Hors démonstration (défaut) : secrets et mot de passe du premier admin générés une fois dans .env
+# Hors démonstration (SALUBRI_DEMO_MODE=false dans .env) : secrets générés une fois dans .env
 sh "$(dirname "$0")/secrets.sh" || exit 1
 # Les interfaces sont construites dans l'image Docker « web » : pas besoin de Node ici.
 PROFILES=""
@@ -43,7 +43,11 @@ until curl -fs "$URL/api/health" >/dev/null 2>&1; do
   printf "."; sleep 2
 done
 echo; echo "Salubri est prêt : $URL  (Salubri Go : $URL/go/ , API : $URL/api/docs)"
-grep -E "^SALUBRI_BOOTSTRAP_ADMIN_PASSWORD=" .env 2>/dev/null | tail -n 1 | sed 's/^SALUBRI_BOOTSTRAP_ADMIN_PASSWORD=/Connexion mairie : identifiant admin, mot de passe /'
+if grep -q '^SALUBRI_DEMO_MODE=false' .env 2>/dev/null; then
+  echo "Connexion : mot de passe admin généré au premier lancement, relisible dans .env (SALUBRI_BOOTSTRAP_ADMIN_PASSWORD)."
+else
+  echo "Comptes démo : admin / Salubri2026 (administrateur) ou demo / ouaga2026."
+fi
 # Adresse(s) du serveur pour l'application Android (même réseau Wi-Fi)
 IPS=$( (hostname -I 2>/dev/null | tr ' ' '\n'; ifconfig 2>/dev/null | awk '/inet /{print $2}') | grep -E '^(10\.|172\.(1[6-9]|2[0-9]|3[01])\.|192\.168\.)' | grep -v '^172\.17\.' | sort -u)
 PSUF=""; [ "$WEBP" = 80 ] || PSUF=":$WEBP"
