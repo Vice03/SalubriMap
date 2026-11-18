@@ -17,8 +17,9 @@ Salubri est un outil libre d'aide à la décision, du signalement des dépotoirs
    - Démo (choix 1) : signalements simulés à partir du SDGD 2020. Complète (choix 2) : données de référence seules, aucun signalement fictif.
    - Purger à la demande (garde la référence) : choix **P** du menu, ou `python -m salubri_api.purge signalements` (taper PURGER, ou `--oui`).
 3. Ouvrir **http://localhost** (Salubri Map) et **http://localhost/go/** (Salubri Go, téléphone).
-4. Se connecter en haut à droite : `demo` / `ouaga2026` (mode démonstration).
-5. En cas de souci : `run/doctor` dit ce qui manque (Docker, ports, disque) et quelle carte sera utilisée.
+4. Se connecter en haut à droite : `demo` / `ouaga2026` (mode démonstration ; le badge « Mode démonstration » n'apparaît que pour ce compte public). Compte à soi, sans badge : `docker compose exec api python -m salubri_api.users add <login> --role admin` (le mot de passe est demandé au clavier), puis `... users disable demo` pour retirer le compte public.
+5. Application Android de Salubri Go (APK, mêmes fonctions que le PWA) : artefact **salubri-go-apk** du workflow GitHub « Android », ou construction locale (voir [`apps/go/README.md`](apps/go/README.md)). Au premier lancement, saisir l'adresse du serveur affichée par `run/start` (« Sur le téléphone, adresse du serveur : http://192.168.x.x »), même Wi-Fi que l'ordinateur ; le pare-feu doit laisser entrer le port 80 (commande PowerShell affichée par `run/start`).
+6. En cas de souci : `run/doctor` dit ce qui manque (Docker, ports, disque) et quelle carte sera utilisée.
 
 Premier démarrage : construction des images puis chargement de la ville (le job CI « stack » chronomètre un clone neuf et l'affiche dans son résumé). Ensuite, aucun accès Internet n'est nécessaire.
 

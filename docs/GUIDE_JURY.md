@@ -163,7 +163,8 @@ le trouve tout seul.
 
 ## 6. Repères
 
-- Comptes : **demo** / **ouaga2026** (administrateur, mode démonstration seulement). Hors démonstration
+- Comptes : **demo** / **ouaga2026** (administrateur, mode démonstration seulement ; c'est lui qui affiche le badge « Mode démonstration »). Compte personnel : `docker compose exec api python -m salubri_api.users add <login> --role admin`.
+- Application Android : l'APK de Salubri Go se télécharge dans GitHub (Actions, artefact `salubri-go-apk`) ; au premier lancement, taper l'adresse du serveur affichée par `run/start` (même Wi-Fi). Détails : `apps/go/README.md`. Hors démonstration
   (`SALUBRI_DEMO_MODE=false`), des secrets aléatoires sont créés au premier démarrage et un admin se crée avec
   `run\admin <login>`.
 - Adresses : Salubri Map `http://localhost/` · Salubri Go `http://localhost/go/` · API `http://localhost/api/docs`.
