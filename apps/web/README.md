@@ -4,7 +4,7 @@ Tableau de bord de la mairie : carte, signalements et modération, import du jeu
 
 ```bash
 pnpm install                 # à la racine du dépôt
-pnpm --filter web dev        # http://localhost:5173 (l'API doit tourner sur http://localhost:8000)
+pnpm --filter web dev        # http://localhost:5173 (l'API doit tourner sur http://localhost:8000 : `docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d`)
 pnpm --filter web build      # produit apps/web/dist, servi par nginx sur http://localhost
 ```
 

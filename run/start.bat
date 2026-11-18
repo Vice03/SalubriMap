@@ -13,7 +13,15 @@ if errorlevel 1 (
 )
 rem Diagnostic (ports, disque, carte) : affiche un ECHEC lisible ; Docker est deja verifie ci-dessus
 call "%~dp0doctor.bat"
+if errorlevel 2 (
+  echo.
+  echo Un port web est deja utilise : voir ci-dessus ^(netstat -ano ^| findstr :PORT^), puis relancez.
+  pause & exit /b 1
+)
 if errorlevel 1 echo Attention : un point du diagnostic est en ECHEC ci-dessus, le demarrage peut echouer.
+set "WEBP=80"
+for /f "tokens=2 delims==" %%a in ('findstr /b /c:"WEB_PORT=" ".env" 2^>nul') do set "WEBP=%%a"
+if "%WEBP%"=="80" ( set "URL=http://localhost" & set "LOC=http://127.0.0.1" ) else ( set "URL=http://localhost:%WEBP%" & set "LOC=http://127.0.0.1:%WEBP%" )
 rem Les interfaces (apps/web, apps/go) sont construites dans l'image Docker "web" : pas besoin de Node ici.
 rem Hors demonstration (SALUBRI_DEMO_MODE=false dans .env) : secrets generes une fois dans .env
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0secrets.ps1"
@@ -44,14 +52,14 @@ echo Attente de l'API...
 set /a n=0
 :wait
 set /a n+=1
-if %n% equ 15 echo (si http://localhost s ouvre deja dans le navigateur, Salubri tourne : vous pouvez fermer cette fenetre)
+if %n% equ 15 echo (si %URL% s ouvre deja dans le navigateur, Salubri tourne : vous pouvez fermer cette fenetre)
 if %n% gtr 120 (
   echo L'API ne repond pas : docker compose logs api seed
   pause & exit /b 1
 )
 rem curl.exe (inclus dans Windows 10+) sur 127.0.0.1 sans proxy : PowerShell passait par le proxy systeme / IPv6 et ne voyait jamais l API
-curl.exe -s -f -o nul -m 3 --noproxy "*" http://127.0.0.1/api/health >nul 2>nul || powershell -NoProfile -Command "try { (Invoke-WebRequest -UseBasicParsing http://127.0.0.1/api/health -TimeoutSec 3) | Out-Null; exit 0 } catch { exit 1 }"
+curl.exe -s -f -o nul -m 3 --noproxy "*" %LOC%/api/health >nul 2>nul || powershell -NoProfile -Command "try { (Invoke-WebRequest -UseBasicParsing %LOC%/api/health -TimeoutSec 3) | Out-Null; exit 0 } catch { exit 1 }"
 if errorlevel 1 ( timeout /t 2 /nobreak >nul & goto wait )
-echo Salubri est pret : http://localhost   (Salubri Go : http://localhost/go/ , API : http://localhost/api/docs)
+echo Salubri est pret : %URL%   (Salubri Go : %URL%/go/ , API : %URL%/api/docs)
 echo Compte de demonstration (SALUBRI_DEMO_MODE=true) : demo / ouaga2026. Production : voir .env.example
-start "" http://localhost
+start "" %URL%

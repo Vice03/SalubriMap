@@ -1,0 +1,11 @@
+# SPDX-License-Identifier: AGPL-3.0-or-later
+# Développement seulement (désactivé par défaut) : publie la base, l'API et Ollama sur la machine, en 127.0.0.1.
+#   docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+# Ports choisis par variables (fichier .env) pour ne pas heurter un PostgreSQL ou un Ollama déjà installés.
+services:
+  db:
+    ports: ["127.0.0.1:${SALUBRI_DB_PORT:-5433}:5432"]
+  api:
+    ports: ["127.0.0.1:${SALUBRI_API_PORT:-8000}:8000"]
+  ollama:
+    ports: ["127.0.0.1:${SALUBRI_OLLAMA_PORT:-11435}:11434"]

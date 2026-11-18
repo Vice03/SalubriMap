@@ -9,10 +9,19 @@ if command -v docker >/dev/null 2>&1; then
   else say "Docker" "ÉCHEC : installé mais arrêté — démarrez Docker Desktop"; ok=1; fi
 else say "Docker" "ÉCHEC : absent — https://docs.docker.com/get-docker/"; ok=1; fi
 mine=$(docker compose ps -q web 2>/dev/null)
-for p in ${WEB_PORT:-80} ${WEB_TLS_PORT:-8443}; do
+# ports web lus dans .env (seuls ports publiés ; la base, l'API et Ollama restent sur le réseau interne de Docker)
+envv() { v=$(grep -E "^$1=" .env 2>/dev/null | tail -1 | cut -d= -f2-); echo "${v:-$2}"; }
+portbad=0
+for spec in "$(envv WEB_PORT 80):WEB_PORT:8080" "$(envv WEB_TLS_PORT 8443):WEB_TLS_PORT:9443"; do
+  p=${spec%%:*}; rest=${spec#*:}; var=${rest%%:*}; alt=${rest#*:}
   if (command -v ss >/dev/null && ss -ltn "sport = :$p" | grep -q LISTEN) || (command -v lsof >/dev/null && lsof -iTCP:"$p" -sTCP:LISTEN >/dev/null 2>&1); then
     if [ -n "$mine" ]; then say "Port $p" "utilisé par Salubri (déjà lancé)"
-    else say "Port $p" "ÉCHEC : occupé par un autre programme (Skype, IIS, Apache…) — fermez-le ou WEB_PORT=8080 dans .env"; ok=1; fi
+    else
+      say "Port $p" "ÉCHEC : déjà utilisé par un autre programme (Apache, nginx, Skype…)"
+      say "" "Trouver le programme : sudo lsof -iTCP:$p -sTCP:LISTEN   (ou : sudo ss -ltnp | grep :$p)"
+      say "" "Ou changer de port : ajouter $var=$alt dans le fichier .env, puis relancer"
+      ok=1; portbad=1
+    fi
   else say "Port $p" "libre"; fi
 done
 free_gb=$(df -Pk . | awk 'NR==2 {print int($4/1048576)}')

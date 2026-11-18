@@ -43,7 +43,8 @@ services:
       - pgdata:/var/lib/postgresql/data
       - ./services/db/init.sql:/docker-entrypoint-initdb.d/10-init.sql:ro
     # base et API joignables depuis ce PC seulement (lot A6) ; le téléphone passe par nginx (80 / 8443)
-    ports: ["127.0.0.1:${DB_PORT:-5432}:5432"]
+    # pas de port publié : l'API joint la base sur le réseau interne de Docker (un PostgreSQL déjà installé sur la
+    # machine garde son 5432). Pour le développement : docker-compose.dev.yml (SALUBRI_DB_PORT).
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U salubri -d salubri"]
       interval: 5s
@@ -97,7 +98,7 @@ services:
       - ./docs:/app/docs:ro  # module « Assistant » : documents de référence cherchés par l'assistant
       - photos:/app/var/photos
       - ./apps/go/public/models:/app/masking_models:ro  # masquage : mêmes modèles que Salubri Go
-    ports: ["127.0.0.1:${API_PORT:-8000}:8000"]
+    # pas de port publié : l'API passe par nginx (http://localhost/api). Développement : docker-compose.dev.yml
     # module « Assistant » : un modèle local lancé sur la machine (LM Studio, Ollama…) est joint par ce nom
     extra_hosts: ["host.docker.internal:host-gateway"]
     depends_on:
@@ -107,6 +108,7 @@ services:
   web:
     # construit apps/web et apps/go dans l'image (aucun Node requis sur la machine)
     build: {context: ., dockerfile: services/nginx/Dockerfile}
+    # seuls ports publiés ; occupés (Skype, IIS…) : WEB_PORT=8080 et/ou WEB_TLS_PORT=9443 dans .env (run/doctor)
     ports: ["${WEB_PORT:-80}:80", "${WEB_TLS_PORT:-8443}:443"]
     # pas de volume photos : nginx ne sert plus les photos, l'API les filtre (lot A4)
     depends_on:
@@ -123,7 +125,7 @@ services:
     image: ollama/ollama:0.12.6
     profiles: ["assistant"]
     volumes: ["ollama:/root/.ollama"]
-    ports: ["127.0.0.1:11434:11434"]
+    # pas de port publié : l'API le joint par son nom (ollama:11434) ; un Ollama déjà installé garde son 11434
     restart: unless-stopped
 
 volumes:

@@ -33,10 +33,12 @@ if [ -s data/osm/ouaga.osm.pbf ] && [ ! -f data/osm/.seeded_osm ]; then
 fi
 printf "Attente de l'API"
 i=0
-until curl -fs "http://localhost:${WEB_PORT:-80}/api/health" >/dev/null 2>&1; do
+WEBP=$(grep -E '^WEB_PORT=' .env 2>/dev/null | tail -1 | cut -d= -f2-); WEBP=${WEBP:-80}
+URL="http://localhost"; [ "$WEBP" = 80 ] || URL="http://localhost:$WEBP"
+until curl -fs "$URL/api/health" >/dev/null 2>&1; do
   i=$((i+1)); [ $i -gt 120 ] && { echo; echo "L'API ne répond pas : docker compose logs api seed"; exit 1; }
   printf "."; sleep 2
 done
-echo; echo "Salubri est prêt : http://localhost  (Salubri Go : http://localhost/go/ , API : http://localhost/api/docs)"
+echo; echo "Salubri est prêt : $URL  (Salubri Go : $URL/go/ , API : $URL/api/docs)"
 echo "Compte de démonstration (SALUBRI_DEMO_MODE=true) : demo / ouaga2026. Production : voir .env.example"
 ( command -v xdg-open >/dev/null && xdg-open http://localhost ) || ( command -v open >/dev/null && open http://localhost ) || true
