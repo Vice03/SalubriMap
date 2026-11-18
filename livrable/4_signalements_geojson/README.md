@@ -3,7 +3,8 @@
 
 | Fichier | Contenu | Licence |
 |---|---|---|
-| [`signalements_demo.geojson`](signalements_demo.geojson) | signalements **simulés** de la démonstration (aucun n'est un vrai citoyen) | **CC0 1.0** ([`LICENCE_signalements_demo.md`](LICENCE_signalements_demo.md)) |
+| [`signalements_demo.geojson`](signalements_demo.geojson) | signalements **simulés**, tirés autour des décharges et dépotoirs réels de l'étude SDGD 2020 (aucun n'est un vrai signalement de citoyen) | **CC0 1.0** ([`LICENCE_signalements_demo.md`](LICENCE_signalements_demo.md)) |
+| [`decharges_sdgd2020.geojson`](decharges_sdgd2020.geojson) | les décharges et points de collecte de référence (SDGD Ouagadougou, rapport phase 2, mars 2020 ; enquête 2019), positions à environ 500 m | donnée de référence citée (source dans chaque point) |
 | `signalements_equipe.geojson` | signalements **réels** collectés par l'équipe dans son secteur, vérifiés, photos masquées | **ODbL 1.0** ([`LICENCE_signalements_equipe.md`](LICENCE_signalements_equipe.md)) — **à ajouter après la sortie terrain** |
 
 Champs de chaque point : `external_id`, `waste_type`, `volume_class`, `reported_at`, `accuracy`, `photo`. Jamais exporté pour les
