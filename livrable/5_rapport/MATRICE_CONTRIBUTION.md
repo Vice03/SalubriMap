@@ -1,21 +1,22 @@
 <!-- SPDX-License-Identifier: CC-BY-4.0 -->
 # Matrice de contribution
 
-## 1. Équipe (partie manuelle, à remplir par l'équipe)
+## 1. Équipe : contribution par membre et par couche
 
-Une ligne par membre, une colonne par couche ; mettre la part (en %) de chaque membre dans chaque couche, chaque
-colonne totalisant 100 %.
+Part (en %) de chaque membre dans chaque couche ; chaque colonne totalise 100 %.
 
 | Membre | Données / terrain | App mobile (Salubri Go) | Masquage (visages, plaques) | API | Optimisation | Simulation | Web (Map, Sim) | Infrastructure | Rapport / vidéo |
 |---|---|---|---|---|---|---|---|---|---|
-| [Nom 1] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
-| [Nom 2] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
-| [Nom 3] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
-| [Nom 4] | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % | [ ] % |
+| BOUDO Djamel Kevin | 0 % | 0 % | 50 % | 100 % | 100 % | 100 % | 0 % | 100 % | 100 % |
+| ZOUNGRANA Baowendwaogré Yves Lucas | 100 % | 100 % | 50 % | 0 % | 0 % | 0 % | 100 % | 0 % | 0 % |
 
-Outils d'aide au développement utilisés : [à compléter par l'équipe].
+- **ZOUNGRANA Baowendwaogré Yves Lucas** : l'interface (application mobile Salubri Go, cartes et pages web) et la collecte de données de terrain.
+- **BOUDO Djamel Kevin** : le backend (API, base de données, optimisation, simulation, infrastructure Docker et lanceurs) et le reste (documentation, rapport, vidéo).
+- **Masquage** : la détection dans l'application (côté interface) et la seconde passe sur le serveur (côté backend) sont réparties à parts égales.
 
-## 2. Briques réutilisées hors code (partie manuelle)
+Outils d'aide au développement utilisés : assistant d'IA (Claude, Anthropic) pour la rédaction du code, des tests et de la documentation, sous la direction et la relecture de l'équipe ; outils standards (Git, Docker, pnpm, ruff, pytest).
+
+## 2. Briques réutilisées hors code
 
 | Brique | Licence | Couche | Usage |
 |---|---|---|---|
