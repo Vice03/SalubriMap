@@ -6,6 +6,7 @@ import { useSession } from '../api/session'
 import type { DumpProps, Feature, PointGeom } from '../api/types'
 import { MapView, type Layers } from '../components/map/MapView'
 import { ReportDrawer } from '../components/reports/ReportDrawer'
+import { WaterPanel } from '../components/map/WaterPanel'
 import { useApi, useApp } from '../state/app'
 import { SeasonsPanel } from '../modules/seasons/SeasonsPanel'
 import { useModules } from '../modules/useModules'
@@ -31,19 +32,21 @@ export function MapPage() {
   const { data: routes } = useApi(() => (planId ? api.routes(planId) : Promise.resolve(null)), [planId])
   const [layers, setLayers] = useState<Layers>({ quartiers: true, dumps: true, reports: false, points: true, routes: true, trucks: true })
   const [reportId, setReportId] = useState<string | null>(null)
+  const [zoomTo, setZoomTo] = useState<[number, number] | null>(null)
   const [dump, setDump] = useState<Feature<PointGeom, DumpProps> | null>(null)
   return (
     <div className="content">
       <div className="card" style={{ padding: 12 }}>
         <div className="map-wrap tall">
           <MapView commune={commune} quartiers={quartiers} dumps={dumps} reports={reports} points={points} routes={routes}
-            layers={layers} focus={focus && focus.length === 2 ? focus : null} onReport={setReportId}
+            layers={layers} focus={zoomTo ?? (focus && focus.length === 2 ? focus : null)} onReport={setReportId}
             onDump={(id) => setDump(dumps?.features.find((f) => f.properties.id === id) ?? null)} />
           <LayerToggles layers={layers} setLayers={setLayers} />
         </div>
         {modules.seasons && <SeasonsPanel planId={planId} />}
         <p className="muted map-licence" data-testid="map-licence">{session ? '' : PUBLIC_SCOPE}{MAP_LICENCE}</p>
       </div>
+      <WaterPanel onFocus={(p) => { setZoomTo(p); setLayers((l) => ({ ...l, water: true })); window.scrollTo({ top: 0, behavior: 'smooth' }) }} />
       {reportId && <ReportDrawer id={reportId} onClose={() => setReportId(null)} onOpen={setReportId} />}
       {dump && <DumpDrawer f={dump} onClose={() => setDump(null)} />}
     </div>

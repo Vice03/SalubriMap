@@ -375,3 +375,7 @@ a { color: var(--primary-2); }
 .laabal-head { width: 100%; display: flex; align-items: center; gap: 10px; border: 0; background: none; padding: 0; text-align: left; font-size: 14.5px; color: var(--ink); }
 .laabal-sites { margin: 8px 0 0; padding-left: 18px; font-size: 13.5px; display: flex; flex-direction: column; gap: 4px; }
 .laabal-head .spacer { flex: 1; }
+
+.heat-scale i { display: inline-block; width: 70px; height: 8px; border-radius: 99px; background: linear-gradient(90deg, #4fc3f7, #26a69a, #fdd835, #fb8c00, #d32f2f); }
+.water-group { border-top: 1px solid var(--line); padding: 10px 0; }
+.water-sites { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }

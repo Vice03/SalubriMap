@@ -26,6 +26,7 @@ from salubri_api.routers import (
     scenarios,
     sim,
     validation,
+    water,
 )
 
 setup_logging()
@@ -88,6 +89,7 @@ def create_app() -> FastAPI:
         export,
         audit,
         validation,
+        water,
     ):
         app.include_router(r.router, prefix="/api")
     # modules optionnels (docs/MODULES.md) : routes montées seulement quand le module est allumé

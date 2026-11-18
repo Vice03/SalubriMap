@@ -7,7 +7,7 @@ import type { DumpProps, Feature, PointGeom, WasteType } from '../api/types'
 import { FleetPanel } from '../components/dashboard/FleetPanel'
 import { LaabalPanel, WhatsAppLaabal } from '../components/dashboard/LaabalPanel'
 import type { Layers } from '../components/map/MapView'
-import { MAP_KEY } from '../components/map/mapKey'
+import { MAP_KEY, WATER_DIST_M } from '../components/map/mapKey'
 // MapLibre (~800 Ko) n'est chargé qu'à l'affichage de la carte : premier écran plus léger (lot E)
 const MapView = lazy(() => import('../components/map/MapView').then((m) => ({ default: m.MapView })))
 import { LineChart, Sparkline } from '../components/ui/Charts'
@@ -32,6 +32,8 @@ const SYMBOL: Record<string, JSX.Element> = {
   quartiers: <svg width="18" height="18" viewBox="0 0 18 18"><rect x="2.5" y="2.5" width="13" height="13" fill="none" stroke={K.zone} strokeWidth="1.5" strokeDasharray="3 2" /></svg>,
   reports: <Dot fill={K.verified} stroke="#fff" r={5} />,
   sdgd: <Dot fill={K.reference} stroke={K.reference} r={5} />,
+  heat: <svg width="18" height="18" viewBox="0 0 18 18"><defs><radialGradient id="hg"><stop offset="0" stopColor="#d32f2f" /><stop offset=".5" stopColor="#fdd835" /><stop offset="1" stopColor="#4fc3f7" stopOpacity="0" /></radialGradient></defs><circle cx="9" cy="9" r="8.5" fill="url(#hg)" /></svg>,
+  water: <svg width="18" height="18" viewBox="0 0 18 18"><path d="M2 10c2-5 6-7 10-6s5 6 2 9-8 3-11 1z" fill="#29b6f6" fillOpacity=".55" stroke="#0277bd" strokeWidth="1.4" /></svg>,
 }
 
 export function LayerToggles({ layers, setLayers }: { layers: Layers; setLayers: (l: Layers) => void }) {
@@ -39,6 +41,7 @@ export function LayerToggles({ layers, setLayers }: { layers: Layers; setLayers:
     ['trucks', 'Camions'], ['routes', 'Tournées (survoler pour isoler)'], ['points', 'Points de regroupement'],
     ['dumps', 'Dépotoirs'], ['reports', 'Signalements'], ['quartiers', 'Quartiers'],
     ['sdgd', 'Décharges et CCT existants (réf. SDGD 2020)'],
+    ['heat', 'Carte de chaleur des signalements'], ['water', "Retenues d'eau"],
   ]
   return (
     <div className="layer-box">
@@ -49,6 +52,14 @@ export function LayerToggles({ layers, setLayers }: { layers: Layers; setLayers:
           {k === 'reports' && layers.reports && <div className="sub">
             <span><Dot fill={K.verified} stroke="#fff" r={5} />vérifié</span><span><Dot fill={K.probable} stroke="#fff" r={5} />probable</span>
             <span><Dot fill="#fff" stroke={K.review} r={4.5} />à revoir</span><span><Dot fill="#fff" stroke={K.rejected} r={4.5} />rejeté</span></div>}
+          {k === 'heat' && layers.heat && <div className="sub">
+            <span><select className="select" style={{ padding: '3px 8px', fontSize: 12.5 }} value={layers.heatDays ?? 0} aria-label="Période de la carte de chaleur"
+              onChange={(e) => setLayers({ ...layers, heatDays: Number(e.target.value) })}>
+              <option value={7}>7 derniers jours</option><option value={30}>30 derniers jours</option><option value={90}>90 derniers jours</option><option value={0}>toute la période</option>
+            </select></span>
+            <span className="heat-scale"><i />peu → beaucoup</span></div>}
+          {k === 'water' && layers.water && <div className="sub">
+            <span><Dot fill="rgba(41,182,246,0.25)" stroke="#0277bd" r={6.5} w={2} />dépotoir à moins de {WATER_DIST_M} m</span></div>}
           {k === 'sdgd' && layers.sdgd && <div className="sub">
             <span><Dot fill={K.reference} stroke={K.reference} r={4.5} />CCT</span><span><Dot fill="#fff" stroke={K.reference} r={5} w={2.5} />décharge</span>
             <span><Dot fill="#fff" stroke={K.reference} r={7.5} w={2.5} />CTVD</span></div>}

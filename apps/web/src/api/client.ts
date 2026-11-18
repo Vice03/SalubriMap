@@ -1,10 +1,12 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
+/// <reference types="geojson" />
 import type {
   AuditEntry, Commune, CompareMany, CompareResult, DumpProps, FC, Feature, Health, ImportResult, LineGeom, ParamsSchema,
   Plan, PointGeom, PointProps, PolyGeom, QuartierProps, ReportProps, ReportStatus, RouteProps, Scenario, Stats,
   ValidationRules, Vehicle,
 } from './types'
 import type { LaabalAlerts } from '../lib/laabal'
+import type { WaterDumps } from './types'
 import { askLogin, authHeaders, getSession, setSession, type Session } from './session'
 
 export class ApiError extends Error {
@@ -119,6 +121,8 @@ export const api = {
   removeVehicle: (sid: string, vid: string) => request<{ plan_version_id: string }>('DELETE', `/scenarios/${sid}/vehicles/${vid}`),
   toLaabal: (id: string) => request<Feature<PointGeom, DumpProps>>('POST', `/dump-sites/${id}/laabal`),
   laabalAlerts: () => get<LaabalAlerts>('/dump-sites/laabal/alertes'),
+  water: () => get<GeoJSON.FeatureCollection>('/eau'),
+  waterDumps: (distance_m = 200) => get<WaterDumps>('/eau/depotoirs', { distance_m }),
   recompute: (sid: string) => request<{ plan_version_id: string }>('POST', `/scenarios/${sid}/recompute`, { json: { reason: 'tableau de bord' } }),
   compare: (a: string, b: string) => get<CompareResult>('/scenarios/compare', { a, b }),
   compareMany: (ids: string[]) => get<CompareMany>('/scenarios/compare-many', { ids: ids.join(',') }),

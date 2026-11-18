@@ -126,3 +126,9 @@ export interface CompareMany {
 
 export interface Health { status: string; db: string; osrm: string; version: string; demo_mode?: boolean }
 export interface ValidationRules { rules: { code: string; title: string; description: string; penalty: string }[] }
+
+export interface WaterDumpSite {
+  id: string; lon: number; lat: number; statut: DumpStatus; volume_m3: number; type: WasteType; n_signalements: number
+  caniveau: boolean; retenue: string; retenue_id: string; distance_m: number
+}
+export interface WaterDumps { distance_m: number; sites: WaterDumpSite[]; retenues: { retenue: string; depotoirs: number; volume_m3: number }[] }

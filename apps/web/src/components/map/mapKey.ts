@@ -8,3 +8,4 @@ export const MAP_KEY = {
   zone: '#475569',      // découpage (quartiers)
   verified: '#0f766e', probable: '#64748b', review: '#b45309', rejected: '#94a3b8', // signalements
 }
+export const WATER_DIST_M = 200 // dépotoirs cerclés autour des retenues d'eau
