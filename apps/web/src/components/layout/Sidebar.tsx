@@ -59,32 +59,45 @@ export function Sidebar() {
   )
 }
 
-/** Bas de la barre latérale : silhouette de ville au soleil couchant et ruban aux couleurs du Burkina Faso (dessin original). */
+/** Bas de la barre latérale : le Monument des Héros Nationaux de Ouagadougou au soleil couchant (dessin original,
+ *  simplifié) et un ruban aux couleurs du Burkina Faso. */
 function CityArt() {
   return (
-    <svg viewBox="0 0 248 150" preserveAspectRatio="xMidYMax slice">
+    <svg viewBox="0 0 248 170" preserveAspectRatio="xMidYMax slice">
       <defs>
-        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#083a77" stopOpacity="0" /><stop offset=".55" stopColor="#f6a54a" stopOpacity=".55" /><stop offset="1" stopColor="#ffcf73" /></linearGradient>
+      <linearGradient id="ca-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#083a77" stopOpacity="0"/><stop offset=".5" stopColor="#5b8fd6" stopOpacity=".55"/><stop offset="1" stopColor="#ffd38a"/></linearGradient>
+      <linearGradient id="ca-cream" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stopColor="#e9d3a8"/><stop offset=".5" stopColor="#fbeed3"/><stop offset="1" stopColor="#dcc196"/></linearGradient>
+      <linearGradient id="ca-ring" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#f2b25a"/><stop offset="1" stopColor="#c9822e"/></linearGradient>
       </defs>
-      <rect width="248" height="150" fill="url(#sky)" />
-      <circle cx="176" cy="92" r="20" fill="#ffd36b" opacity=".9" />
-      {/* immeubles */}
-      <g fill="#7b4a2a" opacity=".85">
-        <rect x="8" y="88" width="16" height="50" /><rect x="26" y="76" width="12" height="62" /><rect x="40" y="94" width="18" height="44" />
-        <rect x="150" y="84" width="14" height="54" /><rect x="166" y="98" width="20" height="40" /><rect x="188" y="80" width="12" height="58" /><rect x="202" y="92" width="22" height="46" />
+      <rect width="248" height="170" fill="url(#ca-sky)"/>
+      <g fill="#2e7d32" opacity=".9"><circle cx="22" cy="138" r="13"/><circle cx="40" cy="142" r="10"/><circle cx="208" cy="136" r="14"/><circle cx="228" cy="141" r="10"/></g>
+      <g transform="translate(30 6)">
+      <path d="M70 158 C92 150 104 128 108 100 L140 100 C144 128 156 150 178 158 Z" fill="url(#ca-cream)"/>
+      <path d="M118 158 C116 140 118 120 124 108 C130 120 132 140 130 158 Z" fill="#c98a3a" opacity=".85"/>
+      <ellipse cx="124" cy="101" rx="30" ry="5" fill="#a86a22"/>
+      <rect x="94" y="91" width="60" height="10" fill="url(#ca-ring)"/>
+      <ellipse cx="124" cy="91" rx="30" ry="5" fill="#f4c27a"/>
+      <g fill="#5a4a3a" opacity=".55"><rect x="101" y="94" width="5" height="4"/><rect x="109" y="94" width="5" height="4"/><rect x="117" y="94" width="5" height="4"/><rect x="125" y="94" width="5" height="4"/><rect x="133" y="94" width="5" height="4"/><rect x="141" y="94" width="5" height="4"/></g>
+      <path d="M110 88 C108 70 104 52 96 40 L108 46 L114 40 L124 46 L134 40 L140 46 L152 40 C144 52 140 70 138 88 Z" fill="url(#ca-cream)"/>
+      <path d="M113 86 C112 70 110 56 106 46 L110 47 C113 58 115 72 116 86 Z" fill="#2f8f3e"/>
+      <path d="M135 86 C136 70 138 56 142 46 L138 47 C135 58 133 72 132 86 Z" fill="#2f8f3e"/>
+      <rect x="122" y="50" width="4" height="36" fill="#b07a3a" opacity=".7"/>
+      <path d="M112 46 C112 38 136 38 136 46 Z" fill="#e2a24f"/>
+      <path d="M116 39 C116 32 132 32 132 39 Z" fill="#2f8f3e"/>
+      <rect x="123.3" y="25" width="1.4" height="8" fill="#9aa4ad"/>
+      <g fill="#9ea3a8" stroke="#7d8287" strokeWidth=".6">
+      <rect x="108" y="96" width="9" height="62"/><rect x="119" y="100" width="9" height="58"/>
+      <rect x="105.5" y="85" width="14" height="12" rx="3"/><rect x="116.5" y="89" width="14" height="12" rx="3"/>
       </g>
-      {/* monument : colonne et anneau */}
-      <g fill="#a0522d">
-        <path d="M100 138 L104 70 L112 70 L116 138 Z" />
-        <ellipse cx="108" cy="66" rx="16" ry="6" fill="none" stroke="#a0522d" strokeWidth="4" />
-        <rect x="88" y="128" width="40" height="10" rx="2" />
+      <g stroke="#6f7479" strokeWidth=".7"><path d="M109 85v4M112.5 85v4M116 85v4M120 89v4M123.5 89v4M127 89v4"/><path d="M105.5 92h5M116.5 96h5"/></g>
+      <rect x="119" y="122" width="9" height="2.2" fill="#d9b44a"/>
+      <path d="M118 128 l1.6 4.6 h4.8 l-3.9 2.9 1.5 4.6 -4 -2.9 -4 2.9 1.5 -4.6 -3.9 -2.9 h4.8z" fill="#f2c12e"/>
+      <rect x="60" y="152" width="128" height="6" fill="#1e5fa8" opacity=".9"/>
+      <path d="M104 158 c4-8 8-8 12 0 c4-8 8-8 12 0 c4-8 8-8 12 0 Z" fill="#1e5fa8"/>
       </g>
-      {/* arbres */}
-      <g fill="#2e7d32"><circle cx="70" cy="122" r="11" /><circle cx="82" cy="126" r="8" /><circle cx="138" cy="124" r="9" /><circle cx="232" cy="122" r="10" /></g>
-      {/* ruban : rouge, vert, étoile jaune */}
-      <path d="M248 106 L248 150 L150 150 Z" fill="#ef2b2d" />
-      <path d="M248 128 L248 150 L196 150 Z" fill="#009e49" />
-      <path d="M226 128 l2.6 7.6 h8 l-6.5 4.7 2.5 7.6 -6.6 -4.7 -6.5 4.7 2.5 -7.6 -6.5 -4.7 h8z" fill="#fcd116" />
+      <path d="M248 120 L248 170 L150 170 Z" fill="#ef2b2d"/>
+      <path d="M248 144 L248 170 L196 170 Z" fill="#009e49"/>
+      <path d="M228 146 l2.6 7.6 h8 l-6.5 4.7 2.5 7.6 -6.6 -4.7 -6.5 4.7 2.5 -7.6 -6.5 -4.7 h8z" fill="#fcd116"/>
     </svg>
   )
 }

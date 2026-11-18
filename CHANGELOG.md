@@ -2,6 +2,7 @@
 
 ## 0.5.0 — en cours
 
+- **Bas de la barre latérale** : le Monument des Héros Nationaux de Ouagadougou en illustration (dessin original simplifié, pas de photo : droits inconnus), avec le ruban aux couleurs du Burkina Faso. Captures du guide refaites.
 - **Assistant : le modèle déjà installé est trouvé.** L'API cherche elle-même un modèle qui tourne (adresse réglée, puis Ollama sur le PC via `host.docker.internal:11434`, conteneur Ollama, LM Studio), toutes les 60 s au plus, sans redémarrage ; elle prend le modèle demandé s'il est installé, sinon le plus gros d'une famille qui appelle des outils (réglage `SALUBRI_LLM_AUTO`, vrai par défaut). `run/llm_detect.py` accepte un modèle installé plus gros que le palier de la machine (avant : un Qwen 14B était refusé sur 16 Go de mémoire) et, Ollama arrêté, lit les modèles sur le disque et dit d'ouvrir Ollama au lieu de proposer un téléchargement. Délai de réponse porté à 240 s. Vérifié avec un faux serveur Ollama sur le port 11434 (adresse réglée injoignable → `qwen2.5:14b` trouvé, outil appelé) ; **pas avec le vrai Ollama du PC**. Tests.
 - **Logo aux couleurs du Burkina Faso** : épingle rouge et verte, étoile jaune (Salubri Map, Salubri Go, icônes de l'application installable).
 - **Badge « Mode démonstration »** : affiché seulement quand on est connecté avec le compte public `demo`, plus pour les visiteurs.
