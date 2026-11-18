@@ -23,16 +23,17 @@ fi
 # On ne reconstruit que nos images (API, interfaces) : OSRM et PostGIS viennent de registres (ghcr.io, Docker Hub)
 # parfois injoignables ; déjà présentes, elles servent telles quelles (compose ne construit que celles qui manquent).
 docker compose build seed api web || echo "Attention : reconstruction impossible (réseau ?) — démarrage avec les images déjà présentes."
+# rues OSM chargees AVANT le demarrage de l'API (sinon blocage mutuel sur la base)
 if [ -s data/osm/ouaga.osm.pbf ] && [ ! -f data/osm/.seeded_osm ]; then
-  echo "Premier chargement des vraies rues OpenStreetMap (1 à 2 minutes)..."
+  echo "Premier chargement des vraies rues OpenStreetMap (3 à 6 minutes selon la machine : ne pas interrompre)..."
+  # libère la base : une ancienne API ou un ancien seed encore actifs tiennent des verrous
+  docker compose stop api web seed >/dev/null 2>&1 || true
   docker compose run --rm seed python -m salubri_api.seed.run --force && echo charge > data/osm/.seeded_osm
-fi
-docker compose $PROFILES up -d || exit 1
-if [ -f data/osm/.seeded_osm ]; then
   # jeu de pièges de la répétition propre à cette carte (scripts/rehearse.py le choisit tout seul)
   docker compose run --rm -v "$PWD/scripts:/app/scripts:ro" -v "$PWD/data/rehearsal:/app/data/rehearsal" seed \
     python /app/scripts/gen_traps.py || echo "Jeu de pièges non généré : la répétition utilisera le jeu par défaut."
 fi
+docker compose $PROFILES up -d || exit 1
 printf "Attente de l'API"
 i=0
 WEBP=$(grep -E '^WEB_PORT=' .env 2>/dev/null | tail -1 | cut -d= -f2-); WEBP=${WEBP:-80}
