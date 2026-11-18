@@ -124,7 +124,7 @@ export function AssistantPanel() {
             <div className="ai-msg bot">
               Bonjour ! J'analyse vos données (plans, simulations, signalements, paramètres) et j'explique les chiffres, avec mes sources.
               Je ne modifie rien (lecture seule) et je ne juge jamais un signalement.
-              {status && !status.disponible && <div className="ai-warn">Aucun modèle de langue n'est joignable : lancez Ollama (ou LM Studio) sur ce PC, ou le choix 12 du lanceur, puis relancez la version complète.</div>}
+              {status && !status.disponible && <div className="ai-warn">Aucun modèle de langue ne répond. Ouvrez l'application Ollama (ou LM Studio) sur ce PC : je la retrouve toute seule en quelques secondes, sans redémarrer Salubri. Pas de modèle installé : choix 12 du lanceur.</div>}
             </div>
             {!allowed && (
               <div className="ai-msg bot">

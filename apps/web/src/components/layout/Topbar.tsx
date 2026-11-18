@@ -90,7 +90,8 @@ export function Topbar() {
             </div>
           )}
         </div>
-        {health?.demo_mode && (
+        {/* Le badge ne sert qu'à prévenir qu'on est connecté avec le compte public de démonstration */}
+        {health?.demo_mode && session?.user.login === 'demo' && (
           <span className="demo-badge" title="Compte « demo » et code ouaga2026 connus de tous : ne pas utiliser pour de vraies données">
             Mode démonstration
           </span>

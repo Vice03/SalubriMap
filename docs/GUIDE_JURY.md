@@ -62,7 +62,7 @@ Démarrez la **version DEMO** (choix 1). Le navigateur s'ouvre sur le tableau de
 ![Tableau de bord](guide/01_tableau_de_bord.jpg)
 
 Dépotoirs actifs, camions disponibles, points de regroupement, tonnes collectées simulées, carte de la ville et état
-de la flotte. Le badge jaune « Mode démonstration » rappelle que les comptes sont publics.
+de la flotte. Une fois connecté avec le compte public « demo », le badge jaune « Mode démonstration » le rappelle.
 
 ### Étape 2 — Signaler un dépotoir avec Salubri Go
 
@@ -142,7 +142,8 @@ le trouve tout seul.
 | La page reste blanche | rafraîchir (Ctrl+F5) ; vérifier l'adresse `http://localhost` |
 | Données de test en désordre | choix 10 (remise à zéro), puis choix 1 |
 | GPS refusé sur téléphone | utiliser le câble USB (choix 11) ou `https://<adresse-du-PC>:8443/go/` en Wi-Fi |
-| L'assistant dit « indisponible » | choix 12, puis choix 2 ; la démo fonctionne sans lui |
+| L'assistant dit « indisponible » (point rouge) | ouvrir l'application Ollama : il la retrouve seul en quelques secondes ; sinon choix 12, puis choix 2. La démo fonctionne sans lui |
+| Ollama ouvert mais toujours rouge | quitter Ollama, définir la variable d'environnement Windows `OLLAMA_HOST=0.0.0.0`, rouvrir Ollama |
 
 ## 6. Repères
 
