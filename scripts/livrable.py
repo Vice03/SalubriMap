@@ -54,7 +54,6 @@ COPIES: dict[str, list[tuple[str, str]]] = {
         ("docs/CHECKLIST_FINALE.md", "CHECKLIST_FINALE.md"),
         ("docs/figures", "figures"),
     ],
-    "6_video": [("docs/VIDEO_SCRIPT.md", "VIDEO_SCRIPT.md")],
 }
 
 LICENCE_DEMO = """<!-- SPDX-License-Identifier: CC0-1.0 -->
@@ -79,7 +78,7 @@ Il est **généré** par `python scripts/livrable.py` : les sources restent dans
 | 3 | Tableau de bord des scénarios et plan de gestion d'un arrondissement | [`3_tableau_de_bord/`](3_tableau_de_bord/README.md) | fait (arrondissement 9, quartiers de démonstration) |
 | 4 | Jeu de signalements en GeoJSON, sous licence ouverte | [`4_signalements_geojson/`](4_signalements_geojson/README.md) | jeu de démonstration fourni (CC0) ; jeu de terrain de l'équipe à ajouter |
 | 5 | Rapport : démarche, paramètres, scénarios simulés, résultats, plan de gestion | [`5_rapport/`](5_rapport/README.md) | fait (PDF + sources) |
-| 6 | Vidéo de démonstration (3 min) | [`6_video/`](6_video/README.md) | plan de tournage prêt ; vidéo à déposer |
+| 6 | Vidéo de démonstration (3 min) | [`6_video/`](6_video/) | vidéo `demo_salubri.mp4` à déposer dans ce dossier (ou lien Drive) |
 
 **Pour essayer tout de suite** : Docker, puis double-clic sur `SALUBRI.bat` à la racine du dépôt (choix 1).
 **Guide pas à pas** : [`GUIDE_JURY.pdf`](GUIDE_JURY.pdf). Code sous AGPL-3.0-or-later, données et documents sous licences ouvertes (détail au `README.md` racine).
@@ -173,18 +172,6 @@ puis `python scripts/livrable.py` copie le fichier dans ce dossier.
 
 Régénération : `python scripts/figures_rapport.py` puis `scripts/md_pdf.sh docs/RAPPORT_TECHNIQUE.md`.
 """,
-    "6_video": """<!-- SPDX-License-Identifier: CC-BY-4.0 -->
-# 6 — Vidéo de démonstration (3 minutes)
-
-Déposer ici la vidéo : **`demo_salubri.mp4`** (1080p, 3 min au plus). Elle suit la fiche : un signalement hors ligne avec masquage →
-vérification → carte → plan → tournée du lendemain ; puis un changement de paramètres (2 camions en panne, saison des pluies) et le plan recalculé.
-
-Format sans voix : la narration est en sous-titres. Plan de tournage (quoi faire, où, combien de temps) :
-[`VIDEO_SCRIPT.md`](VIDEO_SCRIPT.md). Montage automatique des enregistrements d'écran avec les sous-titres :
-`python scripts/video_sous_titres.py video_clips -o livrable/6_video/demo_salubri.mp4`. Préparation des données :
-`python scripts/demo_video.py --api http://localhost --arrondissement 9`.
-**État** : plan et montage prêts, vidéo à tourner.
-""",
 }
 
 
@@ -206,6 +193,7 @@ def contenu() -> dict[Path, bytes]:
                 out[rel] = f.read_bytes()
     for dossier, texte in README.items():
         out[Path(dossier) / "README.md"] = texte.encode()
+    out[Path("6_video/.gitkeep")] = b""  # dossier de la vidéo, sans fichier .md
     out[Path("4_signalements_geojson/LICENCE_signalements_demo.md")] = LICENCE_DEMO.encode()
     equipe = ROOT / COMMUNE / "signalements_equipe.geojson"
     if equipe.exists():  # jeu de terrain, dès qu'il existe

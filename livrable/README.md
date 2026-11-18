@@ -12,7 +12,7 @@ Il est **généré** par `python scripts/livrable.py` : les sources restent dans
 | 3 | Tableau de bord des scénarios et plan de gestion d'un arrondissement | [`3_tableau_de_bord/`](3_tableau_de_bord/README.md) | fait (arrondissement 9, quartiers de démonstration) |
 | 4 | Jeu de signalements en GeoJSON, sous licence ouverte | [`4_signalements_geojson/`](4_signalements_geojson/README.md) | jeu de démonstration fourni (CC0) ; jeu de terrain de l'équipe à ajouter |
 | 5 | Rapport : démarche, paramètres, scénarios simulés, résultats, plan de gestion | [`5_rapport/`](5_rapport/README.md) | fait (PDF + sources) |
-| 6 | Vidéo de démonstration (3 min) | [`6_video/`](6_video/README.md) | plan de tournage prêt ; vidéo à déposer |
+| 6 | Vidéo de démonstration (3 min) | [`6_video/`](6_video/) | vidéo `demo_salubri.mp4` à déposer dans ce dossier (ou lien Drive) |
 
 **Pour essayer tout de suite** : Docker, puis double-clic sur `SALUBRI.bat` à la racine du dépôt (choix 1).
 **Guide pas à pas** : [`GUIDE_JURY.pdf`](GUIDE_JURY.pdf). Code sous AGPL-3.0-or-later, données et documents sous licences ouvertes (détail au `README.md` racine).
