@@ -56,8 +56,8 @@ Choix faits là où la consigne laissait le choix (option la plus simple et sûr
 
 ## Mode démonstration et secrets (0.3, lot A2)
 
-- `SALUBRI_DEMO_MODE` vaut **faux par défaut dans le code** (sûr) et **vrai dans `docker-compose.yml`** (la démo reste « une commande, sans compte à créer »).
-- En démonstration : compte `demo` (admin, mot de passe `ouaga2026`, créé au démarrage s'il n'existe pas ; jamais recréé s'il a été désactivé), code de service `ouaga2026` si `SALUBRI_ADMIN_TOKEN` est vide, clé de session aléatoire par démarrage, badge visible (`GET /api/health` → `demo_mode`).
+- `SALUBRI_DEMO_MODE` vaut **faux par défaut**, dans le code comme dans `docker-compose.yml` (production). `SALUBRI_DEMO_MODE=true` dans `.env` active la démonstration ouverte. Au premier lancement, `run/start` génère un mot de passe pour le compte `admin` (`SALUBRI_BOOTSTRAP_ADMIN_PASSWORD`), que l'API applique tant qu'aucun admin propre n'existe.
+- En démonstration (`SALUBRI_DEMO_MODE=true`) : compte `demo` (admin, mot de passe `ouaga2026`) et compte `admin` (mot de passe `Salubri2026`), recréés ou réparés à chaque démarrage, code de service `ouaga2026` si `SALUBRI_ADMIN_TOKEN` est vide, clé de session aléatoire par démarrage, badge visible (`GET /api/health` → `demo_mode`).
 - Hors démonstration, l'API refuse de démarrer si : code de service vide, égal à `ouaga2026` ou de moins de 16 caractères ; clé de session de moins de 32 caractères ; aucun admin actif ; compte `demo` encore actif. Le message liste tous les problèmes à la fois.
 - Génération des secrets : `run/secrets.ps1` (Windows, appelé par `run/start.bat`) et `run/secrets.sh` (appelé par `run/start.sh`), 32 octets aléatoires du système (générateur cryptographique), écrits dans `.env` (UTF-8 sans BOM), affichés une seule fois, jamais régénérés s'ils sont déjà corrects.
 
@@ -76,7 +76,7 @@ Choix faits là où la consigne laissait le choix (option la plus simple et sûr
 - Champs retirés pour le public : appareil, identifiant client et externe, commentaire, précision GPS, heure de réception, règles déclenchées (leur texte peut citer l'appareil ou l'EXIF), nom du modérateur, EXIF. Le score et le type restent visibles.
 - Les photos restent dans le même volume (aucune migration de fichiers) ; seul le chemin d'accès change. La copie publique est réencodée sans métadonnées à la volée (cache en mémoire de 256 photos) ; le lot A5 enlèvera l'EXIF dès l'enregistrement.
 - Le journal contient des identifiants d'appareil, des notes et des noms de comptes : sa lecture exige un compte modérateur ou admin. Les compteurs agrégés (`/api/reports/stats`) restent publics.
-- Démonstration : le navigateur qui a déjà saisi `ouaga2026` voit tout ; sur un navigateur neuf, cliquer « Se connecter » dans Signalements avant la scène « Filtre Rejetés » (ajouté à docs/DEMO.md).
+- Le navigateur déjà connecté voit tout ; sur un navigateur neuf, cliquer « Se connecter » dans Signalements avant la scène « Filtre Rejetés » (docs/DEMO.md).
 
 ## Téléversements (0.3, lot A5)
 

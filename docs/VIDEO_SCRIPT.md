@@ -38,7 +38,7 @@ téléphone (les voix de l'application ne doivent pas se mêler à la lecture de
 2. Téléphone Android : installer l'APK (`apps/go/android/app/build/outputs/apk/debug/app-debug.apk`), saisir l'adresse du
    serveur affichée par `run/start` (même Wi-Fi), autoriser la localisation, **copier la photo de test sur le téléphone**
    (ou photographier un écran qui l'affiche). Ouvrir Salubri Go une fois avec réseau (mise en cache), puis fermer l'application.
-3. PC : Salubri Map ouvert sur `http://localhost/`, « Se connecter » → `demo` / `ouaga2026`. Fenêtre du navigateur en 1920×1080
+3. PC : Salubri Map ouvert sur `http://localhost/`, « Se connecter » → `admin` et le mot de passe affiché au lancement (ou `demo` / `ouaga2026` si `SALUBRI_DEMO_MODE=true`). Fenêtre du navigateur en 1920×1080
    ou plein écran, zoom 100 %.
 4. Fermer les notifications (mode Ne pas déranger) sur le PC et le téléphone.
 

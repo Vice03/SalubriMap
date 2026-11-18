@@ -17,7 +17,7 @@ def test_assistant_button_follows_flag_and_role(browser, base):  # type: ignore[
         page.get_by_test_id("assistant-open").click()
         panel = page.get_by_test_id("assistant-panel")
         panel.wait_for(timeout=5000)
-        assert "demo / ouaga2026" in panel.inner_text()
+        assert "connectez-vous comme agent de la mairie" in panel.inner_text()
         assert page.locator("[aria-label=\"Question à l'assistant\"]").is_disabled()
         panel.locator("button[aria-label=Fermer]").click()
     else:

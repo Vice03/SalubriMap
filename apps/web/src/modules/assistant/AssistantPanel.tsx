@@ -130,7 +130,7 @@ export function AssistantPanel() {
             </div>
             {!allowed && (
               <div className="ai-msg bot">
-                Pour me poser une question, connectez-vous comme agent de la mairie (démonstration : <b>demo / ouaga2026</b>).
+                Pour me poser une question, connectez-vous comme agent de la mairie (bouton « Se connecter », en haut à droite).
                 <div><button className="ai-chip strong" onClick={() => void askLogin("L'assistant répond aux agents de la mairie connectés.")}><LogIn size={14} /> Se connecter</button></div>
               </div>
             )}

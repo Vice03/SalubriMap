@@ -135,8 +135,8 @@ place. Dans Salubri Go, l'onglet « Route » permet de signaler une route imprat
 
 ![Module Assistant](guide/08_module_assistant.jpg)
 
-**Assistant IA.** Bulle « Assistant IA » en bas à droite, sur toutes les pages ; il faut être connecté (demo /
-ouaga2026) pour poser une question. « Analyser la situation » et « Comparer tous les cas » lui font lire vos données
+**Assistant IA.** Bulle « Assistant IA » en bas à droite, sur toutes les pages ; il faut être connecté (compte admin)
+pour poser une question. « Analyser la situation » et « Comparer tous les cas » lui font lire vos données
 (dépotoirs, signalements, flotte, scénarios simulés) et en tirer une analyse chiffrée. Il explique aussi un plan, un
 point saturé, un score de signalement ou un paramètre, en citant ses sources ; **il ne modifie rien** et ne juge
 jamais un signalement. En haut du panneau, un point vert indique que le modèle de langue répond. Il lui faut un modèle de langue local : s'il répond « Assistant indisponible », utilisez le choix
