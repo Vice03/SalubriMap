@@ -54,7 +54,7 @@ def test_demo_mode_creates_demo_account_once_and_keeps_the_demo_code(db):  # typ
     assert db.query(User).filter(User.login == "demo").count() == 1
 
 
-def test_default_admin_is_created_in_demo_mode_never_overwritten_and_blocks_production(db):  # type: ignore[no-untyped-def]
+def test_default_admin_is_created_in_demo_mode_repaired_in_demo_and_blocks_production(db):  # type: ignore[no-untyped-def]
     from salubri_api.services.auth import verify_password
 
     demo = Settings(demo_mode=True, admin_token="", secret_key="")
@@ -63,11 +63,12 @@ def test_default_admin_is_created_in_demo_mode_never_overwritten_and_blocks_prod
     admin = db.query(User).filter(User.login == "admin").one()
     assert admin.role == "admin" and verify_password(admin.password_hash, "Salubri2026")
     assert any("mot de passe par défaut" in p for p in problems(prod(), db))
-    admin.password_hash = hash_password("un-autre-mot-de-passe")  # changé : jamais réécrit, plus de blocage
+    admin.password_hash = hash_password("un-autre-mot-de-passe")
+    admin.active = False
     db.commit()
-    check_startup(demo, db)
-    assert verify_password(db.query(User).filter(User.login == "admin").one().password_hash, "un-autre-mot-de-passe")
-    assert not any("par défaut" in p for p in problems(prod(), db))
+    check_startup(demo, db)  # mode démo : compte réparé (réactivé, mot de passe d'origine)
+    admin = db.query(User).filter(User.login == "admin").one()
+    assert admin.active and verify_password(admin.password_hash, "Salubri2026")
 
 
 def test_default_admin_logs_in(db):  # type: ignore[no-untyped-def]

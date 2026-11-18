@@ -27,3 +27,4 @@ data/eval/masquage/*
 data/open_buildings/*.csv.gz
 data/open_buildings/*.part
 video_clips/
+diag.log

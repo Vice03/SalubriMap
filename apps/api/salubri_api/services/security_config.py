@@ -62,21 +62,31 @@ def problems(settings: Settings, s: Session) -> list[str]:
 
 
 def ensure_default_admin(s: Session, settings: Settings) -> bool:
-    """Mode démo : crée l'admin par défaut (admin / Salubri2026) s'il manque ; un compte existant n'est jamais touché."""
+    """Mode démo : garantit que admin / Salubri2026 se connecte (compte créé, ré-activé, rôle admin, mot de passe
+    d'origine, blocages anti-force-brute levés). Le mode démo est public par construction ; hors démo, jamais appelé.
+    True si le compte a été créé ou réparé."""
+    from salubri_api.models.users import LoginFailure
+
     login = settings.default_admin_login.strip().lower()
-    if not login or s.query(User).filter(User.login == login).first() is not None:
+    if not login:
         return False
-    u = User(
-        login=login,
-        display_name="Administrateur",
-        role="admin",
-        password_hash=hash_password(settings.default_admin_password),
-    )
-    s.add(u)
+    u = s.query(User).filter(User.login == login).first()
+    changed = False
+    if u is None:
+        u = User(login=login, display_name="Administrateur", role="admin", password_hash="")
+        s.add(u)
+        changed = True
+    if u.role != "admin" or not u.active or not verify_password(u.password_hash, settings.default_admin_password):
+        u.role, u.active = "admin", True
+        u.password_hash = hash_password(settings.default_admin_password)
+        u.session_version = (u.session_version or 0) + 1
+        changed = True
+    s.query(LoginFailure).filter(LoginFailure.login == login).delete()
     s.flush()
-    audit(s, "create", "user", u.id, after={"login": login, "role": "admin", "defaut": True}, actor="system")
+    if changed:
+        audit(s, "create", "user", u.id, after={"login": login, "role": "admin", "defaut": True}, actor="system")
     s.commit()
-    return True
+    return changed
 
 
 def ensure_demo_account(s: Session) -> bool:
