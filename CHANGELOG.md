@@ -2,6 +2,10 @@
 
 ## 0.5.0 — 18 novembre 2026
 
+- Version complète (choix 2 du lanceur) = données réelles : `SALUBRI_DATA_MODE=reel` retire les signalements d'exemple ; restent les décharges et CCT du SDGD 2020, les signalements envoyés par Salubri Go (enregistrés en base) et les imports de la mairie. Les alertes viennent donc de vrais signalements. Retour au choix 1 : les exemples reviennent, rien de réel n'est effacé. Badge « Données réelles ».
+- Carte : légende repliable avec une flèche (repliée par défaut sur petit écran, choix retenu), elle ne cache plus les points.
+- nginx : `Cache-Control: no-cache` sur les pages, le navigateur ne garde plus un ancien écran après une mise à jour.
+
 - Assistant IA : il ne restait plus muet avec Qwen3 14B sur processeur. La « réflexion » de Qwen3 est coupée (`/no_think`) et retirée de la réponse ; la question tourne à part et l'écran reçoit l'étape en cours et un signe de vie toutes les 5 s (nginx ne coupe plus après 5 min, délai porté à 15 min) ; au-delà de 10 min, message clair « trop lent » au lieu d'un écran figé. Test avec un faux serveur lent qui réfléchit.
 
 Réponse à la revue r7 (F3, F4, F6, F8) :

@@ -21,6 +21,7 @@ x-api-env: &api-env
   # de démarrer sans secrets propres (run/start les génère dans .env) ni compte admin (run/admin le crée)
   SALUBRI_DEMO_MODE: ${SALUBRI_DEMO_MODE:-true}
   SALUBRI_SECRET_KEY: ${SALUBRI_SECRET_KEY:-}
+  SALUBRI_DATA_MODE: ${SALUBRI_DATA_MODE:-demo}  # demo = exemples pour le jury ; reel = SDGD 2020 + Salubri Go
   # modules optionnels (docs/MODULES.md), éteints par défaut
   SALUBRI_SEASONS_ENABLED: ${SALUBRI_SEASONS_ENABLED:-false}
   SALUBRI_ASSISTANT_ENABLED: ${SALUBRI_ASSISTANT_ENABLED:-false}

@@ -38,7 +38,7 @@ echo   %G%-----------------------------------------------------------------%N%
 echo.
 echo   %C%DEMARRER%N%
 echo    %Y% 1%N%  Version DEMO         %D%(recommandee pour le jury)%N%
-echo    %Y% 2%N%  Version COMPLETE     %D%(demo + modules Saisons et Assistant IA)%N%
+echo    %Y% 2%N%  Version COMPLETE     %D%(donnees reelles + Saisons + Assistant IA)%N%
 echo.
 echo   %C%OUVRIR%N%
 echo    %Y% 3%N%  Salubri Map   %D%carte, moderation, plan, simulation%N%
@@ -93,6 +93,7 @@ rem ----------------------------------------------------------------- demarrage
 echo.
 echo   %W%Version DEMO%N% : compte demo / ouaga2026, modules optionnels eteints.
 call :setenv SALUBRI_DEMO_MODE true
+call :setenv SALUBRI_DATA_MODE demo
 call :setenv SALUBRI_SEASONS_ENABLED false
 call :setenv SALUBRI_ASSISTANT_ENABLED false
 set "ARGS="
@@ -100,8 +101,10 @@ goto launch
 
 :complete
 echo.
-echo   %W%Version COMPLETE%N% : demo + module Saisons + module Assistant IA ^(modele local ; sinon option 12^).
+echo   %W%Version COMPLETE%N% : donnees reelles ^(SDGD 2020 + signalements Salubri Go^), Saisons et Assistant IA.
+echo   Les signalements d'exemple sont retires ; ceux envoyes par Salubri Go restent enregistres.
 call :setenv SALUBRI_DEMO_MODE true
+call :setenv SALUBRI_DATA_MODE reel
 call :setenv SALUBRI_SEASONS_ENABLED true
 call :setenv SALUBRI_ASSISTANT_ENABLED true
 set "ARGS=--llm=no"
@@ -324,7 +327,7 @@ exit /b %errorlevel%
 
 :state
 set "MODE=demo"
-findstr /b /c:"SALUBRI_SEASONS_ENABLED=true" ".env" >nul 2>nul && set "MODE=complete (Saisons + Assistant IA)"
+findstr /b /c:"SALUBRI_SEASONS_ENABLED=true" ".env" >nul 2>nul && set "MODE=complete, donnees reelles (Saisons + Assistant IA)"
 findstr /b /c:"SALUBRI_DEMO_MODE=false" ".env" >nul 2>nul && set "MODE=production"
 set "DOCKER_TXT=%RD%absent ou arrete%N% %D%- demarre seul aux options 1 et 2%N%"
 docker info >nul 2>nul && set "DOCKER_TXT=%G%pret%N%"

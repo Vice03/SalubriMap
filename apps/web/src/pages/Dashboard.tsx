@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: AGPL-3.0-or-later
-import { ArrowDown, ArrowRight, ArrowUp, Bell, Map as MapIcon, MapPin, Recycle, Trash2, Truck, TrendingUp } from 'lucide-react'
+import { ArrowDown, ArrowRight, ArrowUp, Bell, ChevronDown, Layers as LayersIcon, Map as MapIcon, MapPin, Recycle, Trash2, Truck, TrendingUp } from 'lucide-react'
 import { lazy, Suspense, useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { api } from '../api/client'
@@ -43,9 +43,22 @@ export function LayerToggles({ layers, setLayers }: { layers: Layers; setLayers:
     ['sdgd', 'Décharges et CCT existants (réf. SDGD 2020)'],
     ['heat', 'Carte de chaleur des signalements'], ['water', "Retenues d'eau"],
   ]
+  // Légende repliable (flèche) : sur un petit écran ou une carte chargée, elle ne cache plus les points.
+  // Ouverte par défaut sur grand écran ; le choix est retenu sur ce navigateur.
+  const [open, setOpenState] = useState<boolean>(() => {
+    try { const v = localStorage.getItem('salubri.legende'); if (v) return v === '1' } catch { /* stockage indisponible */ }
+    return typeof window === 'undefined' || window.innerWidth > 900
+  })
+  const setOpen = (v: boolean) => { setOpenState(v); try { localStorage.setItem('salubri.legende', v ? '1' : '0') } catch { /* stockage indisponible */ } }
+  const on = items.filter(([k]) => layers[k]).length
   return (
-    <div className="layer-box">
-      {items.map(([k, label]) => (
+    <div className={`layer-box${open ? '' : ' closed'}`}>
+      <button type="button" className="layer-head" onClick={() => setOpen(!open)} aria-expanded={open} data-testid="legend-toggle"
+        title={open ? 'Replier la légende' : 'Déplier la légende'}>
+        <LayersIcon size={16} /><b>Légende</b>{!open && <span className="layer-count">{on}</span>}
+        <ChevronDown size={16} className="layer-chev" />
+      </button>
+      {open && items.map(([k, label]) => (
         <div key={k}>
           <label><input type="checkbox" checked={!!layers[k]} onChange={(e) => setLayers({ ...layers, [k]: e.target.checked })} /><span className="sym">{SYMBOL[k]}</span>{label}</label>
           {k === 'points' && layers.points && <div className="sub"><span><Dot fill="#fff" stroke={K.problem} r={5} />non desservi</span></div>}

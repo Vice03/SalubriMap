@@ -113,6 +113,17 @@ def create_app() -> FastAPI:
             check_startup(settings, s)
 
     @app.on_event("startup")
+    def _data_mode() -> None:  # données d'exemple ou réelles selon SALUBRI_DATA_MODE (services/data_mode.py)
+        from salubri_api.db import get_sessionmaker
+        from salubri_api.services.data_mode import apply
+
+        try:
+            with get_sessionmaker()() as s:
+                apply(s)
+        except Exception:  # base absente ou pas encore migrée : le seed s'en charge
+            logging.getLogger(__name__).exception("mode de données non appliqué")
+
+    @app.on_event("startup")
     def _resume() -> None:  # plans and simulations interrupted by a restart
         if settings.resume_on_startup:
             from salubri_api.services.plan.recovery import resume_interrupted

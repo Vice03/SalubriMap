@@ -45,6 +45,7 @@ def health(s: Session = Depends(get_session)) -> dict[str, object]:
         # masquage des visages et plaques (seconde passe serveur) : sans modèles, les photos sont refusées (503)
         # modules optionnels : les interfaces cachent ce qui est éteint
         "modules": {"seasons": get_settings().seasons_enabled, "assistant": get_settings().assistant_enabled},
+        "donnees": get_settings().data_mode,
         "masking": "ok"
         if masking_available()
         else "indisponible",  # recalculs en attente : la répétition attend qu'ils soient tous finis

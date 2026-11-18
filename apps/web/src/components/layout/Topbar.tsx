@@ -90,6 +90,11 @@ export function Topbar() {
             </div>
           )}
         </div>
+        {health?.donnees === 'reel' && (
+          <span className="real-badge" title="Version complète : décharges et CCT du SDGD 2020 et signalements envoyés par Salubri Go ; aucun signalement d'exemple">
+            Données réelles
+          </span>
+        )}
         {/* Le badge ne sert qu'à prévenir qu'on est connecté avec le compte public de démonstration */}
         {health?.demo_mode && session?.user.login === 'demo' && (
           <span className="demo-badge" title="Compte « demo » et code ouaga2026 connus de tous : ne pas utiliser pour de vraies données">

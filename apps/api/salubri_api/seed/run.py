@@ -69,10 +69,13 @@ def seed(slug: str, force: bool = False, reports: bool = True, plans: bool = Tru
     with get_sessionmaker()() as s:
         existing = s.query(Commune).filter(Commune.slug == slug).first()
         if existing is not None and not force:
+            from salubri_api.services.data_mode import apply
+
+            changed = apply(s, recompute=True)
             added = load_sdgd_dumps(s, existing) if reports else 0
             if not added:
                 log.info("Commune « %s » déjà chargée : rien à faire (--force pour recharger)", slug)
-                return {"commune": slug, "skipped": True}
+                return {"commune": slug, "skipped": True, "donnees": changed}
             consolidate(s, existing.id)
             s.commit()
             log.info("SDGD 2020 : %d décharges officielles ajoutées, recalcul des plans", added)
@@ -113,7 +116,8 @@ def seed(slug: str, force: bool = False, reports: bool = True, plans: bool = Tru
         s.commit()
 
         if reports:
-            for fname in ("reports_demo.geojson", "reports_field.geojson"):
+            demo_files = ("reports_demo.geojson",) if settings.data_mode == "demo" else ()  # « reel » : SDGD + Go
+            for fname in (*demo_files, "reports_field.geojson"):
                 path = folder / fname
                 if not path.exists() or path.stat().st_size == 0:
                     continue
