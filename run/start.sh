@@ -25,7 +25,9 @@ fi
 docker compose build seed api web || echo "Attention : reconstruction impossible (réseau ?) — démarrage avec les images déjà présentes."
 # rues OSM chargees AVANT le demarrage de l'API (sinon blocage mutuel sur la base)
 if [ -s data/osm/ouaga.osm.pbf ] && [ ! -f data/osm/.seeded_osm ]; then
-  echo "Premier chargement des vraies rues OpenStreetMap (1 à 2 minutes)..."
+  echo "Premier chargement des vraies rues OpenStreetMap (3 à 6 minutes selon la machine : ne pas interrompre)..."
+  # libère la base : une ancienne API ou un ancien seed encore actifs tiennent des verrous
+  docker compose stop api web seed >/dev/null 2>&1 || true
   docker compose run --rm seed python -m salubri_api.seed.run --force && echo charge > data/osm/.seeded_osm
   # jeu de pièges de la répétition propre à cette carte (scripts/rehearse.py le choisit tout seul)
   docker compose run --rm -v "$PWD/scripts:/app/scripts:ro" -v "$PWD/data/rehearsal:/app/data/rehearsal" seed \

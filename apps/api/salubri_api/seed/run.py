@@ -67,6 +67,7 @@ def seed(slug: str, force: bool = False, reports: bool = True, plans: bool = Tru
     folder = data / "communes" / slug
     t0 = time.perf_counter()
     migrate()
+    log.info("Etape 1/6 : base prete (migrations appliquees)")
     summary: dict[str, object] = {"commune": slug}
     with get_sessionmaker()() as s:
         existing = s.query(Commune).filter(Commune.slug == slug).first()
@@ -87,6 +88,7 @@ def seed(slug: str, force: bool = False, reports: bool = True, plans: bool = Tru
                 request_recompute(s, sc, "manual", {"reason": "données SDGD 2020"}, sync=True)
             return {"commune": slug, "sdgd_dumps": added}
         if existing is not None:
+            log.info("Suppression de l'ancienne commune...")
             s.delete(existing)
             s.commit()
         commune = load_commune(s, folder)
@@ -99,8 +101,10 @@ def seed(slug: str, force: bool = False, reports: bool = True, plans: bool = Tru
         if real_osm:
             from salubri_api.seed.load_osm import load_osm  # osmium only needed with a real extract
 
+            log.info("Etape 2/6 : lecture des rues OpenStreetMap (jusqu'a 1-2 min, rien ne s'affiche pendant)...")
             summary["osm"] = load_osm(s, commune.id, pbf, box(*meta["bbox"]))
         if real_bld:
+            log.info("Etape 3/6 : chargement des batiments...")
             summary["buildings"] = load_buildings(s, commune.id, blds)
         if not (real_osm and real_bld):
             log.warning(
@@ -112,12 +116,14 @@ def seed(slug: str, force: bool = False, reports: bool = True, plans: bool = Tru
                 s, commune.id, world, roads=not real_osm, water=not real_osm, buildings=not real_bld
             )
         s.commit()
+        log.info("Etape 4/6 : ilots et vehicules...")
         n_ilots = sum(rebuild_ilots(s, q) for q in quartiers)
         summary["ilots"] = n_ilots
         scenarios = load_vehicles_and_scenarios(s, commune, folder, quartiers)
         s.commit()
 
         if reports:
+            log.info("Etape 5/6 : import des signalements (peut durer 1-2 min)...")
             demo_files = ("reports_demo.geojson",) if settings.data_mode == "demo" else ()  # « reel » : SDGD + Go
             for fname in (*demo_files, "reports_field.geojson"):
                 path = folder / fname
@@ -139,6 +145,7 @@ def seed(slug: str, force: bool = False, reports: bool = True, plans: bool = Tru
     if plans:
         from salubri_api.services.plan.pipeline import request_recompute
 
+        log.info("Etape 6/6 : calcul des plans de collecte (1-2 min)...")
         with get_sessionmaker()() as s:
             for sid in scen_ids:
                 sc = s.get(Scenario, __import__("uuid").UUID(sid))

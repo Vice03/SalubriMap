@@ -42,11 +42,17 @@ docker compose build seed api web
 if errorlevel 1 echo Attention : reconstruction impossible (reseau ?) - demarrage avec les images deja presentes.
 rem Chargement des rues AVANT le demarrage de l'API (sinon les deux se bloquent mutuellement sur la base)
 if exist "data\osm\ouaga.osm.pbf" if not exist "data\osm\.seeded_osm" (
-  echo Premier chargement des vraies rues OpenStreetMap ^(1 a 2 minutes^)...
+  echo Premier chargement des vraies rues OpenStreetMap ^(3 a 6 minutes selon la machine : NE PAS INTERROMPRE^)...
+  rem libere la base : une ancienne API ou un ancien seed encore actifs tiennent des verrous et bloquent le rechargement
+  docker compose stop api web seed >nul 2>nul
   docker compose run --rm seed python -m salubri_api.seed.run --force
-  if not errorlevel 1 echo charge> "data\osm\.seeded_osm"
-  rem jeu de pieges de la repetition propre a cette carte
-  docker compose run --rm -v "%CD%\scripts:/app/scripts:ro" -v "%CD%\data\rehearsal:/app/data/rehearsal" seed python /app/scripts/gen_traps.py
+  if errorlevel 1 (
+    echo Chargement des rues interrompu ou en echec : il sera retente au prochain lancement.
+  ) else (
+    echo charge> "data\osm\.seeded_osm"
+    rem jeu de pieges de la repetition propre a cette carte
+    docker compose run --rm -v "%CD%\scripts:/app/scripts:ro" -v "%CD%\data\rehearsal:/app/data/rehearsal" seed python /app/scripts/gen_traps.py
+  )
 )
 docker compose %PROFILES% up -d
 if errorlevel 1 ( call :pauser & exit /b 1 )
