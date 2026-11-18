@@ -1,4 +1,5 @@
 @echo off
+setlocal EnableExtensions
 REM Salubri - diagnostic avant demarrage (Windows) : Docker, ports, disque, carte utilisee.
 cd /d "%~dp0\.."
 set ok=0
@@ -26,7 +27,7 @@ if exist "data\osm\ouaga.osm.pbf" (
 ) else (
   echo Carte             : ville synthetique ^(pas d'extrait data\osm\ouaga.osm.pbf, voir data\osm\README.md^)
 )
-findstr /r /c:"^SALUBRI_DEMO_MODE=true" .env >nul 2>nul && echo Mode              : demonstration ouverte (comptes demo et admin publics) || echo Mode              : production (compte admin, mot de passe dans .env)
+findstr /r /c:"^SALUBRI_DEMO_MODE=false" .env >nul 2>nul && echo Mode              : production (.env) || echo Mode              : demonstration (comptes admin / demo)
 rem module "Assistant" (optionnel) : moteur, modele et palier de la machine ; jamais bloquant
 where python >nul 2>nul && python run\llm_detect.py --doctor
 if defined portbad exit /b 2
