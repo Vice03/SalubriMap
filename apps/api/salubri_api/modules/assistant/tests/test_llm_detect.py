@@ -118,3 +118,29 @@ def test_start_scripts_call_detection_only_when_enabled() -> None:
     assert 'findstr /b /r /c:"SALUBRI_ASSISTANT_ENABLED=true" .env' in bat and "python run\\llm_detect.py %*" in bat
     assert "SALUBRI_ASSISTANT_ENABLED=(true|1)" in sh and 'python3 run/llm_detect.py "$@"' in sh
     assert "--profile assistant" in bat and "--profile assistant" in sh
+
+
+def test_bigger_installed_model_or_model_on_disk_is_used(monkeypatch, tmp_path, capsys) -> None:  # type: ignore[no-untyped-def]
+    monkeypatch.setattr(det, "ENV", tmp_path / ".env")
+    (tmp_path / ".env").write_text("SALUBRI_ASSISTANT_ENABLED=true\n", encoding="utf-8")
+    monkeypatch.delenv("SALUBRI_LLM_URL", raising=False)
+    monkeypatch.setattr(det, "hardware", lambda: det.Hardware(16, 8, 0, False, 8, 50.0))  # palier « moyen » (≤ 8B)
+    monkeypatch.setattr(
+        det, "detect", lambda max_b, *a: None if max_b < 14 else ("Ollama", "http://localhost:11434/v1", "qwen2.5:14b")
+    )
+    assert det.main(["--llm=no"]) == 0
+    out = capsys.readouterr().out
+    assert "plus gros que conseillé" in out and "qwen2.5:14b trouvé sur Ollama" in out
+    assert "SALUBRI_LLM_MODEL=qwen2.5:14b" in (tmp_path / ".env").read_text(encoding="utf-8")
+    # Ollama arrêté, mais le modèle est sur le disque
+    (tmp_path / ".env").write_text("SALUBRI_ASSISTANT_ENABLED=true\n", encoding="utf-8")
+    man = tmp_path / "models" / "manifests" / "registry.ollama.ai" / "library" / "qwen2.5"
+    man.mkdir(parents=True)
+    (man / "14b").write_text("{}", encoding="utf-8")
+    monkeypatch.setenv("OLLAMA_MODELS", str(tmp_path / "models"))
+    monkeypatch.setattr(det, "detect", lambda *a: None)
+    assert det.installed_on_disk() == ["qwen2.5:14b"]
+    assert det.main(["--llm=no"]) == 0
+    assert "ne répond pas" in capsys.readouterr().out
+    env = (tmp_path / ".env").read_text(encoding="utf-8")
+    assert "SALUBRI_LLM_URL=http://host.docker.internal:11434/v1" in env and "SALUBRI_LLM_MODEL=qwen2.5:14b" in env

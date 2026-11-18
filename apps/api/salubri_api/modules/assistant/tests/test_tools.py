@@ -79,3 +79,37 @@ def test_openai_compatible_client_and_unavailability() -> None:
             raise AssertionError("aurait dû échouer")
         except llm.Unavailable:
             pass
+
+
+def test_pick_prefers_wanted_then_biggest_tool_family() -> None:
+    installed = ["nomic-embed-text:latest", "llama3.2:3b", "qwen2.5:14b"]
+    assert llm.pick(installed, "qwen2.5:7b-instruct") == "qwen2.5:14b"  # le 7B demandé n'est pas installé
+    assert llm.pick(installed, "llama3.2:3b") == "llama3.2:3b"
+    assert llm.pick(["gemma2:9b", "nomic-embed-text"]) == "gemma2:9b"  # rien d'autre : on prend ce qui est là
+    assert llm.pick(["nomic-embed-text"]) is None
+
+
+def test_resolve_finds_ollama_elsewhere(monkeypatch) -> None:  # type: ignore[no-untyped-def]
+    from salubri_api.config import get_settings
+
+    class H(BaseHTTPRequestHandler):
+        def do_GET(self) -> None:  # noqa: N802
+            self.send_response(200)
+            self.end_headers()
+            self.wfile.write(json.dumps({"data": [{"id": "nomic-embed-text"}, {"id": "qwen2.5:14b"}]}).encode())
+
+        def log_message(self, *a: object) -> None:
+            pass
+
+    srv = HTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    try:
+        here = f"http://127.0.0.1:{srv.server_address[1]}/v1"
+        monkeypatch.setattr(get_settings(), "llm_url", "http://127.0.0.1:9/v1")  # adresse réglée : rien n'y répond
+        monkeypatch.setattr(llm, "CANDIDATES", (here,))
+        assert llm.resolve(force=True)[:2] == (here, "qwen2.5:14b")
+        monkeypatch.setattr(get_settings(), "llm_auto", False)
+        assert llm.resolve(force=True)[2] == []  # sans recherche automatique : seulement l'adresse réglée
+    finally:
+        srv.shutdown()
+        llm._found.update(t=-1e9, val=None)

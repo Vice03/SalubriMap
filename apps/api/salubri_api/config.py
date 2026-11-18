@@ -49,7 +49,8 @@ class Settings(BaseSettings):
     llm_url: str = "http://localhost:11434/v1"
     llm_model: str = "qwen2.5:7b-instruct"
     llm_api_key: str = ""
-    llm_timeout_s: float = 60.0
+    llm_timeout_s: float = 240.0  # un modèle de 14 milliards de paramètres sur processeur est lent
+    llm_auto: bool = True  # chercher un modèle déjà lancé (Ollama, LM Studio) si l'adresse réglée ne répond pas
     llm_during_demo: bool = False  # jamais de téléchargement de modèle au démarrage avant une démonstration
 
 

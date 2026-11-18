@@ -4,6 +4,8 @@ llama.cpp server, Jan, LocalAI et vLLM : un seul chemin, pas de chemin propre à
 compatible pour cet usage). `SALUBRI_LLM_URL=fake:` branche un modèle simulé pour les tests (CI sans modèle)."""
 
 import json
+import re
+import time
 from collections.abc import Callable
 from typing import Any
 
@@ -68,8 +70,59 @@ class OpenAICompatible:
             raise Unavailable(str(exc)[:200]) from exc
 
 
+# Où chercher un modèle déjà lancé sur la machine, vu depuis le conteneur de l'API (puis hors Docker).
+CANDIDATES = (
+    "http://host.docker.internal:11434/v1",  # Ollama sur le PC
+    "http://ollama:11434/v1",  # conteneur Ollama (profil « assistant »)
+    "http://localhost:11434/v1",
+    "http://host.docker.internal:1234/v1",  # LM Studio
+    "http://localhost:1234/v1",
+)
+FAMILIES = ("qwen3", "qwen2.5", "qwen2_5", "llama3", "llama-3", "mistral")
+_found: dict[str, Any] = {"t": -1e9, "val": None}
+
+
+def _size_b(name: str) -> float:
+    m = re.search(r"(\d+(?:\.\d+)?)\s*b\b", name.lower().replace("_", "."))
+    return float(m.group(1)) if m else 7.0
+
+
+def pick(models: list[str], wanted: str = "") -> str | None:
+    """Le modèle demandé s'il est installé ; sinon le plus gros d'une famille qui sait appeler des outils ;
+    sinon n'importe quel modèle de texte installé (l'utilisateur l'a choisi)."""
+    if wanted and wanted in models:
+        return wanted
+    text_models = [m for m in models if not any(x in m.lower() for x in ("embed", "vision", "coder", "whisper"))]
+    good = [m for m in text_models if any(f in m.lower() for f in FAMILIES)]
+    pool = good or text_models
+    return sorted(pool, key=lambda m: (_size_b(m), "instruct" in m.lower(), m))[-1] if pool else None
+
+
+def resolve(force: bool = False) -> tuple[str, str, list[str]]:
+    """(adresse, modèle, modèles vus) : l'adresse réglée si elle répond, sinon la première adresse connue où un
+    modèle tourne. Résultat gardé 60 s (15 s quand rien ne répond) pour ne pas sonder à chaque question."""
+    st = settings()
+    now = time.monotonic()
+    ttl = 60 if _found["val"] and _found["val"][2] else 15
+    if not force and _found["val"] and now - _found["t"] < ttl:
+        return _found["val"]  # type: ignore[no-any-return]
+    val: tuple[str, str, list[str]] = (st.llm_url, st.llm_model, [])
+    for url in dict.fromkeys([st.llm_url, *(CANDIDATES if st.llm_auto else ())]):
+        try:
+            models = OpenAICompatible(url, st.llm_model, st.llm_api_key, 2).ping()
+        except Unavailable:
+            continue
+        m = pick(models, st.llm_model)
+        if m:
+            val = (url, m, models)
+            break
+    _found.update(t=now, val=val)
+    return val
+
+
 def client() -> Any:
     st = settings()
     if st.llm_url.startswith("fake:"):
         return FAKE
-    return OpenAICompatible(st.llm_url, st.llm_model, st.llm_api_key, st.llm_timeout_s)
+    url, model, _ = resolve()
+    return OpenAICompatible(url, model, st.llm_api_key, st.llm_timeout_s)

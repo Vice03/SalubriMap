@@ -193,6 +193,18 @@ def detect(max_b: float, host: str = "http://localhost") -> tuple[str, str, str]
     return sorted(found, key=lambda f: params_b(f[2]))[-1]
 
 
+def installed_on_disk() -> list[str]:
+    """Modèles Ollama présents sur le disque (même si Ollama est arrêté) : dossier manifests d'Ollama."""
+    base = Path(os.environ.get("OLLAMA_MODELS") or Path.home() / ".ollama" / "models") / "manifests"
+    out: list[str] = []
+    if base.is_dir():
+        for f in base.glob("*/*/*/*"):  # registre/espace/nom/étiquette
+            if f.is_file():
+                ns, name, tag = f.parts[-3], f.parts[-2], f.name
+                out.append(f"{name}:{tag}" if ns == "library" else f"{ns}/{name}:{tag}")
+    return sorted(out)
+
+
 # ---------------------------------------------------------------- .env
 def read_env() -> dict[str, str]:
     out: dict[str, str] = {}
@@ -275,10 +287,22 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Assistant : {state} ; palier de la machine : {tier.nom} "
               f"(RAM {hw.ram_go} Go, VRAM {hw.vram_go} Go, disque libre {hw.disque_libre_go} Go)")  # fmt: skip
         return 0
+    if not found:  # un modèle plus gros que conseillé est installé : c'est le choix de l'utilisateur, on le prend
+        found = detect(1e9)
+        if found:
+            print(f"Assistant : {found[2]} est plus gros que conseillé pour cette machine ({tier.nom}) : "
+                  "les réponses peuvent prendre une à deux minutes.")  # fmt: skip
     if found:
         name, url, model = found
         print(f"Assistant : modèle {model} trouvé sur {name}")
         write_env({"SALUBRI_LLM_URL": container_url(url), "SALUBRI_LLM_MODEL": model}, dry)
+        return 0
+    disk = [m for m in installed_on_disk() if usable(m)] or installed_on_disk()
+    if disk:
+        model = best_model(disk, 1e9) or disk[-1]
+        print(f"Assistant : Ollama est installé ({', '.join(disk[:4])}) mais ne répond pas. Ouvrez l'application "
+              "Ollama (icône du lama près de l'horloge) : Salubri la trouvera tout seul, sans redémarrer.")  # fmt: skip
+        write_env({"SALUBRI_LLM_URL": "http://host.docker.internal:11434/v1", "SALUBRI_LLM_MODEL": model}, dry)
         return 0
     if tier.tag is None:
         print(f"Assistant : désactivé, {tier.nom} (RAM {hw.ram_go} Go). Rien n'est téléchargé.")

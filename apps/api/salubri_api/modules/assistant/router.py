@@ -37,13 +37,16 @@ class AskIn(BaseModel):
 @router.get("/status", summary="Modèle local joignable ? (sans appeler le modèle)")
 def status() -> dict[str, Any]:
     st = settings()
-    cli = llm.client()
-    try:
-        models = cli.ping() if hasattr(cli, "ping") else ["simulé"]
-        ok = True
-    except llm.Unavailable:
-        models, ok = [], False
-    return {"disponible": ok and not getattr(cli, "down", False), "modele": st.llm_model, "modeles": models[:20]}
+    if st.llm_url.startswith("fake:"):
+        cli = llm.client()
+        return {
+            "disponible": not getattr(cli, "down", False),
+            "modele": "simulé",
+            "adresse": "fake:",
+            "modeles": ["simulé"],
+        }
+    url, model, models = llm.resolve(force=True)
+    return {"disponible": bool(models), "modele": model, "adresse": url, "modeles": models[:20]}
 
 
 @router.post("/ask", summary="Poser une question (modérateurs et administrateurs) ; réponse diffusée en NDJSON")
