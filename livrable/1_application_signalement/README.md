@@ -11,9 +11,9 @@
 - **Guide vocal pour les personnes qui ne lisent pas** : au lancement, une voix française puis une voix mooré
   proposent la langue (le bouton de la langue qui parle brille) ; le signalement se fait ensuite pas à pas, un grand
   bouton par étape : photo → quantité → type de déchet → localisation → remerciement. Les voix françaises sont
-  fournies (`apps/go/public/audio/fr/`, générées par `scripts/go_audio_fr.py`). Les voix **mooré sont à enregistrer**
-  (22 fichiers, liste et textes dans [`docs/AUDIO_GO.md`](../../docs/AUDIO_GO.md)) ; tant qu'elles manquent, la langue
-  mooré garde les boutons qui brillent, sans son. « Continuer sans voix » ouvre le formulaire classique.
+  fournies (`apps/go/public/audio/fr/`, générées par `scripts/go_audio_fr.py`). Les voix mooré sont
+  enregistrées (`apps/go/public/audio/mos/`, découpées par `scripts/go_audio_mos_decoupe.py`) et **restent à faire valider
+  par un locuteur** (22 fichiers, liste et textes dans [`docs/AUDIO_GO.md`](../../docs/AUDIO_GO.md)). « Continuer sans voix » ouvre le formulaire classique.
 
 ## L'essayer
 

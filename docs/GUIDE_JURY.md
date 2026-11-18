@@ -69,7 +69,7 @@ de la flotte. Une fois connecté avec le compte public « demo », le badge jaun
 
 <img src="guide/06_salubri_go.jpg" alt="Salubri Go" style="width:34%;display:block;margin:0 auto;border:1px solid #ccc;border-radius:10px">
 
-Choix **4** du menu (ou `http://localhost/go/`, aussi sur téléphone : choix 11). Au lancement, l'écran de langue parle : une voix française puis une voix mooré proposent la langue, le bouton de celle qui parle brille ; touchez la vôtre (ou « Continuer sans voix »). Le signalement se fait ensuite **pas à pas, un grand bouton par étape**, la voix guidant chacune : photo, quantité (chaque bouton brille quand la voix le nomme), type de déchets, localisation, remerciement. **Les visages et les plaques sont floutés sur l'appareil, avant tout envoi.** Sans réseau, le signalement attend dans « Mes envois » et part tout seul au retour du réseau. Les voix mooré sont en cours d'enregistrement : en attendant, les boutons brillent sans son.
+Choix **4** du menu (ou `http://localhost/go/`, aussi sur téléphone : choix 11). Au lancement, l'écran de langue parle : une voix française puis une voix mooré proposent la langue, le bouton de celle qui parle brille ; touchez la vôtre (ou « Continuer sans voix »). Le signalement se fait ensuite **pas à pas, un grand bouton par étape**, la voix guidant chacune : photo, quantité (chaque bouton brille quand la voix le nomme), type de déchets, localisation, remerciement. **Les visages et les plaques sont floutés sur l'appareil, avant tout envoi.** Sans réseau, le signalement attend dans « Mes envois » et part tout seul au retour du réseau. Les voix mooré sont enregistrées ; elles restent à faire valider par un locuteur (`docs/AUDIO_GO.md`).
 
 ### Étape 3 — La carte et la vérification des signalements
 

@@ -48,6 +48,10 @@ Le français est lu d'abord (fichier français), puis le mooré (fichier mooré)
 
 **Total à fournir en mooré : 22 fichiers** (`lang_mos` + les 21 ci-dessus).
 
+## État : mooré enregistré, à faire valider
+
+Le mooré a été enregistré **en une seule prise** (`scripts/audio_src/mos_enregistrement.opus`) puis découpé aux silences par `scripts/go_audio_mos_decoupe.py` (`--liste` affiche les segments et leur rattachement) ; les 22 fichiers sont dans `apps/go/public/audio/mos/`. Le rattachement suit l'ordre de lecture de l'enregistrement, pas les minutes annoncées. **Une personne qui parle mooré doit écouter les 22 fichiers**, en particulier `type_plastic` et `type_organic` (placés en fin d'enregistrement, après `loc_denied`) et `type_household` (4 s, plus long que la consigne de 3 s). Si un fichier est faux, corriger la table `SEQUENCE` du script et le relancer.
+
 ## Où les mettre
 
 ```
