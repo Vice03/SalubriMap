@@ -7,6 +7,8 @@ d'outil et réponse va dans le journal existant avec l'utilisateur."""
 
 import json
 import re
+import time
+from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
@@ -22,6 +24,8 @@ MAX_ROUNDS = 4
 MAX_ANSWER_CHARS = 3000
 MAX_QUESTION_CHARS = 600
 RATE_PER_MINUTE = 6
+DEADLINE_S = 600  # au-delà, on répond « trop long » plutôt que de laisser l'écran attendre
+SLOW = "Le modèle local a mis trop de temps à répondre. Réessayez (le premier appel charge le modèle en mémoire) ou choisissez un modèle plus petit (choix 12 du lanceur)."
 UNAVAILABLE = "Assistant indisponible : aucun modèle local ne répond (voir docs/MODULES.md)."
 PROMPT = (Path(__file__).parent / "prompt.md").read_text(encoding="utf-8")
 
@@ -56,9 +60,17 @@ def _rate_check(s: Session, actor: str) -> None:
         raise RateLimited(f"Au plus {RATE_PER_MINUTE} questions par minute : réessayez dans un instant")
 
 
-def ask(s: Session, question: str, role: str, actor: str) -> Answer:
-    question = question.strip()[:MAX_QUESTION_CHARS]
+def rate_check(s: Session, actor: str) -> None:
     _rate_check(s, actor)
+
+
+def ask(s: Session, question: str, role: str, actor: str, emit: Callable[[dict[str, Any]], None] | None = None,
+        check_rate: bool = True) -> Answer:  # fmt: skip
+    """`emit` reçoit les étapes au fil de l'eau (outil appelé, modèle au travail) pour que l'écran ne reste pas muet."""
+    say = emit or (lambda e: None)
+    question = question.strip()[:MAX_QUESTION_CHARS]
+    if check_rate:
+        _rate_check(s, actor)
     audit(s, "assistant_question", "assistant", None, after={"question": question}, actor=actor)
     s.commit()
     hits = retrieval.search(s, question, k=4)
@@ -70,8 +82,17 @@ def ask(s: Session, question: str, role: str, actor: str) -> Answer:
     cli = llm.client()
     used: list[str] = []
     proposal = None
+    start = time.monotonic()
     try:
-        for _ in range(MAX_ROUNDS):
+        for i in range(MAX_ROUNDS):
+            if time.monotonic() - start > DEADLINE_S:
+                raise llm.Unavailable("délai dépassé")
+            say(
+                {
+                    "type": "etape",
+                    "texte": "Le modèle lit les documents…" if i == 0 else "Le modèle analyse les résultats…",
+                }
+            )
             msg = cli.chat(messages, tools.schemas(role))
             calls = msg.get("tool_calls") or []
             if not calls:
@@ -84,6 +105,7 @@ def ask(s: Session, question: str, role: str, actor: str) -> Answer:
                     args = json.loads(fn.get("arguments") or "{}")
                 except ValueError:
                     args = {}
+                say({"type": "outil", "nom": name})
                 out = tools.run(s, role, name, args if isinstance(args, dict) else {})
                 used.append(name)
                 if name == "proposer_simulation" and "proposition" in out:
@@ -96,7 +118,8 @@ def ask(s: Session, question: str, role: str, actor: str) -> Answer:
     except llm.Unavailable as exc:
         audit(s, "assistant_unavailable", "assistant", None, after={"erreur": str(exc)[:200]}, actor=actor)
         s.commit()
-        return Answer(UNAVAILABLE, available=False)
+        slow = "timed out" in str(exc).lower() or "timeout" in str(exc).lower() or "délai" in str(exc)
+        return Answer(SLOW if slow else UNAVAILABLE, available=False)
     answer = (msg.get("content") or "Je ne sais pas.").strip()[:MAX_ANSWER_CHARS]
     sources = [f"outil: {n}" for n in dict.fromkeys(used)] + [h.cite for h in hits]
     if not re.search(r"\[(outil|[^\]]+\.md)", answer) and "je ne sais pas" not in answer.lower():

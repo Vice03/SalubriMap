@@ -2,6 +2,8 @@
 
 ## 0.5.0 — 18 novembre 2026
 
+- Assistant IA : il ne restait plus muet avec Qwen3 14B sur processeur. La « réflexion » de Qwen3 est coupée (`/no_think`) et retirée de la réponse ; la question tourne à part et l'écran reçoit l'étape en cours et un signe de vie toutes les 5 s (nginx ne coupe plus après 5 min, délai porté à 15 min) ; au-delà de 10 min, message clair « trop lent » au lieu d'un écran figé. Test avec un faux serveur lent qui réfléchit.
+
 Réponse à la revue r7 (F3, F4, F6, F8) :
 
 - **Lanceur `SALUBRI.bat` refait** : présentation en couleurs, état de Docker, de Salubri et de la version en tête du menu. Il corrige seul les problèmes courants : Docker Desktop arrêté (démarré et attendu jusqu'à 3 min), Docker absent (page d'installation ouverte), port 80 ou 8443 pris par un autre programme (bascule sur un port libre, noté dans `.env`), `.env` absent, premier démarrage en échec (nettoyage des anciens conteneurs et nouvel essai, puis journal affiché). Option R « Réparer ». `run/start.bat` ne s'arrête plus sur « Appuyez sur une touche » quand le lanceur gère l'erreur. Vérifié sous Wine (affichage du menu) ; à confirmer sur Windows.

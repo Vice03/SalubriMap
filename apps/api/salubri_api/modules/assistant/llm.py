@@ -49,17 +49,19 @@ class OpenAICompatible:
         self.url, self.model, self.key, self.timeout, self.max_tokens = url.rstrip("/"), model, key, timeout, max_tokens
 
     def chat(self, messages: list[Message], tools: list[dict[str, Any]]) -> Message:
-        body: dict[str, Any] = {"model": self.model, "messages": messages, "temperature": 0.1,
-                                "max_tokens": self.max_tokens, "stream": False}  # fmt: skip
+        body: dict[str, Any] = {"model": self.model, "messages": no_think(self.model, messages),
+                                "temperature": 0.1, "max_tokens": self.max_tokens, "stream": False}  # fmt: skip
         if tools:
             body["tools"] = tools
         headers = {"Authorization": f"Bearer {self.key}"} if self.key else {}
         try:
             r = httpx.post(f"{self.url}/chat/completions", json=body, headers=headers, timeout=self.timeout)
             r.raise_for_status()
-            return r.json()["choices"][0]["message"]  # type: ignore[no-any-return]
+            msg: Message = r.json()["choices"][0]["message"]
         except (httpx.HTTPError, KeyError, IndexError, ValueError) as exc:
-            raise Unavailable(str(exc)[:200]) from exc
+            raise Unavailable(str(exc)[:200] or type(exc).__name__) from exc
+        msg["content"] = strip_think(msg.get("content") or "")
+        return msg
 
     def ping(self) -> list[str]:
         try:
@@ -68,6 +70,30 @@ class OpenAICompatible:
             return [m.get("id", "") for m in r.json().get("data", [])]
         except (httpx.HTTPError, ValueError) as exc:
             raise Unavailable(str(exc)[:200]) from exc
+
+
+THINK_RE = re.compile(r"<think>.*?(</think>|$)", re.S)
+
+
+def thinks(model: str) -> bool:
+    """Modèles qui « réfléchissent » à voix haute avant de répondre (Qwen3, DeepSeek-R1…) : sur processeur, cette
+    réflexion prend plusieurs minutes et mange la limite de mots ; l'assistant n'en a pas besoin."""
+    m = model.lower()
+    return any(x in m for x in ("qwen3", "deepseek-r1", "qwq"))
+
+
+def no_think(model: str, messages: list[Message]) -> list[Message]:
+    """Coupe la réflexion des modèles Qwen3 (`/no_think` dans le message système, compris par leur modèle de
+    conversation) ; ne touche à rien pour les autres modèles."""
+    if not thinks(model) or not messages or messages[0].get("role") != "system":
+        return messages
+    first = dict(messages[0])
+    first["content"] = f"{first.get('content') or ''}\n/no_think"
+    return [first, *messages[1:]]
+
+
+def strip_think(text: str) -> str:
+    return THINK_RE.sub("", text).strip()
 
 
 # Où chercher un modèle déjà lancé sur la machine, vu depuis le conteneur de l'API (puis hors Docker).

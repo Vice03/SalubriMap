@@ -5,7 +5,7 @@ import { askLogin, authHeaders, can, useSession } from '../../api/session'
 import { ASK_EVENT } from './bus'
 
 interface Proposal { scenario_id: string | null; scenario: string | null; params: Record<string, unknown>; camions_en_panne: number }
-interface Turn { q: string; a: string; sources: string[]; tools: string[]; proposal: Proposal | null; ok: boolean }
+interface Turn { q: string; a: string; sources: string[]; tools: string[]; proposal: Proposal | null; ok: boolean; step?: string; waited?: number }
 interface Status { disponible: boolean; modele: string }
 
 const ANALYSES = [
@@ -88,6 +88,8 @@ export function AssistantPanel() {
             if (!line.trim()) continue
             const e = JSON.parse(line)
             if (e.type === 'outil') t.tools.push(e.nom)
+            if (e.type === 'etape') t.step = e.texte
+            if (e.type === 'attente') t.waited = (t.waited ?? 0) + 5
             if (e.type === 'texte') t.a += e.texte
             if (e.type === 'fin') { t.sources = e.sources ?? []; t.proposal = e.proposition ?? null; t.ok = e.disponible !== false }
             setTurns((x) => [...x.slice(0, -1), { ...t }])
@@ -143,7 +145,7 @@ export function AssistantPanel() {
                 <div className="ai-msg me">{t.q}</div>
                 <div className={`ai-msg bot${t.ok ? '' : ' err'}`}>
                   {t.tools.length > 0 && <div className="ai-tools"><Wrench size={12} /> a consulté : {[...new Set(t.tools)].map((x) => TOOL_LABEL[x] ?? x).join(', ')}</div>}
-                  <div style={{ whiteSpace: 'pre-wrap' }}>{t.a || (busy && i === turns.length - 1 ? <span className="ai-typing"><i /><i /><i /></span> : '…')}</div>
+                  <div style={{ whiteSpace: 'pre-wrap' }}>{t.a || (busy && i === turns.length - 1 ? <span><span className="ai-typing"><i /><i /><i /></span> <small className="muted">{t.step ?? 'Le modèle se prépare…'}{t.waited ? ` (${t.waited} s — un modèle local sur processeur peut prendre 1 à 3 minutes)` : ''}</small></span> : '…')}</div>
                   {t.sources.length > 0 && <div className="ai-src">Sources : {t.sources.join(' · ')}</div>}
                   {t.proposal && <button className="ai-chip strong" onClick={() => void applyProposal(t.proposal!).then(setNote)}>Appliquer cette simulation</button>}
                 </div>

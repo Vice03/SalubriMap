@@ -125,3 +125,67 @@ def test_bm25_finds_the_right_document(db) -> None:  # type: ignore[no-untyped-d
     assert hits and any(h.doc == "RULES.md" for h in hits)
     hits = retrieval.search(db, "calage p0 SDGD décharges", k=3)
     assert "SIMULATION_CALIBRATION.md" in [h.doc for h in hits]  # le rapport cite aussi le calage
+
+
+def test_vrai_modele_lent_qui_reflechit(aclient, monkeypatch):  # type: ignore[no-untyped-def]
+    """Serveur compatible OpenAI lent (6 s) qui « réfléchit » comme Qwen3 : l'écran reçoit des signes de vie,
+    la réflexion est coupée (/no_think) et retirée de la réponse."""
+    import http.server
+    import json as _json
+    import threading
+    import time as _time
+
+    from salubri_api.config import get_settings
+    from salubri_api.modules.assistant import llm
+
+    seen: list[dict] = []
+
+    class H(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *a):  # type: ignore[no-untyped-def]
+            pass
+
+        def _send(self, obj):  # type: ignore[no-untyped-def]
+            b = _json.dumps(obj).encode()
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(b)))
+            self.end_headers()
+            self.wfile.write(b)
+
+        def do_GET(self):  # type: ignore[no-untyped-def]
+            self._send({"data": [{"id": "qwen3:14b"}]})
+
+        def do_POST(self):  # type: ignore[no-untyped-def]
+            seen.append(_json.loads(self.rfile.read(int(self.headers["Content-Length"]))))
+            _time.sleep(6)
+            self._send(
+                {
+                    "choices": [
+                        {
+                            "message": {
+                                "role": "assistant",
+                                "content": "<think>je réfléchis longuement</think>Huit camions suffisent. [plan.md]",
+                            }
+                        }
+                    ]
+                }
+            )
+
+    srv = http.server.ThreadingHTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(get_settings(), "llm_url", f"http://127.0.0.1:{srv.server_port}/v1")
+    monkeypatch.setattr(get_settings(), "llm_model", "qwen3:14b")
+    monkeypatch.setattr(get_settings(), "llm_auto", False)
+    llm._found.update(t=-1e9, val=None)
+    try:
+        r = aclient.post("/api/assistant/ask", json={"question": "Combien de camions faut-il ?"})
+        events = [_json.loads(x) for x in r.text.splitlines() if x.strip()]
+    finally:
+        srv.shutdown()
+        llm._found.update(t=-1e9, val=None)
+    kinds = [e["type"] for e in events]
+    assert "attente" in kinds and "etape" in kinds and kinds[-1] == "fin"
+    texte = "".join(e["texte"] for e in events if e["type"] == "texte")
+    assert "Huit camions suffisent" in texte and "réfléchis" not in texte
+    assert events[-1]["disponible"] is True
+    assert seen[0]["messages"][0]["content"].endswith("/no_think")
