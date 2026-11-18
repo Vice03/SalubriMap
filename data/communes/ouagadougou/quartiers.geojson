@@ -33,8 +33,10 @@
    "properties": {
     "name": "Arrondissement 1 — Nord",
     "arrondissement": 1,
-    "population": 60200,
-    "source": "demo"
+    "population": 57792,
+    "source": "demo",
+    "population_demo": 60200,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -69,8 +71,10 @@
    "properties": {
     "name": "Arrondissement 1 — Sud",
     "arrondissement": 1,
-    "population": 46600,
-    "source": "demo"
+    "population": 44736,
+    "source": "demo",
+    "population_demo": 46600,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -105,8 +109,10 @@
    "properties": {
     "name": "Arrondissement 2 — Nord",
     "arrondissement": 2,
-    "population": 61900,
-    "source": "demo"
+    "population": 48954,
+    "source": "demo",
+    "population_demo": 61900,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -141,8 +147,10 @@
    "properties": {
     "name": "Arrondissement 2 — Sud",
     "arrondissement": 2,
-    "population": 43600,
-    "source": "demo"
+    "population": 34482,
+    "source": "demo",
+    "population_demo": 43600,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -177,8 +185,10 @@
    "properties": {
     "name": "Arrondissement 3 — Nord",
     "arrondissement": 3,
-    "population": 42100,
-    "source": "demo"
+    "population": 134464,
+    "source": "demo",
+    "population_demo": 42100,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -213,8 +223,10 @@
    "properties": {
     "name": "Arrondissement 3 — Sud",
     "arrondissement": 3,
-    "population": 55400,
-    "source": "demo"
+    "population": 176942,
+    "source": "demo",
+    "population_demo": 55400,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -249,8 +261,10 @@
    "properties": {
     "name": "Arrondissement 4 — Nord",
     "arrondissement": 4,
-    "population": 54100,
-    "source": "demo"
+    "population": 120533,
+    "source": "demo",
+    "population_demo": 54100,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -285,8 +299,10 @@
    "properties": {
     "name": "Arrondissement 4 — Sud",
     "arrondissement": 4,
-    "population": 39100,
-    "source": "demo"
+    "population": 87114,
+    "source": "demo",
+    "population_demo": 39100,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -321,8 +337,10 @@
    "properties": {
     "name": "Arrondissement 5 — Nord",
     "arrondissement": 5,
-    "population": 59900,
-    "source": "demo"
+    "population": 77242,
+    "source": "demo",
+    "population_demo": 59900,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -357,8 +375,10 @@
    "properties": {
     "name": "Arrondissement 5 — Sud",
     "arrondissement": 5,
-    "population": 40900,
-    "source": "demo"
+    "population": 52742,
+    "source": "demo",
+    "population_demo": 40900,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -393,8 +413,10 @@
    "properties": {
     "name": "Arrondissement 6 — Nord",
     "arrondissement": 6,
-    "population": 59100,
-    "source": "demo"
+    "population": 139668,
+    "source": "demo",
+    "population_demo": 59100,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -429,8 +451,10 @@
    "properties": {
     "name": "Arrondissement 6 — Sud",
     "arrondissement": 6,
-    "population": 35200,
-    "source": "demo"
+    "population": 83186,
+    "source": "demo",
+    "population_demo": 35200,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -465,8 +489,10 @@
    "properties": {
     "name": "Arrondissement 7 — Nord",
     "arrondissement": 7,
-    "population": 58900,
-    "source": "demo"
+    "population": 141780,
+    "source": "demo",
+    "population_demo": 58900,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -501,8 +527,10 @@
    "properties": {
     "name": "Arrondissement 7 — Sud",
     "arrondissement": 7,
-    "population": 58600,
-    "source": "demo"
+    "population": 141057,
+    "source": "demo",
+    "population_demo": 58600,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -537,8 +565,10 @@
    "properties": {
     "name": "Arrondissement 8 — Nord",
     "arrondissement": 8,
-    "population": 58400,
-    "source": "demo"
+    "population": 78801,
+    "source": "demo",
+    "population_demo": 58400,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -573,8 +603,10 @@
    "properties": {
     "name": "Arrondissement 8 — Sud",
     "arrondissement": 8,
-    "population": 54900,
-    "source": "demo"
+    "population": 74079,
+    "source": "demo",
+    "population_demo": 54900,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -609,8 +641,10 @@
    "properties": {
     "name": "Arrondissement 9 — Nord",
     "arrondissement": 9,
-    "population": 49100,
-    "source": "demo"
+    "population": 157047,
+    "source": "demo",
+    "population_demo": 49100,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -645,8 +679,10 @@
    "properties": {
     "name": "Arrondissement 9 — Sud",
     "arrondissement": 9,
-    "population": 56100,
-    "source": "demo"
+    "population": 179436,
+    "source": "demo",
+    "population_demo": 56100,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -681,8 +717,10 @@
    "properties": {
     "name": "Arrondissement 10 — Nord",
     "arrondissement": 10,
-    "population": 43300,
-    "source": "demo"
+    "population": 112388,
+    "source": "demo",
+    "population_demo": 43300,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -717,8 +755,10 @@
    "properties": {
     "name": "Arrondissement 10 — Sud",
     "arrondissement": 10,
-    "population": 58400,
-    "source": "demo"
+    "population": 151581,
+    "source": "demo",
+    "population_demo": 58400,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -753,8 +793,10 @@
    "properties": {
     "name": "Arrondissement 11 — Nord",
     "arrondissement": 11,
-    "population": 51600,
-    "source": "demo"
+    "population": 131149,
+    "source": "demo",
+    "population_demo": 51600,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -789,8 +831,10 @@
    "properties": {
     "name": "Arrondissement 11 — Sud",
     "arrondissement": 11,
-    "population": 48700,
-    "source": "demo"
+    "population": 123779,
+    "source": "demo",
+    "population_demo": 48700,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -825,8 +869,10 @@
    "properties": {
     "name": "Arrondissement 12 — Nord",
     "arrondissement": 12,
-    "population": 50100,
-    "source": "demo"
+    "population": 32540,
+    "source": "demo",
+    "population_demo": 50100,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   },
   {
@@ -861,9 +907,14 @@
    "properties": {
     "name": "Arrondissement 12 — Sud",
     "arrondissement": 12,
-    "population": 52000,
-    "source": "demo"
+    "population": 33774,
+    "source": "demo",
+    "population_demo": 52000,
+    "population_source": "INSD, RGPH 2019, monographie de Ouagadougou, tableau 2.2 : total de l'arrondissement réparti entre ses quartiers de démonstration au prorata"
    }
   }
- ]
+ ],
+ "metadata": {
+  "population": "Totaux par arrondissement : INSD, 5e RGPH 2019 (2 415 266 habitants). Limites des quartiers : démonstration (les limites des secteurs ne sont pas en données ouvertes)."
+ }
 }

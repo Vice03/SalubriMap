@@ -1,7 +1,14 @@
 # Journal des versions
 
-## 0.5.0 — en cours
+## 0.5.0 — 18 novembre 2026
 
+Réponse à la revue r7 (F3, F4, F6, F8) :
+
+- **Populations réelles (F3)** : chaque arrondissement reçoit son total du recensement (INSD, 5e RGPH 2019, monographie de Ouagadougou, tableau 2.2 : 2 415 266 habitants), réparti entre ses quartiers de démonstration au prorata (`population_source` dans `quartiers.geojson`, ancienne valeur gardée dans `population_demo`). Avec les bâtiments réels, la population est répartie sur les emprises Open Buildings (méthode dasymétrique, déjà dans le seed). Les limites des secteurs restent à demander à la mairie.
+- **Bâtiments réels** : `scripts/prepare_open_buildings.py` réparé (l'index des tuiles avait changé d'adresse : 404) et lu en flux (la tuile de Ouaga fait 1,35 Go) : 1 774 712 bâtiments de confiance ≥ 0,7. Fichier `data/open_buildings/ouaga_buildings.csv.gz` (150 Mo, hors git) ; seed vérifié : 30 235 îlots.
+- **Incertitude des paramètres (F4)** : `POST /api/plans/{id}/simulate` accepte `incertitude: true` : chaque réplication est rejouée en tirant les paramètres non calés (déchets par habitant ±25 %, propension à jeter ±1, effet de la distance ×0,5 à ×2) ; chaque indicateur reçoit `median_param`, `p5_param`, `p95_param`. Le plan d'arrondissement publie les deux intervalles et les écarts à la référence. Test.
+- **Budget d'arrondissement (F6)** : le plan de l'arrondissement 9 prend le budget de la commune au prorata de sa population ; la variante « budget −30 % » mesure donc un effet réel au lieu de reproduire la référence.
+- **Version (F8)** : 0.5.0 partout (API, `pyproject.toml`, Salubri Map, Salubri Go, `docs/openapi.json` régénéré).
 - **Carte de chaleur des signalements** : nouvelle couche de la carte (MapLibre `heatmap`), pondérée par statut (vérifié 1, probable 0,8, à revoir 0,5, rejeté 0 : un piège ne chauffe pas), période au choix (7, 30, 90 jours ou tout) ; le public ne voit que les signalements vérifiés.
 - **Retenues d'eau** : routes `GET /api/eau` (plans d'eau OSM d'au moins 0,5 ha) et `GET /api/eau/depotoirs?distance_m=200` (dépotoirs actifs proches, distance, retenue, regroupement par retenue). Couche « Retenues d'eau » (eau en bleu, dépotoirs cerclés) et panneau « Dépotoirs près des retenues d'eau » sous la carte (clic : zoom). Test.
 - **Caniveaux** : le type OSM des cours d'eau linéaires est gardé (`water.subkind` : drain, ditch… ; migration `0007`). Un dépotoir à moins de 15 m d'un caniveau ou d'un fossé est marqué `near_drain` (carte, fiche, exports GeoJSON et CSV, zones critiques) et sa priorité passe à × 2 (× 1,5 près d'un autre cours d'eau). **Correction** : la règle R7 « dans l'eau » pénalisait (−45) un signalement à moins de 8 m d'un caniveau OSM ; elle ne vise plus que rivières, marigots et canaux. Les caniveaux d'une base existante n'apparaissent qu'après rechargement des données (choix 10 du lanceur). Test.

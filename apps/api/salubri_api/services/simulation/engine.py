@@ -295,13 +295,51 @@ def run(plan: PlanSnapshot, sp: SimParams, seed: int, mode: str = "agrege") -> S
 QUANTILES = {"p5": 5, "p10": 10, "p90": 90, "p95": 95}  # p5–p95 = intervalle à 90 % ; p10–p90 gardés (compatibilité)
 
 
-def replicate(plan: PlanSnapshot, sp: SimParams, seed: int, n: int, mode: str = "agrege") -> dict[str, object]:
-    """Run n seeds; return median and quantiles (p5, p10, p90, p95) per summary indicator and daily series."""
+# Paramètres non calés dont l'incertitude est propagée (revue r7, F4) : (nom, tirage, bornes, source).
+# « fois » : multiplie la valeur du scénario (log-uniforme pour une pente) ; « plus » : ajoute à la valeur.
+UNCERTAIN: list[tuple[str, str, tuple[float, float], str]] = [
+    ("kg_per_person_day", "fois", (0.75, 1.25), "0,6 kg annoncé par la mairie, jamais pesé ; ±25 %"),
+    ("p0", "plus", (-1.0, 1.0), "propension de base à jeter, non calée (SIMULATION_CALIBRATION.md)"),
+    ("slope_dist", "fois_log", (0.5, 2.0), "effet de la distance, non calé ; de la moitié au double"),
+]
+
+
+def draw_params(sp: SimParams, rng: np.random.Generator) -> SimParams:
+    """Un jeu de paramètres incertains tiré dans leurs bornes documentées (UNCERTAIN)."""
+    from dataclasses import replace
+
+    kw: dict[str, float] = {}
+    for name, how, (lo, hi), _ in UNCERTAIN:
+        v = float(getattr(sp, name))
+        if how == "fois":
+            kw[name] = v * rng.uniform(lo, hi)
+        elif how == "fois_log":
+            kw[name] = v * float(np.exp(rng.uniform(np.log(lo), np.log(hi))))
+        else:
+            kw[name] = v + rng.uniform(lo, hi)
+    return replace(sp, **kw)
+
+
+def replicate(
+    plan: PlanSnapshot, sp: SimParams, seed: int, n: int, mode: str = "agrege", uncertainty: bool = False
+) -> dict[str, object]:
+    """Run n seeds; return median and quantiles (p5, p10, p90, p95) per summary indicator and daily series.
+
+    Avec `uncertainty`, n simulations de plus où les paramètres non calés (UNCERTAIN) sont tirés à chaque
+    réplication : chaque indicateur reçoit aussi `median_param`, `p5_param`, `p95_param` (bruit + paramètres).
+    Les mêmes graines servent aux deux séries : les écarts entre scénarios restent comparables."""
     runs = [run(plan, sp, seed + k, mode) for k in range(n)]
     summ = {}
     for k in runs[0].summary:
         v = np.array([r.summary[k] for r in runs], dtype=float)
         summ[k] = {"median": float(np.median(v)), **{q: float(np.percentile(v, x)) for q, x in QUANTILES.items()}}
+    if uncertainty:
+        rng = np.random.default_rng(seed + 100_003)
+        pruns = [run(plan, draw_params(sp, rng), seed + k, mode) for k in range(n)]
+        for k in summ:
+            v = np.array([r.summary[k] for r in pruns], dtype=float)
+            summ[k].update({"median_param": float(np.median(v)), "p5_param": float(np.percentile(v, 5)),
+                            "p95_param": float(np.percentile(v, 95))})  # fmt: skip
     daily = {}
     for k in runs[0].daily:
         arr = np.array([r.daily[k] for r in runs])

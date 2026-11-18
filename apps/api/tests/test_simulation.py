@@ -82,3 +82,16 @@ def test_replications_give_bands():
     out = replicate(PLAN, sp(truck_breakdown_rate_per_day=0.2), 42, 5)
     s = out["summary"]["collected_t"]
     assert s["p10"] <= s["median"] <= s["p90"]
+
+
+def test_parameter_uncertainty_widens_intervals():
+    """Revue r7, F4 : l'intervalle « bruit + paramètres non calés » est publié à côté de l'intervalle des graines."""
+    from salubri_api.services.simulation.engine import replicate
+
+    base = replicate(PLAN, sp(), seed=3, n=12)
+    both = replicate(PLAN, sp(), seed=3, n=12, uncertainty=True)
+    w = both["summary"]["wild_dump_t"]
+    assert base["summary"]["wild_dump_t"]["median"] == w["median"]  # la série « graines » ne change pas
+    assert w["p5_param"] <= w["median_param"] <= w["p95_param"]
+    assert (w["p95_param"] - w["p5_param"]) > (w["p95"] - w["p5"])
+    assert "p5_param" not in base["summary"]["wild_dump_t"]

@@ -29,7 +29,7 @@ STAFF_PER_TRUCK = (1, 2)  # [H] un chauffeur, deux ripeurs par camion et par rot
 POP_INSD_2019 = {9: 336_483}
 
 
-def wait(c: httpx.Client, plan_id: str, timeout: float = 300) -> dict[str, Any]:
+def wait(c: httpx.Client, plan_id: str, timeout: float = 900) -> dict[str, Any]:
     t0 = time.time()
     while time.time() - t0 < timeout:
         p = c.get(f"/api/plans/{plan_id}").json()
@@ -42,7 +42,8 @@ def wait(c: httpx.Client, plan_id: str, timeout: float = 300) -> dict[str, Any]:
 
 
 def simulate(c: httpx.Client, plan_id: str, n: int) -> dict[str, Any]:
-    run = c.post(f"/api/plans/{plan_id}/simulate", json={"replications": n}).json()
+    # incertitude : chaque variante est aussi simulée en tirant les paramètres non calés (revue r7, F4)
+    run = c.post(f"/api/plans/{plan_id}/simulate", json={"replications": n, "incertitude": True}).json()
     for _ in range(1200):
         out = c.get(f"/api/sim-runs/{run['sim_run_id']}").json()
         if out["status"] in ("ready", "failed"):
@@ -150,8 +151,19 @@ def main() -> int:
         props = [q.get("properties") or q for q in mine]
         demo = any(p.get("source") == "demo" for p in props)
         base = next(s for s in c.get("/api/scenarios").json() if s["is_baseline"])
-        bparams = c.get(f"/api/scenarios/{base['id']}").json()["params"]
-        sid = scenario(c, f"Arrondissement {arr}", base["id"], {"active_quartier_ids": [p["id"] for p in props]})
+        bparams = dict(c.get(f"/api/scenarios/{base['id']}").json()["params"])
+        # budget de l'arrondissement : budget de la commune au prorata de sa population (F6 : sinon il ne contraint rien)
+        pop_all = sum((q.get("properties") or q).get("population", 0) for q in qs) or 1
+        share = sum(p.get("population", 0) for p in props) / pop_all
+        bparams["budget_commune_fcfa_month"] = bparams["budget_fcfa_month"]
+        bparams["budget_share"] = share
+        bparams["budget_fcfa_month"] = round(bparams["budget_fcfa_month"] * share)
+        sid = scenario(
+            c,
+            f"Arrondissement {arr}",
+            base["id"],
+            {"active_quartier_ids": [p["id"] for p in props], "budget_fcfa_month": bparams["budget_fcfa_month"]},
+        )
         sc = c.get(f"/api/scenarios/{sid}").json()
         plan_id = sc["latest_ready_plan_id"]
         plan = c.get(f"/api/plans/{plan_id}").json()
@@ -162,22 +174,40 @@ def main() -> int:
         qgeo = [q for q in geo if (q.get("properties") or {}).get("arrondissement") == arr]
         variants: dict[str, dict[str, Any]] = {}
         variants["Référence"] = {"plan": plan, "sim": simulate(c, plan_id, a.replications)}
-        # flotte nécessaire : camions ajoutés un par un jusqu'à ce que tout soit desservi (10 au plus), puis retirés
+        # flotte nécessaire : d'abord le nombre estimé par le plan (trucks_needed), puis un camion à la fois
+        # jusqu'à ce que tout soit desservi (40 camions ajoutés au plus), puis tous retirés
         added: list[str] = []
         pf = plan
-        while pf["summary"]["unserved_points"] > 0 and len(added) < 10:
-            r = c.post(f"/api/scenarios/{sid}/vehicles", json={"kind": "truck_8t"}).json()
-            added.append(r["vehicle"]["id"])
-            pf = wait(c, r["plan_version_id"])
+        need = max(
+            0, int(plan["summary"].get("trucks_needed") or 0) - int(plan["summary"].get("vehicles_available") or 0)
+        )
+        while pf["summary"]["unserved_points"] > 0 and len(added) < 40:
+            r = {}
+            for _ in range(max(1, need)):
+                r = c.post(f"/api/scenarios/{sid}/vehicles", json={"kind": "truck_8t"}).json()
+                added.append(r["vehicle"]["id"])
+            need = 0
+            pf = wait(c, r["plan_version_id"], 900)
         if added:
+            # simulée avec le budget qu'elle demande (coût mensuel + 10 %) : avec celui de l'arrondissement, l'argent
+            # serait épuisé en milieu de mois et la grande flotte ferait moins bien que la petite
+            pk = (pf["summary"].get("capacite") or {}).get("enlevements_semaine") or bparams[
+                "pickup_frequency_per_week"
+            ]
+            need_budget = round(pf["summary"]["cost_day_fcfa"] * pk * 52 / 12 * 1.1)
+            pb = wait(c, c.patch(f"/api/scenarios/{sid}", json={"params": {"budget_fcfa_month": need_budget}}).json()[
+                "plan_version_id"])  # fmt: skip
             variants["Flotte nécessaire"] = {
-                "plan": pf,
-                "sim": simulate(c, pf["id"], a.replications),
+                "plan": pb,
+                "sim": simulate(c, pb["id"], a.replications),
                 "added": len(added),
+                "budget": need_budget,
             }
+            wait(c, c.patch(f"/api/scenarios/{sid}", json={"params": {"budget_fcfa_month": bparams["budget_fcfa_month"]}}).json()[
+                "plan_version_id"])  # fmt: skip
             for vid in added:
                 last = c.delete(f"/api/scenarios/{sid}/vehicles/{vid}").json()
-            wait(c, last["plan_version_id"])
+            wait(c, last["plan_version_id"], 900)
         # 2 camions en panne : les deux premiers camions du scénario
         vids = [v["id"] for v in sc["vehicles"] if not v.get("out_of_service")][:2]
         pid = c.patch(f"/api/scenarios/{sid}", json={"vehicles": [{"id": v, "out_of_service": True} for v in vids]})
@@ -228,7 +258,7 @@ def main() -> int:
     return 0
 
 
-def fleet_section(variants, s, pickups) -> list[str]:  # type: ignore[no-untyped-def]
+def fleet_section(variants, s, pickups, bp=None) -> list[str]:  # type: ignore[no-untyped-def]
     """Flotte actuelle (ce qui n'est pas desservi et ce qu'en dit la simulation) et flotte nécessaire (son coût)."""
     cap = s.get("capacite") or {}
     out = [
@@ -250,23 +280,88 @@ def fleet_section(variants, s, pickups) -> list[str]:  # type: ignore[no-untyped
         return out + ["Avec la flotte actuelle, tous les points sont desservis.", ""]
     ref, need = variants["Référence"], variants["Flotte nécessaire"]
     rows = []
-    for name, v in (("Flotte actuelle", ref), ("Flotte nécessaire", need)):
+    b_ref = (bp or {}).get("budget_fcfa_month")
+    for name, v, b in (("Flotte actuelle", ref, b_ref), ("Flotte nécessaire", need, need.get("budget", b_ref))):
         ps, sim = v["plan"]["summary"], v["sim"]["metrics_summary"]
         rows.append(
             f"| {name} | {ps['vehicles_available']} | {ps['unserved_points']} | {n(ps['unserved_t_per_pickup'])} "
-            f"| {n(ps['cost_day_fcfa'], 0)} | {n(ps['cost_day_fcfa'] * pickups * 52 / 12, 0)} "
+            f"| {n(ps['cost_day_fcfa'], 0)} | {n(ps['cost_day_fcfa'] * pickups * 52 / 12, 0)} | {n(b, 0) if b else '—'} "
             f"| {iv(sim, 'wild_dump_t')} | {iv(sim, 'coverage_rate', 0, 100.0)} |"
         )
     return out + [
         f"Flotte nécessaire : {need['added']} camion(s) de 8 t de plus, ajoutés un par un jusqu'à ce que tous les "
-        "points soient desservis (simulation : 30 réplications, médiane [intervalle à 90 %], 90 jours).",
+        "points soient desservis (simulation : 30 réplications, médiane [intervalle à 90 %], 90 jours). La flotte "
+        "actuelle est simulée avec le budget de l'arrondissement ; la flotte nécessaire avec le budget qu'elle demande "
+        "(coût mensuel + 10 %) : c'est le montant à prévoir pour desservir tout l'arrondissement.",
         "",
         "| Flotte | Camions | Points non desservis | Tonnes non enlevées par enlèvement | Coût par jour (FCFA) "
-        "| Coût par mois (FCFA) | Dépôts sauvages simulés (t) | Couverture simulée (%) |",
-        "|---|---|---|---|---|---|---|---|",
+        "| Coût par mois (FCFA) | Budget simulé (FCFA/mois) | Dépôts sauvages simulés (t) | Couverture simulée (%) |",
+        "|---|---|---|---|---|---|---|---|---|",
         *rows,
         "",
     ]
+
+
+def uncertainty_section(variants) -> list[str]:  # type: ignore[no-untyped-def]
+    """Revue r7, F4 : deux intervalles (graines seules ; graines + paramètres non calés) et écarts à la référence."""
+    ref = variants["Référence"]["sim"]["metrics_summary"]
+    if "p5_param" not in (ref.get("wild_dump_t") or {}):
+        return []
+
+    def ivp(s: dict[str, Any], k: str, d: int, f: float) -> str:
+        v = s.get(k) or {}
+        return f"{n(v['median_param'] * f, d)} [{n(v['p5_param'] * f, d)} ; {n(v['p95_param'] * f, d)}]" if v else "—"
+
+    rows = [("Tonnes en dépôt sauvage", "wild_dump_t", 1, 1.0), ("Tonnes collectées par camion", "collected_t", 1, 1.0),
+            ("Couverture simulée (%)", "coverage_rate", 0, 100.0), ("Coût de la mairie (FCFA/t)", "cost_per_t", 0, 1.0)]  # fmt: skip
+    L = [
+        "",
+        "## Incertitude des chiffres simulés",
+        "",
+        "Les intervalles ci-dessus ne viennent que du hasard des simulations (graines). Les paramètres de comportement "
+        "ne sont pas calés (`SIMULATION_CALIBRATION.md`) : chaque variante est donc simulée une seconde fois en tirant à "
+        "chaque réplication les déchets par habitant (±25 %), la propension de base à jeter (±1 en log-cote) et "
+        "l'effet de la distance (de la moitié au double). Référence :",
+        "",
+        "| Indicateur | Graines seules | Graines + paramètres non calés |",
+        "|---|---|---|",
+    ]
+    for lab, k, d, f in rows:
+        L.append(f"| {lab} | {iv(ref, k, d, f)} | {ivp(ref, k, d, f)} |")
+    L += [
+        "",
+        "Les valeurs absolues sont donc fragiles ; les **écarts à la référence** le sont moins (mêmes graines, mêmes "
+        "paramètres pour toutes les variantes). Écart des médianes à la référence, dépôts sauvages :",
+        "",
+        "| Variante | Écart (t, graines) | Écart (t, avec paramètres) |",
+        "|---|---|---|",
+    ]
+    r0, r1 = ref["wild_dump_t"]["median"], ref["wild_dump_t"]["median_param"]
+    for name, v in variants.items():
+        if name == "Référence":
+            continue
+        w = v["sim"]["metrics_summary"].get("wild_dump_t") or {}
+        if "median_param" in w:
+            L.append(f"| {name} | {w['median'] - r0:+.1f} | {w['median_param'] - r1:+.1f} |".replace(".", ","))
+    return L
+
+
+def budget_line(s, pickups, bp, variants) -> str:  # type: ignore[no-untyped-def]
+    cost = s["cost_day_fcfa"] * pickups * 52 / 12
+    b = bp["budget_fcfa_month"]
+    head = (f"- **Budget** : {n(b, 0)} FCFA par mois, soit le budget de la commune ({n(bp.get('budget_commune_fcfa_month', b), 0)} "
+            f"FCFA, hypothèse à remplacer par celui de la mairie) au prorata de la population de l'arrondissement "
+            f"({n(100 * bp.get('budget_share', 1), 1)} %). Le plan coûte ~{n(cost, 0)} FCFA par mois en camions")  # fmt: skip
+    ref = variants["Référence"]["sim"]["metrics_summary"]
+    low = variants["Budget −30 %"]["sim"]["metrics_summary"]
+    if cost <= b * 0.7:
+        return (
+            head
+            + " : même réduit de 30 %, le budget couvre les tournées, la variante « Budget −30 % » donne la référence."
+        )
+    return (head + f" : {'au-dessus du budget' if cost > b else 'au-dessus du budget réduit de 30 %'}. Quand l'argent du mois "
+            "est épuisé, les camions s'arrêtent : dépôts sauvages simulés "
+            f"{iv(ref, 'wild_dump_t')} t en référence, {iv(low, 'wild_dump_t')} t avec le budget réduit de 30 %.")  # fmt: skip
 
 
 def quartier_of(lon: float, lat: float, qgeo: list[dict]) -> str:  # type: ignore[type-arg]
@@ -300,15 +395,23 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
     ]
     if demo:
         L += [
-            "> **Données de démonstration.** Les limites et populations des quartiers de cet arrondissement viennent "
-            "du jeu de démonstration (`quartiers.geojson`, `source: demo`) : "
+            "> **Limites de démonstration.** Les limites des quartiers de cet arrondissement viennent du jeu de "
+            "démonstration (`quartiers.geojson`, `source: demo`) : "
             + ", ".join(f"{p['name']} ({n(p['population'], 0)} hab.)" for p in props)
-            + ". Les bâtiments sont réels (Open Buildings) mais les populations sont des ordres de grandeur. Remplacer "
-            "par les limites des secteurs et les populations du recensement (INSD) avant tout usage, puis relancer.",
+            + ". Remplacer par les limites des secteurs avant tout usage opérationnel, puis relancer.",
             "",
         ]
-    if arr in POP_INSD_2019:
-        pop_demo = sum(p["population"] for p in props)
+    pop_demo = sum(p["population"] for p in props)
+    if arr in POP_INSD_2019 and abs(pop_demo - POP_INSD_2019[arr]) <= 1:
+        L += [
+            f"> **Population** : {n(POP_INSD_2019[arr], 0)} habitants, total de l'arrondissement au recensement de 2019 "
+            "(INSD, RGPH 2019, monographie de la commune de Ouagadougou, tableau 2.2), réparti entre les quartiers au "
+            "prorata du jeu de démonstration. Le total est réel ; la répartition interne et les limites ne le sont pas "
+            "(les limites des secteurs 37 à 40 ne sont pas en données ouvertes) : **à faire par l'équipe**, demander la "
+            "carte des secteurs à la mairie d'arrondissement et la charger dans `quartiers.geojson`.",
+            "",
+        ]
+    elif arr in POP_INSD_2019:
         L += [
             f"> **Population réelle** : {n(POP_INSD_2019[arr], 0)} habitants en 2019 (INSD, RGPH 2019, monographie de "
             "la commune de Ouagadougou, tableau 2.2), soit "
@@ -332,7 +435,7 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
         "",
         f"![Carte des points et des tournées](figures/plan_arr{arr}_carte.svg)",
         "",
-        *fleet_section(variants, s, pickups),
+        *fleet_section(variants, s, pickups, bp),
         "## Tournées (par jour d'enlèvement)",
         "",
         "| Camion | Rotation | Jours | 1er passage | Dernier passage | Points | Tonnage (t) | km | Coût (FCFA) |",
@@ -398,6 +501,7 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
         "\\* Part de la population servie un jour donné : point à portée de marche **et pas plein**, ou passage du "
         "pré-collecteur dans les 7 jours. Plus stricte que la couverture du plan (distance seule).",
     ]
+    L += uncertainty_section(variants)
     p2 = variants["2 camions en panne"]["plan"]["summary"]
     coh = (p2.get("diff") or {}).get("coherence") or {}
     L += [
@@ -409,10 +513,7 @@ def render(arr, props, demo, plan, points, routes, variants, rain_routes, bp, re
         f"ne bouge (points inchangés : {n(100 * (coh.get('points_inchanges_part') or 0), 0)} %), mais les tournées "
         f"sont refaites (camions sur les mêmes points : {n(100 * (coh.get('tournees_jaccard') or 0), 0)} %). "
         "Prévoir un camion de réserve ou une rotation supplémentaire.",
-        f"- **Budget** : le plan coûte ~{n(s['cost_day_fcfa'] * pickups * 52 / 12, 0)} FCFA par mois en camions, sous le "
-        f"budget même réduit de 30 % ({n(bp['budget_fcfa_month'] * 0.7, 0)} FCFA) : la variante « Budget −30 % » "
-        "donne donc exactement la référence. Le budget ne limite les tournées que s'il descend sous ce coût "
-        "(ou si la valeur de départ de la mairie est bien plus basse que celle de démonstration).",
+        budget_line(s, pickups, bp, variants),
         "- **Pré-collecte** : la charrette est le goulot (`SIMULATION_ODD.md` § 11) ; plus d'abonnés sans plus de "
         "pré-collecteurs n'augmente pas la pré-collecte.",
         "- **Données** : la quantité de déchets par habitant explique ~90 % de l'incertitude sur les dépôts "

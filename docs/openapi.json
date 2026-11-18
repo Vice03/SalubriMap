@@ -3,7 +3,7 @@
  "info": {
   "title": "Salubri API",
   "description": "Aide à la décision pour l'assainissement de Ouagadougou : signalements vérifiés, plan de collecte, simulation multi-agents. Licence AGPL-3.0.",
-  "version": "0.3.0"
+  "version": "0.5.0"
  },
  "paths": {
   "/api/health": {
@@ -1798,6 +1798,73 @@
     }
    }
   },
+  "/api/dump-sites/laabal/alertes": {
+   "get": {
+    "tags": [
+     "Dépotoirs"
+    ],
+    "summary": "Zones récidivistes transmises à la brigade Laabal (et numéro WhatsApp)",
+    "operationId": "laabal_alerts_api_dump_sites_laabal_alertes_get",
+    "parameters": [
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     },
+     {
+      "name": "x-salubri-token",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "X-Salubri-Token"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Laabal Alerts Api Dump Sites Laabal Alertes Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/dump-sites/{site_id}": {
    "patch": {
     "tags": [
@@ -2164,6 +2231,83 @@
          "type": "object",
          "additionalProperties": true,
          "title": "Response Compare Api Scenarios Compare Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/scenarios/compare-many": {
+   "get": {
+    "tags": [
+     "Scénarios"
+    ],
+    "summary": "Comparer plusieurs scénarios (le premier sert de référence)",
+    "description": "`ids` : identifiants séparés par des virgules, 2 à 8. Pour chaque indicateur : la valeur de chaque scénario,\nl'écart à la référence et le meilleur scénario (aucun pour les indicateurs neutres ou à égalité).",
+    "operationId": "compare_many_api_scenarios_compare_many_get",
+    "parameters": [
+     {
+      "name": "ids",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Ids"
+      }
+     },
+     {
+      "name": "authorization",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Authorization"
+      }
+     },
+     {
+      "name": "x-salubri-token",
+      "in": "header",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "X-Salubri-Token"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Compare Many Api Scenarios Compare Many Get"
         }
        }
       }
@@ -3630,6 +3774,54 @@
     }
    }
   },
+  "/api/export/osc": {
+   "get": {
+    "tags": [
+     "Export"
+    ],
+    "summary": "Essai de versement OSM (osmChange) : nouveaux dépotoirs vérifiés (docs/OSM_CONTRIBUTION.md)",
+    "operationId": "export_osc_api_export_osc_get",
+    "parameters": [
+     {
+      "name": "since",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string",
+         "format": "date-time"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Since"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/audit": {
    "get": {
     "tags": [
@@ -3755,6 +3947,76 @@
          "additionalProperties": true,
          "type": "object",
          "title": "Response Rules Api Validation Rules Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/eau": {
+   "get": {
+    "tags": [
+     "Eau"
+    ],
+    "summary": "Retenues d'eau de la commune (FeatureCollection, polygones OSM d'au moins 0,5 ha)",
+    "operationId": "retenues_api_eau_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "additionalProperties": true,
+         "type": "object",
+         "title": "Response Retenues Api Eau Get"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/eau/depotoirs": {
+   "get": {
+    "tags": [
+     "Eau"
+    ],
+    "summary": "Dépotoirs actifs à moins de `distance_m` d'une retenue d'eau, du plus proche au plus loin",
+    "operationId": "depotoirs_pres_de_l_eau_api_eau_depotoirs_get",
+    "parameters": [
+     {
+      "name": "distance_m",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "maximum": 1000,
+       "minimum": 10,
+       "default": 200,
+       "title": "Distance M"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "type": "object",
+         "additionalProperties": true,
+         "title": "Response Depotoirs Pres De L Eau Api Eau Depotoirs Get"
+        }
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
         }
        }
       }
@@ -3953,6 +4215,18 @@
       "title": "Exif Taken At",
       "description": "Date de prise de vue EXIF, lue avant masquage"
      },
+     "masking_client": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Masking Client",
+      "description": "Zones floutées sur le téléphone, JSON {\"faces\":1,\"plates\":0,\"manual\":0}"
+     },
      "photo": {
       "anyOf": [
        {
@@ -4036,6 +4310,32 @@
       },
       "type": "array",
       "title": "Report"
+     },
+     "crs": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Crs"
+     },
+     "colonnes": {
+      "additionalProperties": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ]
+      },
+      "type": "object",
+      "title": "Colonnes",
+      "default": {}
      }
     },
     "type": "object",
@@ -4448,10 +4748,30 @@
      },
      "replications": {
       "type": "integer",
-      "maximum": 20.0,
+      "maximum": 100.0,
       "minimum": 1.0,
       "title": "Replications",
-      "default": 5
+      "default": 30
+     },
+     "mode": {
+      "anyOf": [
+       {
+        "type": "string",
+        "enum": [
+         "agents",
+         "agrege"
+        ]
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mode"
+     },
+     "incertitude": {
+      "type": "boolean",
+      "title": "Incertitude",
+      "default": false
      }
     },
     "type": "object",

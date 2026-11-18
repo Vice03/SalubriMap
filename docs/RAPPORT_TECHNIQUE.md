@@ -42,12 +42,14 @@ que l'aval de ce qu'il touche (`docs/REHEARSAL_REPORT.md` : étapes recalculées
 |---|---|---|
 | Routes, cours d'eau, centres de santé | OpenStreetMap (extrait Geofabrik) | ODbL |
 | Bâtiments | Google Open Buildings v3 (confiance ≥ 0,7) | CC BY 4.0 / ODbL |
-| Quartiers et populations | jeu de **démonstration** (`quartiers.geojson`, `source: demo`) | — |
+| Populations | **INSD, RGPH 2019** : total de chaque arrondissement (monographie de Ouagadougou, tableau 2.2 ; 2 415 266 habitants) | publication officielle |
+| Limites des quartiers | jeu de **démonstration** (`quartiers.geojson`, `source: demo`) ; population de l'arrondissement répartie au prorata | — |
 | CCT existants | SDGD 2020 (positions relevées) | à confirmer |
 | Signalements | citoyens (Salubri Go), imports, collecte de l'équipe | ODbL (`COLLECTE_TERRAIN.md`) |
 
-Limite principale : les limites et populations des quartiers sont des ordres de grandeur ; il faut les
-remplacer par celles du recensement (INSD) — un seul fichier à changer (`docs/NOUVELLE_COMMUNE.md`).
+Limite principale : les totaux de population sont réels (INSD 2019) mais leur répartition à l'intérieur d'un
+arrondissement et les limites des quartiers ne le sont pas ; les limites des secteurs ne sont pas en données
+ouvertes et sont à demander à la mairie — un seul fichier à changer (`docs/NOUVELLE_COMMUNE.md`).
 
 ## 5. Paramètres
 
@@ -95,6 +97,18 @@ panne, la saison des pluies ou un nouveau quartier **ne déplacent aucun point e
 au hasard** : chaque plan garde ≥ 70 % des points en place, un déplacement moyen sur tous les points ≤ 30 m et
 sa couverture quand le paramètre ne touche pas au placement.
 
+**Pourquoi ces bornes** (tirées des règles du modèle, pas d'une mesure) :
+- *≥ 70 % de points inchangés* : la pénalité de stabilité vaut 300 m de marche par point déplacé ; un changement
+  de paramètre ne justifie de déplacer que les points dont la contrainte change (capacité, marche) ; garder au
+  moins 70 % des points en place laisse jusqu'à un tiers des points pour s'adapter, au-delà le placement serait
+  refait sans raison.
+- *déplacement moyen ≤ 30 m sur tous les points* : si au plus 10 % des points bougent de la distance de stabilité
+  (300 m), la moyenne sur tous les points vaut au plus 30 m ; une moyenne plus forte signale un plan refait.
+- *couverture qui ne baisse pas* quand le paramètre ne touche pas au placement : les points ne changent pas, la
+  population servie non plus.
+Seule la seconde borne a été redéfinie après un premier passage (elle portait sur la moyenne des seuls points
+déplacés, qu'un unique point légitime faisait dépasser) ; sa valeur découle de la même règle de 10 % × 300 m.
+
 ### 6.4 Simulation à agents (résumé ODD)
 
 Protocole complet : [`SIMULATION_ODD.md`](SIMULATION_ODD.md).
@@ -109,7 +123,11 @@ Protocole complet : [`SIMULATION_ODD.md`](SIMULATION_ODD.md).
   (`tests/test_abm.py`). Construire le modèle à agents a révélé un biais du modèle agrégé (le pré-collecteur
   emportait des déchets de non-abonnés : 12 % de dépôts sauvages en moins), corrigé.
 - **Vitesse** : 0,3 s pour 19 000 ménages, 5 s pour 357 000 (ville entière) sur 2 cœurs.
-- **Incertitude** : 30 réplications par scénario, médiane et intervalle à 90 % (5ᵉ–95ᵉ centiles).
+- **Incertitude** : 30 réplications par scénario, médiane et intervalle à 90 % (5ᵉ–95ᵉ centiles). Ces
+  intervalles ne montrent que le hasard des simulations ; le plan d'arrondissement publie aussi un second intervalle
+  où les paramètres non calés (déchets par habitant ±25 %, propension à jeter ±1, effet de la distance ×0,5 à ×2)
+  sont tirés à chaque réplication, et compare les scénarios par **écart à la référence** (option `incertitude` de
+  `POST /api/plans/{id}/simulate`).
 - **Paramètres** : les 34 paramètres de comportement des deux modèles sont dans le fichier documenté (section
   `comportement`, unité, intervalle, source) et modifiables par scénario.
 - **Calage** : une seule référence chiffrée, les décharges sauvages du SDGD 2020 (4 dans la zone pilote).
@@ -122,9 +140,10 @@ Protocole complet : [`SIMULATION_ODD.md`](SIMULATION_ODD.md).
 
 Plan complet, tables par point et par tournée, coûts, personnel, risques et consignes de saison des pluies :
 [`PLAN_ARRONDISSEMENT_9.md`](PLAN_ARRONDISSEMENT_9.md) (et le PDF). Six variantes, 30 réplications chacune : référence, 2 camions en panne, saison des pluies,
-+20 % d'abonnements, budget −30 %, pluies + 2 camions en panne. Population réelle de l'arrondissement :
-336 483 habitants (INSD, RGPH 2019), 3,2 fois la population de démonstration simulée ; les limites des
-secteurs 37 à 40 ne sont pas en données ouvertes (à demander à la mairie).
++20 % d'abonnements, budget −30 %, pluies + 2 camions en panne. Population : 336 483 habitants (INSD, RGPH
+2019), le total réel de l'arrondissement ; les limites des secteurs 37 à 40 ne sont pas en données ouvertes (à
+demander à la mairie). Budget : celui de la commune au prorata de la population de l'arrondissement (13,9 %),
+pour que la variante « budget −30 % » mesure un vrai effet.
 
 ![Carte des points et tournées](figures/plan_arr9_carte.svg)
 
@@ -176,8 +195,8 @@ hypothèses de comportement pèsent peu dans leurs bornes.
 
 ## 9. Limites
 
-- Quartiers et populations de démonstration ; plan de l'arrondissement 9 approximatif tant qu'ils ne sont pas
-  remplacés.
+- Limites des quartiers de démonstration (populations calées sur les totaux INSD 2019) ; plan de
+  l'arrondissement 9 approximatif à l'intérieur de l'arrondissement tant que les limites des secteurs manquent.
 - Paramètres de comportement des ménages non calés : la seule référence (SDGD 2020) ne suffit pas ; les
   simulations comparent des scénarios, elles ne prédisent pas.
 - Facteur de détour sans OSRM pas encore mesuré contre OSRM.

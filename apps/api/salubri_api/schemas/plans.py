@@ -9,3 +9,4 @@ class SimulateIn(BaseModel):
     horizon_days: int | None = Field(None, ge=7, le=365)
     replications: int = Field(30, ge=1, le=100)
     mode: Literal["agents", "agrege"] | None = None  # par défaut : celui du scénario
+    incertitude: bool = False  # propager aussi l'incertitude des paramètres non calés (deux fois plus long)

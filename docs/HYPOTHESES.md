@@ -19,6 +19,15 @@
 | H14 | Identifiants | UUID v4 (et non v7) | `models/__init__.py` |
 | H15 | Le maximum de points (`collection_point_max`) borne un placement complet ; un nouveau quartier reçoit toujours les points dont il a besoin | | `planning/collection_points.py` |
 
+## Population : recensement de 2019
+
+Totaux par arrondissement : INSD, 5e RGPH 2019, *Monographie de la commune de Ouagadougou* (déc. 2022), tableau 2.2
+(arr. 1 : 102 528 ; 2 : 83 436 ; 3 : 311 406 ; 4 : 207 647 ; 5 : 129 984 ; 6 : 222 854 ; 7 : 282 837 ; 8 : 152 880 ;
+9 : 336 483 ; 10 : 263 969 ; 11 : 254 928 ; 12 : 66 314 ; commune : 2 415 266). Les limites des secteurs ne sont pas
+en données ouvertes : chaque total est réparti entre les quartiers de démonstration de l'arrondissement au prorata,
+puis, dans chaque quartier, sur les bâtiments Open Buildings (îlots, méthode dasymétrique). Pas de croissance
+appliquée depuis 2019 (paramètre `population_factor` pour la simuler).
+
 ## Référence officielle : SDGD Ouagadougou 2020
 
 Source : *Actualisation du Schéma directeur de gestion des déchets solides de la ville de Ouagadougou*, rapport définitif phase 2 « Mise en place de la base de données » (Commune de Ouagadougou / AMGT, CID–CINTECH, financement BAD, mars 2020), enquête de terrain 2019 :

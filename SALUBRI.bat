@@ -42,6 +42,7 @@ echo    11  Demo sur telephone Android (cable USB)
 echo    12  Assistant : installer un modele local (telechargement, avec accord)
 echo    13  Journal de l'API en direct (Ctrl+C puis N pour revenir)
 echo    14  Arreter Salubri
+echo    15  Caler le facteur de detour contre OSRM (Salubri doit tourner)
 echo.
 echo     0  Quitter (Salubri continue de tourner)
 echo.
@@ -63,6 +64,7 @@ if /i "%choix%"=="11" ( call run\telephone.bat & goto menu )
 if /i "%choix%"=="12" goto modele
 if /i "%choix%"=="13" ( docker compose logs -f --tail 50 api & goto menu )
 if /i "%choix%"=="14" ( call run\stop.bat & goto menu )
+if /i "%choix%"=="15" ( call run\detour.bat & echo. & pause & goto menu )
 if /i "%choix%"=="0" goto fin
 echo   Choix inconnu : %choix%
 timeout /t 2 /nobreak >nul

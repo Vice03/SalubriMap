@@ -24,3 +24,5 @@ data/eval/masquage/*
 !data/eval/masquage/resultat.json
 !data/eval/masquage/floutees/
 .verify/
+data/open_buildings/*.csv.gz
+data/open_buildings/*.part

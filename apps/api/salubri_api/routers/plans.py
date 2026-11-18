@@ -196,7 +196,9 @@ def diff(plan_id: str, against: str | None = None, s: Session = Depends(get_sess
     }
 
 
-def _run_replications(run_id: str, plan_id: str, seed: int, horizon: int | None, n: int, mode: str | None) -> None:
+def _run_replications(
+    run_id: str, plan_id: str, seed: int, horizon: int | None, n: int, mode: str | None, incertitude: bool = False
+) -> None:
     with get_sessionmaker()() as s:
         run = s.get(SimRun, parse_uuid(run_id))
         pv = s.get(PlanVersion, parse_uuid(plan_id))
@@ -207,7 +209,9 @@ def _run_replications(run_id: str, plan_id: str, seed: int, horizon: int | None,
             params = ScenarioParams(**(pv.params_snapshot or {}))
             if horizon:
                 params = params.model_copy(update={"horizon_days": horizon})
-            res = replicate(snapshot_from_db(s, pv), SimParams.from_scenario(params), seed, n, mode or params.sim_mode)
+            res = replicate(
+                snapshot_from_db(s, pv), SimParams.from_scenario(params), seed, n, mode or params.sim_mode, incertitude
+            )
             run.metrics_summary, run.metrics_daily = res["summary"], res["daily"]  # type: ignore[assignment]
             run.duration_ms, run.status = int(res["duration_ms"]), "ready"  # type: ignore[call-overload]
         except Exception as exc:
@@ -226,6 +230,14 @@ def simulate_plan(plan_id: str, body: SimulateIn, s: Session = Depends(get_sessi
     s.add(run)
     s.commit()
     background.spawn(
-        _run_replications, str(run.id), str(pv.id), seed, body.horizon_days, body.replications, body.mode, name="sim"
+        _run_replications,
+        str(run.id),
+        str(pv.id),
+        seed,
+        body.horizon_days,
+        body.replications,
+        body.mode,
+        body.incertitude,
+        name="sim",
     )
     return {"sim_run_id": str(run.id), "status": "pending"}
