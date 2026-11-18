@@ -25,7 +25,7 @@ signalement (12 règles, photos masquées), à **planifier** les points de regro
 | Internet | seulement au **premier** démarrage (télécharger les images Docker) ; ensuite tout marche hors ligne |
 
 Rien d'autre à installer : ni Node, ni Python, ni base de données (tout tourne dans Docker). Python n'est utile
-que pour l'option 12 (installer un modèle pour l'assistant).
+que pour l'option 10 (installer un modèle pour l'assistant).
 
 ## 2. Le lanceur `SALUBRI.bat`
 
@@ -45,13 +45,11 @@ après chaque action, une touche ramène au menu.
 | **G** Livrables et guide | ouvre le dossier `livrable/` (les six livrables du défi, chacun avec son `README.md`) et ce guide | — |
 | **6** État des services | conteneurs Docker et réponse de l'API | quelques s |
 | **7** Diagnostic | Docker, ports, disque, carte utilisée, assistant | quelques s |
-| **8** Répétition générale | rejoue les pièges du jury et des changements de paramètres, écrit `docs/REHEARSAL_REPORT.md` | 3–5 min |
-| **9** Tests automatiques | les tests de l'API dans Docker | 4–6 min |
-| **10** Remise à zéro | efface toutes les données et redémarre (demande « OUI ») | ~2 min |
-| **11** Téléphone | démo de Salubri Go sur un téléphone Android branché en USB | — |
-| **12** Assistant | cherche un modèle de langue déjà installé, sinon propose d'en télécharger un adapté à la machine (taille affichée, accord demandé) | selon le réseau |
-| **13** Journal | messages de l'API en direct (Ctrl+C puis **N** pour revenir au menu) | — |
-| **14** Arrêter | arrête Salubri (les données sont gardées) | ~10 s |
+| **8** Remise à zéro | efface toutes les données et redémarre (demande « OUI ») | ~2 min |
+| **9** Téléphone | démo de Salubri Go sur un téléphone Android branché en USB | — |
+| **10** Assistant | cherche un modèle de langue déjà installé, sinon propose d'en télécharger un adapté à la machine (taille affichée, accord demandé) | selon le réseau |
+| **11** Journal | messages de l'API en direct (Ctrl+C puis **N** pour revenir au menu) | — |
+| **12** Arrêter | arrête Salubri (les données sont gardées) | ~10 s |
 | **0** Quitter | ferme le menu ; Salubri continue de tourner | — |
 
 ## 3. Parcours conseillé pour le jury (10 minutes)
@@ -69,7 +67,7 @@ de la flotte. Une fois connecté avec le compte public « demo », le badge jaun
 
 <img src="guide/06_salubri_go.jpg" alt="Salubri Go" style="width:34%;display:block;margin:0 auto;border:1px solid #ccc;border-radius:10px">
 
-Choix **4** du menu (ou `http://localhost/go/`, aussi sur téléphone : choix 11). Au lancement, l'écran de langue parle : une voix française puis une voix mooré proposent la langue, le bouton de celle qui parle brille ; touchez la vôtre (ou « Continuer sans voix »). Le signalement se fait ensuite **pas à pas, un grand bouton par étape**, la voix guidant chacune : photo, quantité (chaque bouton brille quand la voix le nomme), type de déchets, localisation, remerciement. **Les visages et les plaques sont floutés sur l'appareil, avant tout envoi.** Sans réseau, le signalement attend dans « Mes envois » et part tout seul au retour du réseau. Les voix mooré sont enregistrées ; elles restent à faire valider par un locuteur (`docs/AUDIO_GO.md`).
+Choix **4** du menu (ou `http://localhost/go/`, aussi sur téléphone : choix 9). Au lancement, l'écran de langue parle : une voix française puis une voix mooré proposent la langue, le bouton de celle qui parle brille ; touchez la vôtre (ou « Continuer sans voix »). Le signalement se fait ensuite **pas à pas, un grand bouton par étape**, la voix guidant chacune : photo, quantité (chaque bouton brille quand la voix le nomme), type de déchets, localisation, remerciement. **Les visages et les plaques sont floutés sur l'appareil, avant tout envoi.** Sans réseau, le signalement attend dans « Mes envois » et part tout seul au retour du réseau. Les voix mooré sont enregistrées ; elles restent à faire valider par un locuteur (`docs/AUDIO_GO.md`).
 
 ### Étape 3 — La carte et la vérification des signalements
 
@@ -154,8 +152,8 @@ le trouve tout seul.
 | Port 80 ou 8443 en ÉCHEC (choix 7) | fermer le logiciel qui l'occupe, ou mettre `WEB_PORT=8080` dans `.env` (le menu en tient compte) |
 | « L'API ne répond pas » | choix 6 (état) puis 13 (journal) ; au premier démarrage, attendre quelques minutes de plus |
 | La page reste blanche | rafraîchir (Ctrl+F5) ; vérifier l'adresse `http://localhost` |
-| Données de test en désordre | choix 10 (remise à zéro), puis choix 1 |
-| GPS refusé sur téléphone | utiliser le câble USB (choix 11) ou `https://<adresse-du-PC>:8443/go/` en Wi-Fi |
+| Données de test en désordre | choix 8 (remise à zéro), puis choix 1 |
+| GPS refusé sur téléphone | utiliser le câble USB (choix 9) ou `https://<adresse-du-PC>:8443/go/` en Wi-Fi |
 | L'assistant dit « indisponible » (point rouge) | ouvrir l'application Ollama : il la retrouve seul en quelques secondes ; sinon choix 12, puis choix 2. La démo fonctionne sans lui |
 | Ollama ouvert mais toujours rouge | quitter Ollama, définir la variable d'environnement Windows `OLLAMA_HOST=0.0.0.0`, rouvrir Ollama |
 

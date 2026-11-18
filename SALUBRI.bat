@@ -49,16 +49,13 @@ echo.
 echo   %C%VERIFIER%N%
 echo    %Y% 6%N%  Etat des services
 echo    %Y% 7%N%  Diagnostic de la machine (Docker, ports, disque)
-echo    %Y% 8%N%  Repetition generale (pieges du jury, changements de parametres)
-echo    %Y% 9%N%  Tests automatiques de l'API
 echo.
 echo   %C%OUTILS%N%
-echo    %Y%10%N%  Remettre la demo a zero (efface les donnees, recharge)
-echo    %Y%11%N%  Demo sur telephone Android (cable USB)
-echo    %Y%12%N%  Assistant IA : installer un modele local (avec accord)
-echo    %Y%13%N%  Journal de l'API en direct (Ctrl+C puis N pour revenir)
-echo    %Y%14%N%  Arreter Salubri
-echo    %Y%15%N%  Caler le facteur de detour contre OSRM
+echo    %Y% 8%N%  Remettre la demo a zero (efface les donnees, recharge)
+echo    %Y% 9%N%  Demo sur telephone Android (cable USB)
+echo    %Y%10%N%  Assistant IA : installer un modele local (avec accord)
+echo    %Y%11%N%  Journal de l'API en direct (Ctrl+C puis N pour revenir)
+echo    %Y%12%N%  Arreter Salubri
 echo    %Y% P%N%  Purger les signalements %D%(garder les donnees de reference)%N%
 echo    %Y% R%N%  Reparer : nettoyer les conteneurs et relancer
 echo.
@@ -75,14 +72,11 @@ if /i "%choix%"=="5" ( start "" "%URL%/api/docs" & goto menu )
 if /i "%choix%"=="G" goto guide
 if /i "%choix%"=="6" goto etat
 if /i "%choix%"=="7" ( call run\doctor.bat & echo. & pause & goto menu )
-if /i "%choix%"=="8" goto rehearse
-if /i "%choix%"=="9" goto tests
-if /i "%choix%"=="10" goto reset
-if /i "%choix%"=="11" ( call run\telephone.bat & pause & goto menu )
-if /i "%choix%"=="12" goto modele
-if /i "%choix%"=="13" ( docker compose logs -f --tail 50 api & goto menu )
-if /i "%choix%"=="14" goto stop
-if /i "%choix%"=="15" goto detour
+if /i "%choix%"=="8" goto reset
+if /i "%choix%"=="9" ( call run\telephone.bat & pause & goto menu )
+if /i "%choix%"=="10" goto modele
+if /i "%choix%"=="11" ( docker compose logs -f --tail 50 api & goto menu )
+if /i "%choix%"=="12" goto stop
 if /i "%choix%"=="R" goto repair
 if /i "%choix%"=="P" goto purge
 if /i "%choix%"=="0" goto fin
@@ -153,24 +147,10 @@ echo.
 pause
 goto menu
 
-:rehearse
-call :need_running
-if errorlevel 1 goto menu
-call run\rehearse.bat
-pause
-goto menu
-
 :purge
 call :need_running
 if errorlevel 1 goto menu
 call run\purge.bat
-pause
-goto menu
-
-:tests
-call :ensure_docker
-if errorlevel 1 ( pause & goto menu )
-call run\test.bat
 pause
 goto menu
 
@@ -211,13 +191,6 @@ goto menu
 call run\stop.bat
 echo   %G%Salubri est arrete%N% ^(donnees conservees^).
 call :sleep 2
-goto menu
-
-:detour
-call :need_running
-if errorlevel 1 goto menu
-call run\detour.bat
-pause
 goto menu
 
 :repair
