@@ -1,6 +1,6 @@
 # Rapport de répétition de l'épreuve
 
-Généré le 18/11/2026 07:02 UTC — API http://localhost:8088, OSRM down.
+Généré le 18/11/2026 07:18 UTC — API http://localhost:8088, OSRM down.
 
 ## Signalements piégés
 
@@ -39,7 +39,7 @@ Jeu de pièges : `routes-osm_batiments-reels`
 | trap-029-r8-accuracy | probable R8 | probable (85) | R8 | ✅ |
 | trap-030-r8-copied-point | to_review/rejected R8 | to_review (60) | R8 | ✅ |
 | trap-031-r9-first | probable  | probable (100) | — | ✅ |
-| trap-032-r9-jump | to_review/probable/rejected R9 | rejected (0) | R5 | ❌ |
+| trap-032-r9-jump | to_review/probable/rejected R9 | probable (100) | — | ❌ |
 | trap-033-r10-burst | probable  | probable (100) | — | ✅ |
 | trap-034-r10-burst | probable  | probable (100) | — | ✅ |
 | trap-035-r10-burst | probable  | probable (100) | — | ✅ |
@@ -48,7 +48,7 @@ Jeu de pièges : `routes-osm_batiments-reels`
 | trap-038-r10-burst | probable  | probable (100) | — | ✅ |
 | trap-039-r10-burst | probable  | probable (100) | — | ✅ |
 | trap-040-r10-burst | probable  | probable (100) | — | ✅ |
-| trap-041-r10-burst | probable  | to_review (55) | R7 | ❌ |
+| trap-041-r10-burst | probable  | probable (100) | — | ✅ |
 | trap-042-r10-burst | probable  | probable (100) | — | ✅ |
 | trap-043-r10-burst | probable/to_review R10 | probable (70) | R10 | ✅ |
 | trap-044-r10-burst | probable/to_review R10 | probable (70) | R10 | ✅ |
@@ -69,12 +69,12 @@ Dépotoirs consolidés avant/après : 174 → 174 ✅
 
 | Étape | Événement | Étapes recalculées | En cache | Durée serveur | Durée totale | Points inchangés | Déplacement moyen / max | Tournées (Jaccard) | Δ coût | Couverture avant → après | Invariants |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.25 s | 1.50 s | 100 % | 0.0 / 0.0 m | 0.083 | 44779 | 96 % → 96 % | ✅ |
-| Saison des pluies | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.21 s | 1.55 s | 100 % | 0.0 / 0.0 m | 0.056 | 24525 | 96 % → 96 % | ✅ |
-| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 6.14 s | 8.22 s | 100 % | 0.0 / 0.0 m | 0.019 | 57165 | 96 % → 98 % | ❌ 6.1 s > 5 s |
+| 2 camions en panne | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.18 s | 1.42 s | 100 % | 0.0 / 0.0 m | 0.069 | 47272 | 96 % → 96 % | ✅ |
+| Saison des pluies | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.36 s | 1.59 s | 100 % | 0.0 / 0.0 m | 0.116 | -61201 | 96 % → 96 % | ✅ |
+| Secteur nouveau (répétition) | zone_changed | E2, E3, E4, E5, E6, E7 | E1 | 5.19 s | 7.11 s | 100 % | 0.0 / 0.0 m | 0.019 | 151622 | 96 % → 98 % | ❌ 5.2 s > 5 s |
 | Budget −30 % | budget_changed | E6, E7 | E1, E2, E3, E4, E5 | 0.24 s | 0.62 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 98 % → 98 % | ✅ |
-| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.28 s | 1.51 s | 100 % | 0.0 / 0.0 m | 0.091 | 76909 | 98 % → 98 % | ✅ |
-| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.38 s | 1.63 s | 100 % | 0.0 / 0.0 m | 0.08 | -37893 | 98 % → 98 % | ✅ |
+| Réparation de BF-01 | fleet_changed | E5, E6, E7 | E1, E2, E3, E4 | 1.25 s | 1.51 s | 100 % | 0.0 / 0.0 m | 0.082 | 65723 | 98 % → 98 % | ✅ |
+| Retour en saison sèche | season_changed | E2, E4, E5, E6, E7 | E1, E3 | 1.25 s | 1.49 s | 100 % | 0.0 / 0.0 m | 0.036 | -26656 | 98 % → 98 % | ✅ |
 | Deux modifications en 100 ms | subscription_changed | E7 | E1, E2, E3, E4, E5, E6 | 0.00 s | 0.39 s | 100 % | 0.0 / 0.0 m | 1.0 | 0 | 98 % → 98 % | ✅ |
 
 Ce qui change et pourquoi :
@@ -87,15 +87,15 @@ Graine 2026, 10 changements tirés dans `perturbations.parametres`, enchaînés.
 
 | # | Paramètre → valeur | Points inchangés | Déplacement des points déplacés, moyen / max | Déplacement moyen, tous points | Tournées (Jaccard) | Couverture avant → après | Résultat |
 |---|---|---|---|---|---|---|---|
-| 1 | `collection_point_capacity_t` → 2.479 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.318 | 96 % → 96 % | ✅ |
-| 2 | `walk_distance_max_m` → 347.08 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.833 | 96 % → 100 % | ✅ |
-| 3 | `collection_point_capacity_t` → 3.326 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.846 | 100 % → 100 % | ✅ |
-| 4 | `waste_kg_per_person_day` → 0.668 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.099 | 100 % → 100 % | ✅ |
-| 5 | `subscription_rate` → 0.435 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
-| 6 | `walk_distance_max_m` → 376.36 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
+| 1 | `collection_point_capacity_t` → 2.479 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.259 | 96 % → 96 % | ✅ |
+| 2 | `walk_distance_max_m` → 347.08 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 96 % → 99 % | ✅ |
+| 3 | `collection_point_capacity_t` → 3.326 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.34 | 99 % → 99 % | ✅ |
+| 4 | `waste_kg_per_person_day` → 0.668 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.154 | 99 % → 99 % | ✅ |
+| 5 | `subscription_rate` → 0.435 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 99 % → 99 % | ✅ |
+| 6 | `walk_distance_max_m` → 376.36 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 99 % → 100 % | ✅ |
 | 7 | `truck_breakdown_rate_per_day` → 0.063 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
-| 8 | `waste_kg_per_person_day` → 0.604 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.116 | 100 % → 100 % | ✅ |
+| 8 | `waste_kg_per_person_day` → 0.604 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.203 | 100 % → 100 % | ✅ |
 | 9 | `budget_factor` → 1.03 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
-| 10 | `collection_point_capacity_t` → 2.431 | 100 % | 0.0 / 0.0 m | 0.0 m | 1.0 | 100 % → 100 % | ✅ |
+| 10 | `collection_point_capacity_t` → 2.431 | 100 % | 0.0 / 0.0 m | 0.0 m | 0.145 | 100 % → 100 % | ✅ |
 
 **Résultat : des contrôles échouent.**

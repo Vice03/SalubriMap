@@ -190,7 +190,7 @@ def main() -> None:
             ["R9"],
             "r9-jump",
             device_id="trap-r9",
-            reported_at=(T0 + timedelta(hours=10, minutes=3)).isoformat(),
+            reported_at=(T0 + timedelta(hours=10, minutes=2)).isoformat(),  # > 120 km/h même à 4 km
         )
         # R10: 12 reports in 20 minutes from one device (40 m apart: no R1, no R9)
         lon0, lat0 = next(pts)

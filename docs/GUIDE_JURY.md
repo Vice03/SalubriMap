@@ -76,6 +76,11 @@ les plaques sont floutés sur l'appareil, avant tout envoi**. Choisissez le type
 
 ![Carte interactive](guide/02_carte.jpg)
 
+Dans le cadre des couches, cochez **« Carte de chaleur des signalements »** (période au choix : 7, 30, 90 jours) pour
+voir où les signalements se concentrent, et **« Retenues d'eau »** : barrages et lacs en bleu, dépotoirs à moins de 200 m
+cerclés ; la liste par retenue est sous la carte. Les données sont réelles : bâtiments Google Open Buildings, voies et
+eau OpenStreetMap, populations du recensement INSD 2019.
+
 Le public ne voit que les signalements **vérifiés**, photos masquées (ligne de licence sous la carte). Cliquez
 « Se connecter » en haut à droite : **demo** / **ouaga2026**.
 

@@ -272,13 +272,13 @@ def _optimise(
         list(range(len(frozen), off)) if stab_pts else list(range(off, off + len(warm_new)))
     )  # départ : les points de la version précédente s'il y en a (stabilité), sinon le k-means
 
-    # budget total des essais CP-SAT : la limite d'un essai (le test en direct attend le plan) ; en mode
+    # budget total des essais CP-SAT : 0,75 × la limite d'un essai (le test en direct attend le plan) ; en mode
     # déterministe, pas de budget à l'horloge (même entrée → même plan)
     from salubri_api.services.planning.placement_opt import OptResult, _deterministic
 
     det = _deterministic()
     t_start = time.perf_counter()
-    budget = p.placement_time_limit_s
+    budget = 0.75 * p.placement_time_limit_s
 
     def left() -> float:
         return budget - (time.perf_counter() - t_start)
